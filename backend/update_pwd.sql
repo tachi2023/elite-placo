@@ -1,0 +1,1 @@
+﻿UPDATE utilisateur SET mot_de_passe_hache = '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy' WHERE identifiant = 'raoul.michel'; SELECT identifiant, mot_de_passe_hache FROM utilisateur WHERE identifiant = 'raoul.michel';

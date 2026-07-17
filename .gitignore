@@ -1,0 +1,19 @@
+# Secrets — ne JAMAIS committer
+.env
+*.env
+
+# Backend
+backend/target/
+backend/.mvn/
+*.class
+
+# Frontend
+frontend/build/
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+
+# IDE
+.idea/
+.vscode/
+*.iml

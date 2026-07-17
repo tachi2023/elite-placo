@@ -1,0 +1,44 @@
+name: elite_placo
+description: Application de gestion comptable des chantiers — Élite Placo & Déco
+publish_to: 'none'
+version: 0.1.0-mvp
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Gestion d'état (choisi pour sa simplicité — voir justification architecture)
+  provider: ^6.1.0
+
+  # Appels API
+  dio: ^5.4.0
+
+  # Base locale hors-ligne + chiffrement (non négociable dès la v1 — elite.md §4)
+  sqflite_sqlcipher: ^3.4.0
+  path_provider: ^2.1.0
+
+  # Détection réseau (déclenche la synchronisation)
+  connectivity_plus: ^7.3.0
+
+  # Stockage sécurisé du PIN et des jetons JWT
+  flutter_secure_storage: ^10.3.1
+
+  # Export PDF + partage WhatsApp
+  pdf: ^3.10.0
+  printing: ^5.12.0
+  share_plus: ^7.2.0
+  google_fonts: ^8.2.0
+  shared_preferences: ^2.5.5
+  intl: ^0.20.3
+  crypto: ^3.0.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
