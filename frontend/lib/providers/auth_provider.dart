@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:local_auth/local_auth.dart';
 import '../services/api_service.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -12,6 +13,7 @@ class AuthProvider extends ChangeNotifier {
   String? _erreurConnexion;
   bool _isPinConfigured = true;
   DateTime? _lockoutUntil;
+  bool _peutUtiliserBiometrie = false;
   
   bool _isInitializing = true;
   bool get isInitializing => _isInitializing;
@@ -21,11 +23,13 @@ class AuthProvider extends ChangeNotifier {
   String? get erreurConnexion => _erreurConnexion;
   bool get isPinConfigured => _isPinConfigured;
   DateTime? get lockoutUntil => _lockoutUntil;
+  bool get peutUtiliserBiometrie => _peutUtiliserBiometrie;
   
   bool get isLockedOut => _lockoutUntil != null && _lockoutUntil!.isAfter(DateTime.now());
 
   final ApiService _api = ApiService();
   final _secureStorage = const FlutterSecureStorage();
+  final LocalAuthentication _localAuth = LocalAuthentication();
   static const _pinKey = 'user_pin_hash';
   static const _attemptsKey = 'failed_attempts';
   static const _lockoutKey = 'lockout_until';
@@ -52,6 +56,15 @@ class AuthProvider extends ChangeNotifier {
         await prefs.remove(_attemptsKey);
         await prefs.remove(_lockoutKey);
       }
+    }
+
+    // Charger la disponibilité biométrique
+    try {
+      final canCheck = await _localAuth.canCheckBiometrics;
+      final isSupported = await _localAuth.isDeviceSupported();
+      _peutUtiliserBiometrie = canCheck && isSupported;
+    } catch (_) {
+      _peutUtiliserBiometrie = false;
     }
     
     _isInitializing = false;
@@ -143,6 +156,50 @@ class AuthProvider extends ChangeNotifier {
     } catch (_) {
       _erreurConnexion = 'Erreur inattendue lors de la connexion.';
     }
+  }
+
+  Future<bool> verifierBiometrie() async {
+    if (isLockedOut) {
+      _erreurConnexion = 'Application bloquée temporairement.';
+      notifyListeners();
+      return false;
+    }
+
+    try {
+      final canCheck = await _localAuth.canCheckBiometrics;
+      final isSupported = await _localAuth.isDeviceSupported();
+      if (!canCheck || !isSupported) {
+        _erreurConnexion = 'Biométrie non disponible.';
+        notifyListeners();
+        return false;
+      }
+
+      final didAuthenticate = await _localAuth.authenticate(
+        localizedReason: 'Déverrouillez votre application Élite Placo',
+        options: const AuthenticationOptions(
+          biometricOnly: true,
+          stickyAuth: true,
+        ),
+      );
+
+      if (didAuthenticate) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove(_attemptsKey);
+        await prefs.remove(_lockoutKey);
+        _tentativesEchouees = 0;
+        _lockoutUntil = null;
+        
+        await _tenterConnexionApi();
+
+        _estDeverrouille = true;
+        notifyListeners();
+        return true;
+      }
+    } catch (_) {
+      _erreurConnexion = 'Erreur lors de l\'authentification biométrique.';
+      notifyListeners();
+    }
+    return false;
   }
 
   void verrouiller() {

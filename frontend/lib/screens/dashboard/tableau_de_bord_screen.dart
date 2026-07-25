@@ -4,7 +4,9 @@ import 'package:intl/intl.dart';
 import '../../providers/dashboard_provider.dart';
 import '../../widgets/indicateur_pastille.dart';
 import '../chantiers/nouveau_chantier_screen.dart';
+import '../settings/gestion_site_screen.dart';
 import '../../theme/app_theme.dart';
+import '../../models/chantier.dart';
 
 class TableauDeBordScreen extends StatefulWidget {
   const TableauDeBordScreen({super.key});
@@ -32,12 +34,20 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.anthracite,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Tableau de Bord'),
+        title: Text('Tableau de Bord', style: TextStyle(fontWeight: FontWeight.w600)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.settings, color: AppTheme.or),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const GestionSiteScreen()));
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh, color: AppTheme.or),
             onPressed: () => context.read<DashboardProvider>().charger(),
           ),
         ],
@@ -45,152 +55,196 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppTheme.or,
         foregroundColor: AppTheme.anthracite,
+        elevation: 8,
+        shadowColor: AppTheme.or.withOpacity(0.5),
         icon: const Icon(Icons.add),
-        label: const Text('Nouveau projet', style: TextStyle(fontWeight: FontWeight.bold)),
+        label: const Text('NOUVEAU PROJET', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2)),
         onPressed: () async {
           await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const NouveauChantierScreen()));
           if (mounted) context.read<DashboardProvider>().charger();
         },
       ),
-      body: Consumer<DashboardProvider>(
-        builder: (context, provider, _) {
-          if (provider.enChargement) {
-            return const Center(child: CircularProgressIndicator(color: AppTheme.or));
-          }
-          final vue = provider.vueGlobale;
-          if (vue == null || vue.resumesChantiers.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.architecture_rounded, size: 80, color: AppTheme.grisFonce.withOpacity(0.5)),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Aucun projet en cours.',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(color: AppTheme.grisFonce),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF1E1E24), // Anthracite légèrement plus clair
+              AppTheme.anthracite, // Anthracite profond
+              Color(0xFF0F0F12), // Presque noir
+            ],
+            stops: [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Consumer<DashboardProvider>(
+            builder: (context, provider, _) {
+              if (provider.enChargement) {
+                return const Center(child: CircularProgressIndicator(color: AppTheme.or));
+              }
+              final vue = provider.vueGlobale;
+              if (vue == null || vue.resumesChantiers.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.architecture_rounded, size: 80, color: AppTheme.or.withOpacity(0.3)),
+                      const SizedBox(height: 24),
+                      Text(
+                        'Aucun projet en cours',
+                        style: Theme.of(context).textTheme.displayMedium?.copyWith(color: AppTheme.blanc),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Créez votre premier chantier pour commencer.',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppTheme.grisFonce),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Créez votre premier chantier pour commencer.',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
-              ),
-            );
-          }
+                );
+              }
 
-          return RefreshIndicator(
-            color: AppTheme.or,
-            backgroundColor: AppTheme.anthraciteClair,
-            onRefresh: () => provider.charger(),
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                if (vue.donneesPartiellementNonSynchronisees)
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppTheme.or.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppTheme.or.withOpacity(0.5)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.cloud_sync_rounded, color: AppTheme.or, size: 20),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Synchronisation en attente (Mode hors-ligne actif)',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppTheme.or),
-                          ),
+              return RefreshIndicator(
+                color: AppTheme.or,
+                backgroundColor: AppTheme.anthracite,
+                onRefresh: () => provider.charger(),
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                  physics: const BouncingScrollPhysics(),
+                  children: [
+                    if (vue.donneesPartiellementNonSynchronisees)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 24),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppTheme.or.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppTheme.or.withOpacity(0.3)),
                         ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.cloud_off_rounded, color: AppTheme.or, size: 24),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'Mode hors-ligne : Données en attente de synchronisation.',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppTheme.or),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    
+                    Text('Aperçu Financier', style: Theme.of(context).textTheme.titleLarge),
+                    const SizedBox(height: 20),
+                    
+                    // KPIs en grille
+                    GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 1.4,
+                      children: [
+                        _buildKpiCard('Chiffre d\'Affaires', _fmt(vue.chiffreAffairesTotal), Icons.account_balance),
+                        _buildKpiCard('Résultat Net', _fmt(vue.resultatNetGlobal), Icons.insights, isHighlight: true),
+                        _buildKpiCard('Total Encaissé', _fmt(vue.totalEncaisseGlobal), Icons.arrow_circle_down, color: AppTheme.succes),
+                        _buildKpiCard('Total Dépenses', _fmt(vue.totalDepensesGlobal), Icons.arrow_circle_up, color: AppTheme.erreur),
                       ],
                     ),
-                  ),
-                
-                Text('Aperçu Financier', style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: 16),
-                
-                // KPIs en grille
-                GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 1.5,
-                  children: [
-                    _buildKpiCard('Chiffre d\'Affaires', _fmt(vue.chiffreAffairesTotal), Icons.monetization_on_outlined),
-                    _buildKpiCard('Résultat Net', _fmt(vue.resultatNetGlobal), Icons.account_balance_wallet_outlined, isHighlight: true),
-                    _buildKpiCard('Total Encaissé', _fmt(vue.totalEncaisseGlobal), Icons.arrow_downward_rounded, color: AppTheme.succes),
-                    _buildKpiCard('Total Dépenses', _fmt(vue.totalDepensesGlobal), Icons.arrow_upward_rounded, color: AppTheme.erreur),
-                  ],
-                ),
-                
-                const SizedBox(height: 16),
-                _buildKpiCard(
-                  'Marge Globale', 
-                  '${vue.margeGlobalePourcent.toStringAsFixed(1)}%', 
-                  Icons.pie_chart_outline,
-                  fullWidth: true
-                ),
+                    
+                    const SizedBox(height: 16),
+                    _buildKpiCard(
+                      'Marge Globale', 
+                      '${vue.margeGlobalePourcent.toStringAsFixed(1)}%', 
+                      Icons.donut_large,
+                      fullWidth: true,
+                      isHighlight: true
+                    ),
 
-                const SizedBox(height: 32),
-                Text('Projets Récents', style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: 16),
-                
-                ...vue.resumesChantiers.map((resume) => Card(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    leading: Container(
-                      padding: const EdgeInsets.all(2),
+                    const SizedBox(height: 40),
+                    Text('Projets Récents', style: Theme.of(context).textTheme.titleLarge),
+                    const SizedBox(height: 20),
+                    
+                    ...vue.resumesChantiers.map((resume) => Container(
+                      margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppTheme.grisFonce),
-                      ),
-                      child: IndicateurPastille(indicateur: resume.situation.indicateur),
-                    ),
-                    title: Text(
-                      resume.chantier.nomClient,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Row(
-                        children: [
-                          Icon(Icons.location_on, size: 14, color: AppTheme.grisFonce),
-                          const SizedBox(width: 4),
-                          Text('${resume.chantier.ville ?? 'N/A'}'),
-                          const SizedBox(width: 8),
-                          Text('• ${resume.chantier.statut}'),
+                        color: Colors.white.withOpacity(0.03),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.white.withOpacity(0.05)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          )
                         ],
                       ),
-                    ),
-                    trailing: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          'Marge',
-                          style: TextStyle(fontSize: 10, color: AppTheme.grisFonce),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        leading: Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppTheme.or.withOpacity(0.5)),
+                          ),
+                          child: IndicateurPastille(indicateur: resume.situation.indicateur),
                         ),
-                        Text(
-                          '${resume.situation.margeBrutePourcent.toStringAsFixed(1)}%',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: resume.situation.margeBrutePourcent < 0 ? AppTheme.erreur : AppTheme.succes,
+                        title: Text(
+                          resume.chantier.nomClient,
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.blanc),
+                        ),
+                        subtitle: Padding(
+                          padding: const EdgeInsets.only(top: 6.0),
+                          child: Row(
+                            children: [
+                              Icon(Icons.location_on, size: 14, color: AppTheme.or.withOpacity(0.8)),
+                              const SizedBox(width: 4),
+                              Text('${resume.chantier.ville ?? 'N/A'}', style: TextStyle(color: AppTheme.grisClair)),
+                              const SizedBox(width: 12),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.or.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  StatutChantier.libelle(resume.chantier.statut),
+                                  style: TextStyle(color: AppTheme.or, fontSize: 10, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                )),
-              ],
-            ),
-          );
-        },
+                        trailing: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Marge',
+                              style: TextStyle(fontSize: 10, color: AppTheme.grisFonce, letterSpacing: 1),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${resume.situation.margeBrutePourcent.toStringAsFixed(1)}%',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: resume.situation.margeBrutePourcent < 0 ? AppTheme.erreur : AppTheme.succes,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }
@@ -198,13 +252,20 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
   Widget _buildKpiCard(String label, String valeur, IconData icon, {bool fullWidth = false, bool isHighlight = false, Color? color}) {
     return Container(
       width: fullWidth ? double.infinity : null,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isHighlight ? AppTheme.or.withOpacity(0.1) : AppTheme.anthraciteClair,
-        borderRadius: BorderRadius.circular(16),
+        color: isHighlight ? AppTheme.or.withOpacity(0.08) : Colors.white.withOpacity(0.03),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isHighlight ? AppTheme.or.withOpacity(0.3) : Colors.transparent,
+          color: isHighlight ? AppTheme.or.withOpacity(0.3) : Colors.white.withOpacity(0.05),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,12 +273,12 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: color ?? (isHighlight ? AppTheme.or : AppTheme.grisFonce)),
-              const SizedBox(width: 8),
+              Icon(icon, size: 20, color: color ?? (isHighlight ? AppTheme.or : AppTheme.grisClair)),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  label,
-                  style: TextStyle(fontSize: 12, color: isHighlight ? AppTheme.or : AppTheme.grisFonce),
+                  label.toUpperCase(),
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isHighlight ? AppTheme.or : AppTheme.grisFonce, letterSpacing: 0.5),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -228,8 +289,9 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
           Text(
             valeur,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: color ?? AppTheme.blanc,
-              fontSize: fullWidth ? 24 : 18,
+              color: color ?? (isHighlight ? AppTheme.or : AppTheme.blanc),
+              fontSize: fullWidth ? 28 : 20,
+              fontWeight: FontWeight.bold,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

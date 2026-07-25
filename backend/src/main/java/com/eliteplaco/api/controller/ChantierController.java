@@ -36,7 +36,17 @@ public class ChantierController {
     @PatchMapping("/{id}/statut")
     public ChantierDTO changerStatut(@PathVariable Long id, @Valid @RequestBody ChangerStatutRequest requete) {
         Chantier.StatutChantier nouveauStatut = Chantier.StatutChantier.valueOf(requete.nouveauStatut());
-        Chantier chantier = chantierService.changerStatut(id, nouveauStatut);
+        Chantier chantier = chantierService.changerStatut(id, nouveauStatut, requete.lastModifiedDate());
+        return chantierService.calculerSituation(chantier);
+    }
+
+    @PutMapping("/{id}/statut")
+    public ChantierDTO changerStatutPut(
+            @PathVariable Long id,
+            @RequestParam String statut,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime lastModifiedDate) {
+        Chantier.StatutChantier nouveauStatut = Chantier.StatutChantier.valueOf(statut);
+        Chantier chantier = chantierService.changerStatut(id, nouveauStatut, lastModifiedDate);
         return chantierService.calculerSituation(chantier);
     }
 

@@ -1,7 +1,6 @@
 package com.eliteplaco.api.controller;
 
 import com.eliteplaco.api.dto.ChantierSuiviPublicDTO;
-import com.eliteplaco.api.dto.DepensePublicDTO;
 import com.eliteplaco.api.entity.Chantier;
 import com.eliteplaco.api.entity.LienSuiviClient;
 import com.eliteplaco.api.entity.MouvementFinancier;
@@ -31,6 +30,10 @@ public class SuiviClientController {
         LienSuiviClient lien = lienRepository.findByCodePublicAndActifTrue(code)
                 .orElseThrow(() -> new AppException("Ce lien de suivi est introuvable ou n'est plus actif."));
 
+        if (lien.getDateExpiration() != null && lien.getDateExpiration().isBefore(java.time.LocalDateTime.now())) {
+            throw new java.lang.RuntimeException("Ce lien de suivi a expiré.");
+        }
+
         Chantier chantier = lien.getChantier();
         int avancement = switch (chantier.getStatut()) {
             case A_VENIR -> 0;
@@ -39,23 +42,11 @@ public class SuiviClientController {
             case TERMINE, ARCHIVE -> 100;
         };
 
-        // Filtrer uniquement les dépenses pour le client final
-        List<DepensePublicDTO> depensesPubliques = chantier.getMouvements().stream()
-                .filter(m -> m.getTypeMouvement() == MouvementFinancier.TypeMouvement.DEPENSE)
-                .map(m -> new DepensePublicDTO(
-                        m.getDescription(),
-                        m.getCategorie(),
-                        m.getMontant(),
-                        m.getDate()
-                ))
-                .collect(Collectors.toList());
-
         return new ChantierSuiviPublicDTO(
                 chantier.getNomClient(), 
                 chantier.getVille(), 
                 chantier.getStatut().name(), 
-                avancement,
-                depensesPubliques
+                avancement
         );
     }
 }

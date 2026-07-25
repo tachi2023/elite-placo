@@ -48,6 +48,9 @@ public class Chantier {
     @Column(nullable = false)
     private LocalDateTime dateCreation = LocalDateTime.now();
 
+    @Column(nullable = false)
+    private LocalDateTime lastModifiedDate = LocalDateTime.now();
+
     // Ajouté par le Script 2 (V2) : marquage hors-ligne (§"Marquage des données en attente")
     @Column(nullable = false)
     private Boolean synchronise = true;

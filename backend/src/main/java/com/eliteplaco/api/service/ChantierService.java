@@ -6,6 +6,7 @@ import com.eliteplaco.api.entity.Chantier.StatutChantier;
 import com.eliteplaco.api.exception.AppException;
 import com.eliteplaco.api.repository.ChantierRepository;
 import com.eliteplaco.api.repository.MouvementFinancierRepository;
+import com.eliteplaco.api.repository.LienSuiviClientRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -40,11 +41,14 @@ public class ChantierService {
 
     private final ChantierRepository chantierRepository;
     private final MouvementFinancierRepository mouvementRepository;
+    private final LienSuiviClientRepository lienSuiviClientRepository;
 
     public ChantierService(ChantierRepository chantierRepository,
-                            MouvementFinancierRepository mouvementRepository) {
+                            MouvementFinancierRepository mouvementRepository,
+                            LienSuiviClientRepository lienSuiviClientRepository) {
         this.chantierRepository = chantierRepository;
         this.mouvementRepository = mouvementRepository;
+        this.lienSuiviClientRepository = lienSuiviClientRepository;
     }
 
     public List<Chantier> listerActifs() {
@@ -76,14 +80,22 @@ public class ChantierService {
         chantier.setTypeTravaux(typeTravaux.trim());
         chantier.setMontantDevis(montantDevis);
         chantier.setStatut(StatutChantier.A_VENIR);
+        chantier.setLastModifiedDate(LocalDateTime.now());
         chantier.setSynchronise(false);
 
         return chantierRepository.save(chantier);
     }
 
     /** §10.9 — changement de statut. A1 : pas de saut d'étape autorisé. */
-    public Chantier changerStatut(Long chantierId, StatutChantier nouveauStatut) {
+    public Chantier changerStatut(Long chantierId, StatutChantier nouveauStatut, LocalDateTime clientLastModifiedDate) {
         Chantier chantier = trouverParIdOuLever(chantierId);
+
+        if (clientLastModifiedDate != null && chantier.getLastModifiedDate() != null) {
+            // Si la version serveur est plus récente que la version client
+            if (chantier.getLastModifiedDate().isAfter(clientLastModifiedDate.plusSeconds(1))) {
+                throw new AppException("CONFLIT : Ce chantier a été modifié par un autre utilisateur depuis votre dernière synchronisation.");
+            }
+        }
 
         if (chantier.getStatut() == StatutChantier.ARCHIVE) {
             throw new AppException("Ce chantier est archivé. Désarchivez-le avant de changer son statut.");
@@ -95,7 +107,18 @@ public class ChantierService {
         }
 
         chantier.setStatut(nouveauStatut);
+        chantier.setLastModifiedDate(LocalDateTime.now());
         chantier.setSynchronise(false);
+
+        if (nouveauStatut == StatutChantier.TERMINE || nouveauStatut == StatutChantier.ARCHIVE) {
+            lienSuiviClientRepository.findByChantierIdAndActifTrue(chantierId).ifPresent(l -> {
+                if (l.getDateExpiration() == null) {
+                    l.setDateExpiration(LocalDateTime.now().plusDays(30));
+                    lienSuiviClientRepository.save(l);
+                }
+            });
+        }
+
         return chantierRepository.save(chantier);
     }
 
@@ -106,7 +129,16 @@ public class ChantierService {
             throw new AppException("Seul un chantier \"Terminé\" peut être archivé.");
         }
         chantier.setStatut(StatutChantier.ARCHIVE);
+        chantier.setLastModifiedDate(LocalDateTime.now());
         chantier.setSynchronise(false);
+
+        lienSuiviClientRepository.findByChantierIdAndActifTrue(chantierId).ifPresent(l -> {
+            if (l.getDateExpiration() == null) {
+                l.setDateExpiration(LocalDateTime.now().plusDays(30));
+                lienSuiviClientRepository.save(l);
+            }
+        });
+
         return chantierRepository.save(chantier);
     }
 
@@ -117,6 +149,7 @@ public class ChantierService {
             throw new AppException("Ce chantier n'est pas archivé.");
         }
         chantier.setStatut(StatutChantier.TERMINE);
+        chantier.setLastModifiedDate(LocalDateTime.now());
         chantier.setSynchronise(false);
         return chantierRepository.save(chantier);
     }
@@ -137,7 +170,8 @@ public class ChantierService {
         return new ChantierDTO(
                 chantier.getId(), chantier.getNomClient(), chantier.getVille(),
                 chantier.getTypeTravaux(), chantier.getStatut().name(), chantier.getMontantDevis(),
-                totalEncaisse, totalDepenses, resultatNet, margePourcent, calculerIndicateur(margePourcent)
+                totalEncaisse, totalDepenses, resultatNet, margePourcent, calculerIndicateur(margePourcent),
+                chantier.getLastModifiedDate()
         );
     }
 

@@ -18,5 +18,6 @@ public record ChantierDTO(
         BigDecimal totalDepenses,
         BigDecimal resultatNet,
         BigDecimal margeBrutePourcent,
-        String indicateur // "VERT" | "ORANGE" | "ROUGE"
+        String indicateur, // "VERT" | "ORANGE" | "ROUGE"
+        java.time.LocalDateTime lastModifiedDate
 ) {}

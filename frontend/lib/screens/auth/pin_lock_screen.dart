@@ -17,17 +17,30 @@ class _PinLockScreenState extends State<PinLockScreen> {
   bool _isLoading = false;
   Timer? _timer;
   int _secondsLeft = 0;
+  bool _biometrieTente = false;
 
   @override
   void initState() {
     super.initState();
     _startTimerIfNeeded();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _tenterBiometrieAuto();
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _startTimerIfNeeded();
+  }
+
+  void _tenterBiometrieAuto() async {
+    if (_biometrieTente) return;
+    final auth = context.read<AuthProvider>();
+    if (auth.isPinConfigured && auth.peutUtiliserBiometrie && !auth.isLockedOut) {
+      _biometrieTente = true;
+      await auth.verifierBiometrie();
+    }
   }
 
   void _startTimerIfNeeded() {
@@ -176,8 +189,21 @@ class _PinLockScreenState extends State<PinLockScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.anthracite,
-      body: SafeArea(
+      backgroundColor: Colors.transparent, // Background will be handled by container
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF1E1E24),
+              AppTheme.anthracite,
+              Color(0xFF0F0F12),
+            ],
+            stops: [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
         child: Column(
           children: [
             const Spacer(flex: 2),
@@ -257,7 +283,22 @@ class _PinLockScreenState extends State<PinLockScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      const SizedBox(width: 88), // Espace vide à gauche
+                      if (auth.isPinConfigured && auth.peutUtiliserBiometrie)
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: _isLoading ? null : () => auth.verifierBiometrie(),
+                            borderRadius: BorderRadius.circular(40),
+                            child: Container(
+                              width: 72,
+                              height: 72,
+                              alignment: Alignment.center,
+                              child: const Icon(Icons.fingerprint, size: 36, color: AppTheme.or),
+                            ),
+                          ),
+                        )
+                      else
+                        const SizedBox(width: 88),
                       _buildKeypadButton('0'),
                       _buildKeypadButton('DEL'),
                     ],
@@ -268,6 +309,7 @@ class _PinLockScreenState extends State<PinLockScreen> {
             const Spacer(flex: 2),
           ],
         ),
+      ),
       ),
     );
   }

@@ -35,4 +35,7 @@ public class LienSuiviClient {
 
     @Column(name = "date_revocation")
     private LocalDateTime dateRevocation;
+
+    @Column(name = "date_expiration")
+    private LocalDateTime dateExpiration;
 }
