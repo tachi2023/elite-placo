@@ -22,10 +22,14 @@ class _ChantiersListScreenState extends State<ChantiersListScreen> {
 
   Color _getCouleurIndicateur(String? indicateur) {
     switch (indicateur) {
-      case 'VERT': return AppTheme.vert;
-      case 'ORANGE': return AppTheme.orange;
-      case 'ROUGE': return AppTheme.rouge;
-      default: return Colors.grey;
+      case 'VERT':
+        return AppTheme.vert;
+      case 'ORANGE':
+        return AppTheme.orange;
+      case 'ROUGE':
+        return AppTheme.rouge;
+      default:
+        return Colors.grey;
     }
   }
 
@@ -43,30 +47,35 @@ class _ChantiersListScreenState extends State<ChantiersListScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () => context.read<ChantierProvider>().chargerChantiers(),
+            onPressed: () =>
+                context.read<ChantierProvider>().chargerChantiers(),
           )
         ],
       ),
       body: Consumer<ChantierProvider>(
         builder: (context, provider, _) {
           if (provider.enChargement) {
-            return const Center(child: CircularProgressIndicator(color: AppTheme.or));
+            return const Center(
+                child: CircularProgressIndicator(color: AppTheme.or));
           }
           if (provider.chantiers.isEmpty) {
-            return Center(
+            return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.architecture, size: 64, color: AppTheme.or),
-                  const SizedBox(height: 16),
-                  const Text('Aucun chantier.', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  const Text('Créez votre premier chantier pour commencer.', style: TextStyle(color: Colors.grey)),
+                  Icon(Icons.architecture, size: 64, color: AppTheme.or),
+                  SizedBox(height: 16),
+                  Text('Aucun chantier.',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8),
+                  Text('Créez votre premier chantier pour commencer.',
+                      style: TextStyle(color: Colors.grey)),
                 ],
               ),
             );
           }
-          
+
           return ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: provider.chantiers.length,
@@ -79,14 +88,16 @@ class _ChantiersListScreenState extends State<ChantiersListScreen> {
                 margin: const EdgeInsets.only(bottom: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(color: Colors.grey.withOpacity(0.2)),
+                  side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
                 ),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(16),
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => ChantierDetailScreen(chantierId: c.id!)),
+                      MaterialPageRoute(
+                          builder: (_) =>
+                              ChantierDetailScreen(chantierId: c.id!)),
                     );
                   },
                   child: Padding(
@@ -100,7 +111,10 @@ class _ChantiersListScreenState extends State<ChantiersListScreen> {
                             Expanded(
                               child: Text(
                                 c.nomClient,
-                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Outfit'),
+                                style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Outfit'),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -112,7 +126,8 @@ class _ChantiersListScreenState extends State<ChantiersListScreen> {
                                 color: _getCouleurIndicateur(indicateur),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: _getCouleurIndicateur(indicateur).withOpacity(0.5),
+                                    color: _getCouleurIndicateur(indicateur)
+                                        .withValues(alpha: 0.5),
                                     blurRadius: 6,
                                     spreadRadius: 1,
                                   )
@@ -124,14 +139,19 @@ class _ChantiersListScreenState extends State<ChantiersListScreen> {
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            const Icon(Icons.location_on, size: 14, color: Colors.grey),
+                            const Icon(Icons.location_on,
+                                size: 14, color: Colors.grey),
                             const SizedBox(width: 4),
-                            Text(c.ville ?? 'Ville non précisée', style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                            Text(c.ville ?? 'Ville non précisée',
+                                style: const TextStyle(
+                                    color: Colors.grey, fontSize: 13)),
                             const Spacer(),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: _getCouleurStatut(c.statut).withOpacity(0.15),
+                                color: _getCouleurStatut(c.statut)
+                                    .withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(

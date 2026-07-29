@@ -10,6 +10,8 @@ import Contact from './pages/Contact';
 import ChantiersPage from './pages/ChantiersPage';
 import DashboardPage from './pages/DashboardPage';
 import NewChantierPage from './pages/NewChantierPage';
+import ParametresPage from './pages/ParametresPage';
+import MateriauxPage from './pages/MateriauxPage';
 
 function App() {
   return (
@@ -25,8 +27,8 @@ function App() {
         <Route path="/chantiers" element={<ChantiersPage />} />
         <Route path="/chantiers/new" element={<NewChantierPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/parametres" element={<div className="min-h-screen bg-[#050505] p-8 text-white">Paramètres à venir</div>} />
-        <Route path="/parametres/materiaux" element={<div className="min-h-screen bg-[#050505] p-8 text-white">Prix matériaux à venir</div>} />
+        <Route path="/parametres" element={<ParametresPage />} />
+        <Route path="/parametres/materiaux" element={<MateriauxPage />} />
         <Route path="/suivi/:code" element={<ClientDashboard />} />
       </Routes>
     </BrowserRouter>

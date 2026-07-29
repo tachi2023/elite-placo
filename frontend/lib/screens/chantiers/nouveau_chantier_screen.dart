@@ -18,14 +18,19 @@ class _NouveauChantierScreenState extends State<NouveauChantierScreen> {
   bool _enCours = false;
 
   static const _typesDisponibles = [
-    'Plâtrerie', 'Faux plafonds', 'Décoration intérieure',
-    'Revêtements muraux', 'Peinture décorative', 'Isolation',
+    'Plâtrerie',
+    'Faux plafonds',
+    'Décoration intérieure',
+    'Revêtements muraux',
+    'Peinture décorative',
+    'Isolation',
   ];
 
   Future<void> _enregistrer() async {
     setState(() => _enCours = true);
     final provider = context.read<ChantierProvider>();
-    final montant = double.tryParse(_montantController.text.replaceAll(' ', '')) ?? -1;
+    final montant =
+        double.tryParse(_montantController.text.replaceAll(' ', '')) ?? -1;
 
     final ok = await provider.creerChantier(
       nomClient: _nomController.text.trim(),
@@ -61,7 +66,11 @@ class _NouveauChantierScreenState extends State<NouveauChantierScreen> {
             children: [
               const Text(
                 'Informations du Client',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Outfit', color: AppTheme.or),
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Outfit',
+                    color: AppTheme.or),
               ),
               const SizedBox(height: 16),
               _buildTextField(
@@ -75,31 +84,41 @@ class _NouveauChantierScreenState extends State<NouveauChantierScreen> {
                 label: 'Ville',
                 icon: Icons.location_on_outlined,
               ),
-              
               const SizedBox(height: 32),
               const Text(
                 'Détails des Travaux',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Outfit', color: AppTheme.or),
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Outfit',
+                    color: AppTheme.or),
               ),
               const SizedBox(height: 16),
-              
               DropdownButtonFormField<String>(
-                value: _typeTravaux,
+                initialValue: _typeTravaux,
                 dropdownColor: AppTheme.anthraciteClair,
-                style: const TextStyle(color: Colors.white, fontFamily: 'Inter'),
+                style:
+                    const TextStyle(color: Colors.white, fontFamily: 'Inter'),
                 decoration: InputDecoration(
                   labelText: 'Type de travaux *',
                   labelStyle: const TextStyle(color: Colors.grey),
-                  prefixIcon: const Icon(Icons.handyman_outlined, color: Colors.grey),
+                  prefixIcon:
+                      const Icon(Icons.handyman_outlined, color: Colors.grey),
                   filled: true,
                   fillColor: AppTheme.anthraciteClair,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.or)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppTheme.or)),
                 ),
-                items: _typesDisponibles.map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
-                onChanged: (v) => setState(() => _typeTravaux = v ?? _typeTravaux),
+                items: _typesDisponibles
+                    .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                    .toList(),
+                onChanged: (v) =>
+                    setState(() => _typeTravaux = v ?? _typeTravaux),
               ),
-              
               const SizedBox(height: 16),
               _buildTextField(
                 controller: _montantController,
@@ -107,7 +126,6 @@ class _NouveauChantierScreenState extends State<NouveauChantierScreen> {
                 icon: Icons.payments_outlined,
                 keyboardType: TextInputType.number,
               ),
-              
               const SizedBox(height: 48),
               ElevatedButton(
                 onPressed: _enCours ? null : _enregistrer,
@@ -115,14 +133,22 @@ class _NouveauChantierScreenState extends State<NouveauChantierScreen> {
                   backgroundColor: AppTheme.or,
                   foregroundColor: AppTheme.anthracite,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                   elevation: 2,
                 ),
                 child: _enCours
-                    ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.anthracite))
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: AppTheme.anthracite))
                     : const Text(
                         'Créer le chantier',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Outfit'),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Outfit'),
                       ),
               ),
             ],
@@ -148,8 +174,12 @@ class _NouveauChantierScreenState extends State<NouveauChantierScreen> {
         prefixIcon: Icon(icon, color: Colors.grey),
         filled: true,
         fillColor: AppTheme.anthraciteClair,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.or)),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppTheme.or)),
       ),
     );
   }

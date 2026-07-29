@@ -14,7 +14,7 @@ class ChantierRepository {
     try {
       final response = await _api.client.get('/api/chantiers');
       final List<dynamic> data = response.data;
-      
+
       // Mettre à jour le cache local (écrase le cache avec la vérité du serveur)
       await _localDb.viderTable('chantier_local');
       for (var json in data) {
@@ -36,19 +36,22 @@ class ChantierRepository {
 
     // Lecture depuis le cache
     final localData = await _localDb.lister('chantier_local');
-    List<Chantier> chantiers = localData.map((row) => Chantier(
-      id: row['apiId'],
-      nomClient: row['nomClient'],
-      ville: row['ville'],
-      typeTravaux: row['typeTravaux'],
-      statut: row['statut'],
-      montantDevis: row['montantDevis'],
-      dateCreation: DateTime.parse(row['dateCreation']),
-      synchronise: row['synchronise'] == 1,
-    )).toList();
+    List<Chantier> chantiers = localData
+        .map((row) => Chantier(
+              id: row['apiId'],
+              nomClient: row['nomClient'],
+              ville: row['ville'],
+              typeTravaux: row['typeTravaux'],
+              statut: row['statut'],
+              montantDevis: row['montantDevis'],
+              dateCreation: DateTime.parse(row['dateCreation']),
+              synchronise: row['synchronise'] == 1,
+            ))
+        .toList();
 
     if (!inclureArchives) {
-      chantiers = chantiers.where((c) => c.statut != StatutChantier.archive).toList();
+      chantiers =
+          chantiers.where((c) => c.statut != StatutChantier.archive).toList();
     }
     return chantiers;
   }
@@ -76,7 +79,8 @@ class ChantierRepository {
     });
 
     // 2. Ajout à la file d'attente
-    await _localDb.ajouterAFileAttente('chantier', 'CREATION', chantier.toJson(), localId);
+    await _localDb.ajouterAFileAttente(
+        'chantier', 'CREATION', chantier.toJson(), localId);
 
     // 3. Tenter de synchroniser en arrière-plan
     SyncService().synchroniser();
@@ -103,8 +107,9 @@ class ChantierRepository {
         queryParameters: {'statut': chantier.statut},
       );
       return Chantier.fromJson(response.data as Map<String, dynamic>);
-    } on DioException catch (e) {
-      throw Exception('Impossible de mettre à jour le statut hors-ligne pour le moment.');
+    } on DioException {
+      throw Exception(
+          'Impossible de mettre à jour le statut hors-ligne pour le moment.');
     }
   }
 

@@ -28,7 +28,8 @@ class _GestionSiteScreenState extends State<GestionSiteScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Gestion du Site Web', style: TextStyle(fontWeight: FontWeight.w600)),
+        title: const Text('Gestion du Site Web',
+            style: TextStyle(fontWeight: FontWeight.w600)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: const BackButton(color: AppTheme.or),
@@ -54,12 +55,11 @@ class _GestionSiteScreenState extends State<GestionSiteScreen> {
               _buildSectionHeader('Services Proposés', Icons.handyman),
               const SizedBox(height: 16),
               ...services.map((s) => _buildItemCard(s['titre']!)),
-              
               const SizedBox(height: 32),
-              
               _buildSectionHeader('Photos Réalisations', Icons.photo_library),
               const SizedBox(height: 16),
-              ...realisations.map((r) => _buildItemCard(r['titre']!, hasImage: true)),
+              ...realisations
+                  .map((r) => _buildItemCard(r['titre']!, hasImage: true)),
             ],
           ),
         ),
@@ -75,9 +75,9 @@ class _GestionSiteScreenState extends State<GestionSiteScreen> {
         Text(
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: AppTheme.blanc,
-            fontWeight: FontWeight.bold,
-          ),
+                color: AppTheme.blanc,
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ],
     );
@@ -87,27 +87,28 @@ class _GestionSiteScreenState extends State<GestionSiteScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
+        color: Colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        leading: hasImage 
-          ? Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: AppTheme.or.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppTheme.or.withOpacity(0.5)),
-              ),
-              child: const Icon(Icons.image, color: AppTheme.or),
-            )
-          : const Icon(Icons.text_snippet, color: AppTheme.grisClair),
+        leading: hasImage
+            ? Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: AppTheme.or.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppTheme.or.withValues(alpha: 0.5)),
+                ),
+                child: const Icon(Icons.image, color: AppTheme.or),
+              )
+            : const Icon(Icons.text_snippet, color: AppTheme.grisClair),
         title: Text(
           title,
-          style: const TextStyle(color: AppTheme.blanc, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+              color: AppTheme.blanc, fontWeight: FontWeight.w600),
         ),
         trailing: IconButton(
           icon: const Icon(Icons.edit, color: AppTheme.or),

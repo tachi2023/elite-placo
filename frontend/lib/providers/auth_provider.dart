@@ -14,7 +14,7 @@ class AuthProvider extends ChangeNotifier {
   bool _isPinConfigured = true;
   DateTime? _lockoutUntil;
   bool _peutUtiliserBiometrie = false;
-  
+
   bool _isInitializing = true;
   bool get isInitializing => _isInitializing;
 
@@ -24,8 +24,9 @@ class AuthProvider extends ChangeNotifier {
   bool get isPinConfigured => _isPinConfigured;
   DateTime? get lockoutUntil => _lockoutUntil;
   bool get peutUtiliserBiometrie => _peutUtiliserBiometrie;
-  
-  bool get isLockedOut => _lockoutUntil != null && _lockoutUntil!.isAfter(DateTime.now());
+
+  bool get isLockedOut =>
+      _lockoutUntil != null && _lockoutUntil!.isAfter(DateTime.now());
 
   final ApiService _api = ApiService();
   final _secureStorage = const FlutterSecureStorage();
@@ -40,7 +41,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> _init() async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     // Charger le statut du PIN
     final savedHash = await _secureStorage.read(key: _pinKey);
     _isPinConfigured = savedHash != null && savedHash.isNotEmpty;
@@ -66,7 +67,7 @@ class AuthProvider extends ChangeNotifier {
     } catch (_) {
       _peutUtiliserBiometrie = false;
     }
-    
+
     _isInitializing = false;
     notifyListeners();
   }
@@ -108,7 +109,7 @@ class AuthProvider extends ChangeNotifier {
     await prefs.remove(_lockoutKey);
     _tentativesEchouees = 0;
     _lockoutUntil = null;
-    
+
     await _tenterConnexionApi();
 
     _estDeverrouille = true;
@@ -123,9 +124,13 @@ class AuthProvider extends ChangeNotifier {
 
     if (_tentativesEchouees >= 3) {
       int minutes = 0;
-      if (_tentativesEchouees == 3) minutes = 1; // 3 essais = 1 min (simplifié, ou 30s)
-      else if (_tentativesEchouees == 4) minutes = 2; // 4 essais = 2 min
-      else minutes = 5; // > 4 = 5 min
+      if (_tentativesEchouees == 3) {
+        minutes = 1; // 3 essais = 1 min (simplifié, ou 30s)
+      } else if (_tentativesEchouees == 4) {
+        minutes = 2; // 4 essais = 2 min
+      } else {
+        minutes = 5; // > 4 = 5 min
+      }
 
       _lockoutUntil = DateTime.now().add(Duration(minutes: minutes));
       await prefs.setInt(_lockoutKey, _lockoutUntil!.millisecondsSinceEpoch);
@@ -151,7 +156,8 @@ class AuthProvider extends ChangeNotifier {
           e.type == DioExceptionType.connectionError) {
         _erreurConnexion = 'Mode hors-ligne — données locales uniquement.';
       } else {
-        _erreurConnexion = 'Connexion serveur échouée (${e.response?.statusCode}).';
+        _erreurConnexion =
+            'Connexion serveur échouée (${e.response?.statusCode}).';
       }
     } catch (_) {
       _erreurConnexion = 'Erreur inattendue lors de la connexion.';
@@ -188,7 +194,7 @@ class AuthProvider extends ChangeNotifier {
         await prefs.remove(_lockoutKey);
         _tentativesEchouees = 0;
         _lockoutUntil = null;
-        
+
         await _tenterConnexionApi();
 
         _estDeverrouille = true;

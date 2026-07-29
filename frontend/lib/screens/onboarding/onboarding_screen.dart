@@ -17,17 +17,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<_OnboardingSlide> _slides = [
     _OnboardingSlide(
       titre: 'L\'Excellence du Plâtre',
-      description: 'Gérez vos chantiers de plâtrerie et décoration haut de gamme avec une précision d\'artisan.',
+      description:
+          'Gérez vos chantiers de plâtrerie et décoration haut de gamme avec une précision d\'artisan.',
       icon: Icons.architecture_rounded,
     ),
     _OnboardingSlide(
       titre: 'Suivi Financier',
-      description: 'Acomptes, dépenses, matériaux. Une vue claire et en temps réel sur la rentabilité de chaque projet.',
+      description:
+          'Acomptes, dépenses, matériaux. Une vue claire et en temps réel sur la rentabilité de chaque projet.',
       icon: Icons.account_balance_wallet_rounded,
     ),
     _OnboardingSlide(
       titre: 'Mode Hors-Ligne',
-      description: 'Saisissez vos données directement sur le chantier. La synchronisation sécurisée se fait automatiquement.',
+      description:
+          'Saisissez vos données directement sur le chantier. La synchronisation sécurisée se fait automatiquement.',
       icon: Icons.cloud_sync_rounded,
     ),
   ];
@@ -62,7 +65,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: const Text('Passer'),
               ),
             ),
-            
+
             // Slides
             Expanded(
               child: PageView.builder(
@@ -84,7 +87,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             color: AppTheme.anthraciteClair,
                             boxShadow: [
                               BoxShadow(
-                                color: AppTheme.or.withOpacity(0.2),
+                                color: AppTheme.or.withValues(alpha: 0.2),
                                 blurRadius: 30,
                                 spreadRadius: 5,
                               ),
@@ -101,9 +104,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         const SizedBox(height: 24),
                         Text(
                           slide.description,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            height: 1.5,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    height: 1.5,
+                                  ),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -129,13 +133,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         height: 8,
                         width: _currentPage == index ? 24 : 8,
                         decoration: BoxDecoration(
-                          color: _currentPage == index ? AppTheme.or : AppTheme.grisFonce,
+                          color: _currentPage == index
+                              ? AppTheme.or
+                              : AppTheme.grisFonce,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
                     ),
                   ),
-                  
+
                   // Bouton Suivant / Commencer
                   ElevatedButton(
                     onPressed: () {
@@ -149,9 +155,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 16),
                     ),
-                    child: Text(_currentPage == _slides.length - 1 ? 'Commencer' : 'Suivant'),
+                    child: Text(_currentPage == _slides.length - 1
+                        ? 'Commencer'
+                        : 'Suivant'),
                   ),
                 ],
               ),

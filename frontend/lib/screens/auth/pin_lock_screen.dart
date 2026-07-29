@@ -37,7 +37,9 @@ class _PinLockScreenState extends State<PinLockScreen> {
   void _tenterBiometrieAuto() async {
     if (_biometrieTente) return;
     final auth = context.read<AuthProvider>();
-    if (auth.isPinConfigured && auth.peutUtiliserBiometrie && !auth.isLockedOut) {
+    if (auth.isPinConfigured &&
+        auth.peutUtiliserBiometrie &&
+        !auth.isLockedOut) {
       _biometrieTente = true;
       await auth.verifierBiometrie();
     }
@@ -55,7 +57,9 @@ class _PinLockScreenState extends State<PinLockScreen> {
             setState(() => _secondsLeft--);
           } else {
             timer.cancel();
-            auth.notifyListeners(); // Refresh state
+            if (mounted) {
+              setState(() {});
+            }
           }
         });
       }
@@ -76,7 +80,8 @@ class _PinLockScreenState extends State<PinLockScreen> {
 
     if (touche == 'DEL') {
       if (_pinSaisi.isNotEmpty) {
-        setState(() => _pinSaisi = _pinSaisi.substring(0, _pinSaisi.length - 1));
+        setState(
+            () => _pinSaisi = _pinSaisi.substring(0, _pinSaisi.length - 1));
       }
       return;
     }
@@ -153,17 +158,28 @@ class _PinLockScreenState extends State<PinLockScreen> {
           height: 72,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isDel || disabled ? Colors.transparent : AppTheme.anthraciteClair,
-            border: isDel ? Border.all(color: disabled ? AppTheme.anthraciteClair : AppTheme.grisFonce) : null,
+            color: isDel || disabled
+                ? Colors.transparent
+                : AppTheme.anthraciteClair,
+            border: isDel
+                ? Border.all(
+                    color: disabled
+                        ? AppTheme.anthraciteClair
+                        : AppTheme.grisFonce)
+                : null,
           ),
           alignment: Alignment.center,
           child: isDel
-              ? Icon(Icons.backspace_outlined, color: disabled ? AppTheme.anthraciteClair : AppTheme.grisFonce)
+              ? Icon(Icons.backspace_outlined,
+                  color:
+                      disabled ? AppTheme.anthraciteClair : AppTheme.grisFonce)
               : Text(
                   text,
                   style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                    color: disabled ? AppTheme.anthraciteClair : AppTheme.blanc,
-                  ),
+                        color: disabled
+                            ? AppTheme.anthraciteClair
+                            : AppTheme.blanc,
+                      ),
                 ),
         ),
       ),
@@ -183,13 +199,16 @@ class _PinLockScreenState extends State<PinLockScreen> {
 
     String titre = 'Saisissez votre code PIN';
     if (!auth.isPinConfigured) {
-      titre = _pinCree == null ? 'Créez votre code PIN' : 'Confirmez votre code PIN';
+      titre = _pinCree == null
+          ? 'Créez votre code PIN'
+          : 'Confirmez votre code PIN';
     } else if (auth.isLockedOut) {
       titre = 'Bloqué. Réessayez dans $_secondsLeft s';
     }
 
     return Scaffold(
-      backgroundColor: Colors.transparent, // Background will be handled by container
+      backgroundColor:
+          Colors.transparent, // Background will be handled by container
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -204,114 +223,129 @@ class _PinLockScreenState extends State<PinLockScreen> {
           ),
         ),
         child: SafeArea(
-        child: Column(
-          children: [
-            const Spacer(flex: 2),
-            Icon(auth.isLockedOut ? Icons.lock_clock_outlined : Icons.architecture_rounded, 
-                 size: 64, color: auth.isLockedOut ? AppTheme.erreur : AppTheme.or),
-            const SizedBox(height: 16),
-            Text(
-              'ÉLITE PLACO',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                letterSpacing: 4,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              titre,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: auth.isLockedOut ? AppTheme.erreur : AppTheme.grisClair,
-                fontWeight: auth.isLockedOut ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-            const Spacer(flex: 1),
-            
-            // Indicateurs PIN
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(4, (i) {
-                final estRempli = i < _pinSaisi.length;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  margin: const EdgeInsets.symmetric(horizontal: 12),
-                  width: 16,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: estRempli ? AppTheme.or : Colors.transparent,
-                    border: Border.all(
-                      color: estRempli ? AppTheme.or : AppTheme.grisFonce,
-                      width: 2,
+          child: Column(
+            children: [
+              const Spacer(flex: 2),
+              Icon(
+                  auth.isLockedOut
+                      ? Icons.lock_clock_outlined
+                      : Icons.architecture_rounded,
+                  size: 64,
+                  color: auth.isLockedOut ? AppTheme.erreur : AppTheme.or),
+              const SizedBox(height: 16),
+              Text(
+                'ÉLITE PLACO',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      letterSpacing: 4,
                     ),
-                    boxShadow: estRempli ? [
-                      BoxShadow(
-                        color: AppTheme.or.withOpacity(0.5),
-                        blurRadius: 10,
-                        spreadRadius: 2,
-                      )
-                    ] : null,
-                  ),
-                );
-              }),
-            ),
-            const Spacer(flex: 1),
-            
-            if (_isLoading)
-              const CircularProgressIndicator(color: AppTheme.or)
-            else
-              const SizedBox(height: 36),
-              
-            const Spacer(flex: 1),
-            
-            // Clavier numérique
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: ['1', '2', '3'].map(_buildKeypadButton).toList(),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: ['4', '5', '6'].map(_buildKeypadButton).toList(),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: ['7', '8', '9'].map(_buildKeypadButton).toList(),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      if (auth.isPinConfigured && auth.peutUtiliserBiometrie)
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: InkWell(
-                            onTap: _isLoading ? null : () => auth.verifierBiometrie(),
-                            borderRadius: BorderRadius.circular(40),
-                            child: Container(
-                              width: 72,
-                              height: 72,
-                              alignment: Alignment.center,
-                              child: const Icon(Icons.fingerprint, size: 36, color: AppTheme.or),
-                            ),
-                          ),
-                        )
-                      else
-                        const SizedBox(width: 88),
-                      _buildKeypadButton('0'),
-                      _buildKeypadButton('DEL'),
-                    ],
-                  ),
-                ],
               ),
-            ),
-            const Spacer(flex: 2),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                titre,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: auth.isLockedOut
+                          ? AppTheme.erreur
+                          : AppTheme.grisClair,
+                      fontWeight: auth.isLockedOut
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                    ),
+              ),
+              const Spacer(flex: 1),
+
+              // Indicateurs PIN
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(4, (i) {
+                  final estRempli = i < _pinSaisi.length;
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    margin: const EdgeInsets.symmetric(horizontal: 12),
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: estRempli ? AppTheme.or : Colors.transparent,
+                      border: Border.all(
+                        color: estRempli ? AppTheme.or : AppTheme.grisFonce,
+                        width: 2,
+                      ),
+                      boxShadow: estRempli
+                          ? [
+                              BoxShadow(
+                                color: AppTheme.or.withValues(alpha: 0.5),
+                                blurRadius: 10,
+                                spreadRadius: 2,
+                              )
+                            ]
+                          : null,
+                    ),
+                  );
+                }),
+              ),
+              const Spacer(flex: 1),
+
+              if (_isLoading)
+                const CircularProgressIndicator(color: AppTheme.or)
+              else
+                const SizedBox(height: 36),
+
+              const Spacer(flex: 1),
+
+              // Clavier numérique
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children:
+                          ['1', '2', '3'].map(_buildKeypadButton).toList(),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children:
+                          ['4', '5', '6'].map(_buildKeypadButton).toList(),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children:
+                          ['7', '8', '9'].map(_buildKeypadButton).toList(),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        if (auth.isPinConfigured && auth.peutUtiliserBiometrie)
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: InkWell(
+                              onTap: _isLoading
+                                  ? null
+                                  : () => auth.verifierBiometrie(),
+                              borderRadius: BorderRadius.circular(40),
+                              child: Container(
+                                width: 72,
+                                height: 72,
+                                alignment: Alignment.center,
+                                child: const Icon(Icons.fingerprint,
+                                    size: 36, color: AppTheme.or),
+                              ),
+                            ),
+                          )
+                        else
+                          const SizedBox(width: 88),
+                        _buildKeypadButton('0'),
+                        _buildKeypadButton('DEL'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(flex: 2),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
 }
-

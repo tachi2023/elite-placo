@@ -8,7 +8,8 @@ class AppTheme {
   // --- Palette de Couleurs ---
   static const Color anthracite = Color(0xFF161618); // Fond principal
   static const Color anthraciteClair = Color(0xFF232326); // Cartes, surfaces
-  static const Color or = Color(0xFFD4AF37); // Laiton/Or pour les accents (boutons, icônes)
+  static const Color or =
+      Color(0xFFD4AF37); // Laiton/Or pour les accents (boutons, icônes)
   static const Color orSombre = Color(0xFFB5952F);
   static const Color blanc = Color(0xFFFFFFFF);
   static const Color grisClair = Color(0xFFE0E0E0);
@@ -22,7 +23,7 @@ class AppTheme {
 
   // --- Typographie ---
   static TextTheme get _textTheme {
-    // Utilisation de Outfit (très moderne, ronde et géométrique) 
+    // Utilisation de Outfit (très moderne, ronde et géométrique)
     // ou Inter (épurée) pour un aspect haut de gamme.
     return GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme).copyWith(
       displayLarge: GoogleFonts.outfit(
@@ -68,7 +69,7 @@ class AppTheme {
         onSurface: blanc,
       ),
       textTheme: _textTheme,
-      
+
       // Style des AppBar
       appBarTheme: AppBarTheme(
         backgroundColor: anthracite,
@@ -82,7 +83,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: anthraciteClair,
         elevation: 4,
-        shadowColor: Colors.black.withOpacity(0.4),
+        shadowColor: Colors.black.withValues(alpha: 0.4),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -121,7 +122,8 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: anthraciteClair,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,

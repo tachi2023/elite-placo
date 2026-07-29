@@ -10,19 +10,23 @@ class MetrageService {
   final MetrageRepository _repository;
   MetrageService(this._repository);
 
-  Future<FicheMetrage> creerFiche({required int chantierId, required String systeme}) {
-    return _repository.creer(FicheMetrage(chantierId: chantierId, systeme: systeme));
+  Future<FicheMetrage> creerFiche(
+      {required int chantierId, required String systeme}) {
+    return _repository
+        .creer(FicheMetrage(chantierId: chantierId, systeme: systeme));
   }
 
   /// §10.6, étapes 2-4 + A1/A2. Ajoute une pièce à une fiche déjà créée ;
   /// une pièce invalide n'empêche pas la saisie des autres (A1).
-  Future<FicheMetrage> ajouterPiece(FicheMetrage fiche, PieceMetrage piece) async {
+  Future<FicheMetrage> ajouterPiece(
+      FicheMetrage fiche, PieceMetrage piece) async {
     if (piece.longueur <= 0 || piece.largeur <= 0) {
       throw AppException(
           'Longueur et largeur doivent être des nombres positifs pour "${piece.nomPiece}".');
     }
     if (fiche.pieces.length >= limitePieces) {
-      throw AppException('Une fiche de métrage est limitée à $limitePieces pièces.');
+      throw const AppException(
+          'Une fiche de métrage est limitée à $limitePieces pièces.');
     }
     if (piece.surfaceDeduction > piece.surfaceBrute) {
       // A4 — incohérence signalée mais non bloquante : c'est à l'appelant
@@ -49,7 +53,8 @@ class MetrageService {
   /// §10.6-A3 — la validation finale exige au moins une pièce.
   Future<FicheMetrage> validerFiche(FicheMetrage fiche) async {
     if (fiche.pieces.isEmpty) {
-      throw const AppException('Ajoutez au moins une pièce avant de valider la fiche.');
+      throw const AppException(
+          'Ajoutez au moins une pièce avant de valider la fiche.');
     }
     if (fiche.id == null) {
       return await _repository.creer(fiche);

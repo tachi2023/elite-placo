@@ -3,6 +3,7 @@ package com.eliteplaco.api.controller;
 import com.eliteplaco.api.dto.*;
 import com.eliteplaco.api.entity.Chantier;
 import com.eliteplaco.api.service.ChantierService;
+import com.eliteplaco.api.service.LienSuiviClientService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,12 @@ import java.util.List;
 public class ChantierController {
 
     private final ChantierService chantierService;
-    public ChantierController(ChantierService chantierService) { this.chantierService = chantierService; }
+    private final LienSuiviClientService lienSuiviClientService;
+
+    public ChantierController(ChantierService chantierService, LienSuiviClientService lienSuiviClientService) {
+        this.chantierService = chantierService;
+        this.lienSuiviClientService = lienSuiviClientService;
+    }
 
     @GetMapping
     public List<ChantierDTO> lister() {
@@ -61,8 +67,8 @@ public class ChantierController {
     }
 
     @PostMapping("/{id}/suivi")
-    public String genererLienSuivi(@PathVariable Long id, @org.springframework.beans.factory.annotation.Autowired com.eliteplaco.api.service.LienSuiviClientService lienService) {
+    public String genererLienSuivi(@PathVariable Long id) {
         Chantier chantier = chantierService.trouverParIdOuLever(id);
-        return lienService.genererOuRecupererLien(chantier);
+        return lienSuiviClientService.genererOuRecupererLien(chantier);
     }
 }
