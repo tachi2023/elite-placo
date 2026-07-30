@@ -1,0 +1,52 @@
+services:
+  - type: web
+    name: elite-placo-api
+    env: docker
+    region: frankfurt
+    plan: free
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    envVars:
+      - key: JAVA_VERSION
+        value: 17
+      - key: DB_HOST
+        fromDatabase:
+          name: elite-placo-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: elite-placo-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: elite-placo-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: elite-placo-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: elite-placo-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://eliteplacodeco.cm,http://localhost:5000
+
+  - type: web
+    name: elite-placo-site
+    env: docker
+    region: frankfurt
+    plan: free
+    dockerfilePath: site-vitrine/Dockerfile
+    dockerContext: site-vitrine
+    envVars:
+      - key: VITE_API_URL
+        value: https://elite-placo-api.onrender.com
+
+databases:
+  - name: elite-placo-db
+    databaseName: eliteplaco
+    user: eliteplaco
+    plan: free

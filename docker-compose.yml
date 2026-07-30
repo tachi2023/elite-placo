@@ -23,8 +23,41 @@ services:
       timeout: 5s
       retries: 10
 
-  # Interface web pour voir/parcourir tes tables sans écrire de SQL.
-  # Accès : http://localhost:5050 une fois démarré.
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: elite-placo-backend:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/eliteplaco
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: changeme
+      JWT_SECRET: change_me_secure
+      CORS_ORIGINS: http://localhost:5000
+    ports:
+      - "8080:8080"
+
+  site-vitrine:
+    build:
+      context: ./site-vitrine
+      dockerfile: Dockerfile
+    image: elite-placo-site:latest
+    ports:
+      - "3000:80"
+    environment:
+      VITE_API_URL: http://localhost:8080
+
+  flutter-web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: elite-placo-flutter-web:latest
+    ports:
+      - "8081:80"
+
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: elite_placo_pgadmin

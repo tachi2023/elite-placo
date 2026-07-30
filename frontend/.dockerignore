@@ -1,0 +1,11 @@
+build
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache
+.dart_tool
+.idea
+.git
+Dockerfile
+*.log
+.env*
