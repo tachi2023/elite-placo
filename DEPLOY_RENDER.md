@@ -1,32 +1,35 @@
 # Déploiement sur Render — instructions
 
-1) Lier le dépôt GitHub à Render
+## 1) Connecter le dépôt
 
-- Connectez votre compte GitHub dans Render
-- Créez un service Web pour le backend, choisissez le dossier `backend`
-  - Build Command: `mvn -DskipTests package`
-  - Start Command: `java -jar target/api-0.1.0-MVP.jar`
-  - Définissez les variables d'environnement à partir de `.env.render.sample`
+- Connectez votre compte GitHub à Render.
+- Créez un nouveau service à partir du dépôt GitHub `tachi2023/elite-placo`.
+- Sélectionnez le blueprint Render si vous souhaitez utiliser le fichier [render.yaml](render.yaml).
 
-- Créez un service Static Site pour le site-vitrine, dossier `site-vitrine`
-  - Build Command: `npm ci && npm run build`
-  - Publish directory: `dist`
-  - Définissez `VITE_API_URL` pour pointer sur l'URL publique du backend Render
+## 2) Déploiement automatique
 
-2) Base de données
+Pour déclencher un déploiement à chaque push sur `main`, ajoutez dans GitHub Actions la secret :
 
-- Provisionnez une base PostgreSQL (Render propose des add-ons gérés) ou utilisez un service externe
-- Ensuite, exécutez les migrations Flyway sur la base (Render permet d'exécuter des commandes via la console ou d'exécuter un job temporaire)
+- `RENDER_DEPLOY_HOOK_URL`
 
-Exemple de commande Flyway (depuis le container ou local si accès réseau):
+La workflow [`.github/workflows/deploy-render.yml`](.github/workflows/deploy-render.yml) l’utilisera automatiquement.
 
-```
-mvn -pl backend org.flywaydb:flyway-maven-plugin:migrate \
-  -Dflyway.url=jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_NAME \
-  -Dflyway.user=$DB_USER -Dflyway.password=$DB_PASSWORD
-```
+## 3) Variables d’environnement
 
-3) Tests post-déploiement
+Vérifiez les variables suivantes dans Render :
 
-- Vérifiez que `https://<backend>/actuator/health` (si activé) est OK
-- Accédez à la page publique `https://<site-vitrine>` et testez un code de suivi
+- `JWT_SECRET`
+- `CORS_ORIGINS`
+- `VITE_API_URL`
+
+## 4) Base PostgreSQL
+
+Render créera la base de données via [render.yaml](render.yaml). Si vous préférez une autre base, vous pouvez la remplacer à la main.
+
+## 5) Vérification
+
+Une fois déployé :
+
+- le backend est disponible sur l’URL Render fournie,
+- le site public est disponible sur l’URL Render fournie,
+- l’APK peut être téléchargé depuis Actions GitHub.
