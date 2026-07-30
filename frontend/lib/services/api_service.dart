@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 
 /// Point d'entrée unique vers l'API Spring Boot.
 /// Le jeton JWT est ajouté automatiquement à chaque requête via un
@@ -13,13 +12,13 @@ class ApiService {
   String? _jeton;
 
   ApiService._interne() {
+    const apiBaseUrl = String.fromEnvironment(
+      'API_BASE_URL',
+      defaultValue: 'http://localhost:8080',
+    );
+
     _dio = Dio(BaseOptions(
-      // En développement local, l'API tourne sur localhost:8080.
-      // Sur Android Emulator, utiliser 10.0.2.2 au lieu de localhost.
-      // TODO : remplacer par l'URL réelle du VPS une fois déployé.
-      baseUrl: kIsWeb
-          ? 'http://localhost:8080'
-          : 'http://10.0.2.2:8080',
+      baseUrl: apiBaseUrl,
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {'Content-Type': 'application/json'},
