@@ -32,7 +32,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://eliteplacodeco.cm,http://localhost:5000
+        value: https://eliteplacodeco.cm,http://localhost:5000,https://elite-placo-site.onrender.com
 
   - type: web
     name: elite-placo-site

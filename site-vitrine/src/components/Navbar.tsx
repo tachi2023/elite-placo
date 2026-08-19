@@ -31,7 +31,7 @@ export default function Navbar() {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${isScrolled ? 'glass border-or/10 h-16' : 'bg-transparent border-transparent h-20'}`}>
-      <div className="w-full px-[50px] h-full flex items-center justify-between">
+      <div className="w-full px-6 md:px-[50px] h-full flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex flex-col leading-none">
           <span className="font-display text-xl font-semibold tracking-widest text-texte">
@@ -43,7 +43,7 @@ export default function Navbar() {
         </Link>
 
         {/* Right side group: Nav links + CTAs */}
-        <div className="hidden md:flex items-center gap-16">
+        <div className="hidden lg:flex items-center gap-16">
           
           {/* Desktop Nav */}
           <nav className="flex items-center gap-8">
@@ -85,7 +85,7 @@ export default function Navbar() {
 
         {/* Mobile burger */}
         <button
-          className="md:hidden text-texte p-2"
+          className="lg:hidden text-texte p-2"
           onClick={() => setOpen(!open)}
         >
           {open ? <X size={24} /> : <Menu size={24} />}

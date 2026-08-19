@@ -84,6 +84,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Base de données embarquée pour développement local (fallback H2) -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Tests -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

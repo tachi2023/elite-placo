@@ -70,3 +70,16 @@ d'architecture et leur justification. Résumé :
 Implémenter la logique métier : `ChantierService` (calcul résultat net /
 marge / indicateur), `AuthController` + `JwtService` (login/refresh), et les
 écrans Flutter correspondants.
+
+### Lancer en développement sans PostgreSQL
+
+Si vous n'avez pas PostgreSQL localement et que vous voulez démarrer rapidement
+le backend avec une base en mémoire H2 (profil `local`) :
+
+```bash
+cd backend
+mvn -Dspring-boot.run.profiles=local spring-boot:run
+```
+
+Ce profil utilise une base H2 en mémoire et désactive Flyway pour éviter
+les migrations PostgreSQL en local.

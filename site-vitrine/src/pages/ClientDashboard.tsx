@@ -34,7 +34,9 @@ export default function ClientDashboard() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/suivi/${code}`)
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
+    axios.get(`${apiBaseUrl}/api/suivi/${code}`)
       .then(res => { setData(res.data); setLoading(false); })
       .catch(err => {
         setError(err.response?.data?.message || "Code invalide ou chantier introuvable. Vérifiez votre code.");

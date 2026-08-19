@@ -29,6 +29,17 @@ class VueGlobale {
     required this.resumesChantiers,
     required this.donneesPartiellementNonSynchronisees,
   });
+
+  /// Fabrique une vue vide (utilisée en cas d'erreur pour éviter un spinner infini).
+  factory VueGlobale.vide() => const VueGlobale(
+    chiffreAffairesTotal: 0,
+    totalEncaisseGlobal: 0,
+    totalDepensesGlobal: 0,
+    resultatNetGlobal: 0,
+    margeGlobalePourcent: 0,
+    resumesChantiers: [],
+    donneesPartiellementNonSynchronisees: false,
+  );
 }
 
 /// Module 4 — CA total, encaissé/dépenses global, résultat net et marge

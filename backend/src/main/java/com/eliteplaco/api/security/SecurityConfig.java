@@ -1,5 +1,6 @@
 package com.eliteplaco.api.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,6 +22,9 @@ public class SecurityConfig {
 
     private final JwtService jwtService;
 
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
+
     public SecurityConfig(JwtService jwtService) {
         this.jwtService = jwtService;
     }
@@ -36,7 +40,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // API stateless consommée par le client Flutter
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/suivi/**").permitAll()
+                .requestMatchers("/", "/actuator/**", "/api/auth/**", "/api/suivi/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(new JwtAuthFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
