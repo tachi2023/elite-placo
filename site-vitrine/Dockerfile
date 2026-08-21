@@ -6,6 +6,7 @@ COPY postcss.config.js ./
 COPY vite.config.ts ./
 RUN npm ci
 COPY public ./public
+COPY index.html ./
 COPY src ./src
 RUN npm run build
 
