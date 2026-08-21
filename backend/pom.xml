@@ -84,12 +84,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Base de données embarquée pour développement local (fallback H2) -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+        <!-- NOTE: h2 moved to a dedicated 'local' profile below so it is NOT included in production builds -->
 
         <!-- Tests -->
         <dependency>
@@ -133,4 +128,36 @@
             </plugin>
         </plugins>
     </build>
+    
+    <profiles>
+        <!-- Profile 'local' enables H2 for local development and disables Flyway execution during mvn package/run if desired -->
+        <profile>
+            <id>local</id>
+            <activation>
+                <property>
+                    <name>env.SPRING_PROFILES_ACTIVE</name>
+                    <value>local</value>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <!-- Skip Flyway plugin execution for local profile to avoid requiring Postgres -->
+                    <plugin>
+                        <groupId>org.flywaydb</groupId>
+                        <artifactId>flyway-maven-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

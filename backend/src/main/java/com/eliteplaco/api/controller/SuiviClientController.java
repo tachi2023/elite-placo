@@ -23,10 +23,27 @@ import java.util.stream.Collectors;
 public class SuiviClientController {
 
     private final LienSuiviClientRepository lienRepository;
-    public SuiviClientController(LienSuiviClientRepository lienRepository) { this.lienRepository = lienRepository; }
+    private final org.springframework.core.env.Environment env;
+
+    public SuiviClientController(LienSuiviClientRepository lienRepository, org.springframework.core.env.Environment env) {
+        this.lienRepository = lienRepository;
+        this.env = env;
+    }
 
     @GetMapping("/{code}")
     public ChantierSuiviPublicDTO consulter(@PathVariable String code) {
+        // Mode démo : si la variable d'environnement APP_DEMO_ENABLED=true et code=="DEMO-CLIENT",
+        // retourner un chantier factice pour permettre la validation du design sans base de données.
+        String demoEnabled = env.getProperty("APP_DEMO_ENABLED", "false");
+        if ("true".equalsIgnoreCase(demoEnabled) && "DEMO-CLIENT".equalsIgnoreCase(code)) {
+            return new ChantierSuiviPublicDTO(
+                    "M. Demo Client",
+                    "Paris",
+                    "EN_COURS",
+                    42
+            );
+        }
+
         LienSuiviClient lien = lienRepository.findByCodePublicAndActifTrue(code)
                 .orElseThrow(() -> new AppException("Ce lien de suivi est introuvable ou n'est plus actif."));
 
