@@ -16,10 +16,10 @@ class ChantierRepository {
       final List<dynamic> data = response.data;
 
       // Mettre à jour le cache local (écrase le cache avec la vérité du serveur)
-      await _localDb.viderTable('chantier_local');
+      final db = await _localDb.database;
       for (var json in data) {
         final chantier = Chantier.fromJson(json as Map<String, dynamic>);
-        await _localDb.inserer('chantier_local', {
+        final valeurs = {
           'apiId': chantier.id,
           'nomClient': chantier.nomClient,
           'ville': chantier.ville,
@@ -28,7 +28,15 @@ class ChantierRepository {
           'montantDevis': chantier.montantDevis,
           'dateCreation': chantier.dateCreation.toIso8601String(),
           'synchronise': 1,
-        });
+        };
+        final existant = await db.query(
+          'chantier_local', where: 'apiId = ?', whereArgs: [chantier.id], limit: 1);
+        if (existant.isEmpty) {
+          await db.insert('chantier_local', valeurs);
+        } else if (existant.first['synchronise'] == 1) {
+          await db.update('chantier_local', valeurs,
+              where: 'apiId = ?', whereArgs: [chantier.id]);
+        }
       }
     } catch (e) {
       // Offline : On ignore l'erreur API et on lira juste le cache local
@@ -43,7 +51,7 @@ class ChantierRepository {
               ville: row['ville'],
               typeTravaux: row['typeTravaux'],
               statut: row['statut'],
-              montantDevis: row['montantDevis'],
+              montantDevis: (row['montantDevis'] as num).toDouble(),
               dateCreation: DateTime.parse(row['dateCreation']),
               synchronise: row['synchronise'] == 1,
             ))
@@ -99,17 +107,53 @@ class ChantierRepository {
 
   /// PUT /api/chantiers/{id}/statut
   Future<Chantier> mettreAJour(Chantier chantier) async {
-    // Dans cette version simplifiée de la Phase 3, on va juste tenter l'API
-    // Si échec -> throw (On limitera le vrai mode offline complet à la création pour ce POC).
     try {
       final response = await _api.client.put(
         '/api/chantiers/${chantier.id}/statut',
         queryParameters: {'statut': chantier.statut},
       );
-      return Chantier.fromJson(response.data as Map<String, dynamic>);
+      final chantierServeur = Chantier.fromJson(response.data as Map<String, dynamic>);
+      await _mettreAJourCacheLocal(chantierServeur, synchronise: true);
+      return chantierServeur;
     } on DioException {
-      throw Exception(
-          'Impossible de mettre à jour le statut hors-ligne pour le moment.');
+      if (chantier.id == null) {
+        throw Exception('Impossible de synchroniser un chantier local sans identifiant serveur.');
+      }
+      final localRowId = await _mettreAJourCacheLocal(chantier, synchronise: false);
+      await _localDb.ajouterAFileAttente(
+        'chantier',
+        'MODIFICATION_STATUT',
+        {
+          'id': chantier.id,
+          'statut': chantier.statut,
+          'lastModifiedDate': chantier.dateChangementStatut?.toIso8601String() ?? DateTime.now().toIso8601String(),
+        },
+        localRowId,
+      );
+      SyncService().synchroniser();
+      return chantier.copyWith(synchronise: false);
+    }
+  }
+
+  Future<int> _mettreAJourCacheLocal(Chantier chantier, {required bool synchronise}) async {
+    final db = await _localDb.database;
+    final whereArgs = [chantier.id];
+    final existing = await db.query('chantier_local', where: 'apiId = ?', whereArgs: whereArgs, limit: 1);
+    final valeurs = {
+      'apiId': chantier.id,
+      'nomClient': chantier.nomClient,
+      'ville': chantier.ville,
+      'typeTravaux': chantier.typeTravaux,
+      'statut': chantier.statut,
+      'montantDevis': chantier.montantDevis,
+      'dateCreation': chantier.dateCreation.toIso8601String(),
+      'synchronise': synchronise ? 1 : 0,
+    };
+    if (existing.isNotEmpty) {
+      await db.update('chantier_local', valeurs, where: 'apiId = ?', whereArgs: whereArgs);
+      return existing.first['id'] as int;
+    } else {
+      return db.insert('chantier_local', valeurs);
     }
   }
 

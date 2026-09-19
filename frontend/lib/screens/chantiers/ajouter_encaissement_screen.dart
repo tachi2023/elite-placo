@@ -27,10 +27,18 @@ class _AjouterEncaissementScreenState extends State<AjouterEncaissementScreen> {
 
     final provider = context.read<ChantierProvider>();
     try {
-      // L'écriture réelle passe par FinanceService via un service exposé
-      // sur le provider ; ici on simplifie en rechargeant après écriture.
-      await provider.chargerChantiers(); // s'assure que le chantier est à jour
+      final resultat = await provider.ajouterEncaissement(
+        chantierId: widget.chantier.id!,
+        montant: montant,
+        date: DateTime.now(),
+        nature: _nature,
+      );
       if (!mounted) return;
+      if (resultat.avertissement != null && resultat.avertissement!.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(resultat.avertissement!)),
+        );
+      }
       Navigator.of(context).pop();
     } catch (_) {
       if (!mounted) return;

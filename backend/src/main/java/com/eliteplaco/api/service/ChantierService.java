@@ -183,6 +183,7 @@ public class ChantierService {
 
     void marquerNonSynchronise(Chantier chantier) {
         chantier.setSynchronise(false);
+        chantier.setLastModifiedDate(LocalDateTime.now());
         chantierRepository.save(chantier);
     }
 }

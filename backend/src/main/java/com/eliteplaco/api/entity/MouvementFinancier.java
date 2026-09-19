@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.LocalDate;
 
 /**
@@ -40,4 +41,7 @@ public abstract class MouvementFinancier {
     // Ajouté par le Script 2 (V2) : marquage hors-ligne
     @Column(nullable = false)
     private Boolean synchronise = true;
+
+    @Column(nullable = false)
+    private LocalDateTime lastModifiedDate = LocalDateTime.now();
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/chantier.dart';
+import '../models/mouvement_financier.dart';
 import '../repositories/chantier_repository.dart';
 import '../repositories/mouvement_repository.dart';
 import '../services/chantier_service.dart';
@@ -36,8 +37,11 @@ class ChantierProvider extends ChangeNotifier {
     notifyListeners();
 
     _chantiers = await _chantierService.listerChantiersActifs();
+    _situations.clear();
     for (final c in _chantiers) {
-      _situations[c.id!] = await _financeService.calculerSituation(c);
+      if (c.id != null) {
+        _situations[c.id!] = await _financeService.calculerSituation(c);
+      }
     }
 
     _enChargement = false;
@@ -82,5 +86,70 @@ class ChantierProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  Future<({MouvementFinancier mouvement, String? avertissement})> ajouterEncaissement({
+    required int chantierId,
+    required double montant,
+    required DateTime date,
+    required String nature,
+  }) async {
+    final chantier = await chantierRepository.trouverParId(chantierId);
+    if (chantier == null) {
+      throw const AppException('Chantier introuvable.');
+    }
+    final resultat = await _financeService.enregistrerEncaissement(
+      chantier: chantier,
+      montant: montant,
+      date: date,
+      nature: nature,
+    );
+    await chargerChantiers();
+    return resultat;
+  }
+
+  Future<MouvementFinancier> ajouterDepense({
+    required int chantierId,
+    required double montant,
+    required DateTime date,
+    required String categorie,
+    String? description,
+  }) async {
+    final chantier = await chantierRepository.trouverParId(chantierId);
+    if (chantier == null) {
+      throw const AppException('Chantier introuvable.');
+    }
+    final mouvement = await _financeService.enregistrerDepense(
+      chantier: chantier,
+      montant: montant,
+      date: date,
+      categorie: categorie,
+      description: description,
+    );
+    await chargerChantiers();
+    return mouvement;
+  }
+
+  Future<MouvementFinancier> modifierMouvement(
+    MouvementFinancier mouvement, {
+    double? nouveauMontant,
+    DateTime? nouvelleDate,
+    String? nouvelleCategorie,
+    String? nouvelleDescription,
+  }) async {
+    final misAJour = await _financeService.modifierMouvement(
+      mouvement,
+      nouveauMontant: nouveauMontant,
+      nouvelleDate: nouvelleDate,
+      nouvelleCategorie: nouvelleCategorie,
+      nouvelleDescription: nouvelleDescription,
+    );
+    await chargerChantiers();
+    return misAJour;
+  }
+
+  Future<void> supprimerMouvement(MouvementFinancier mouvement) async {
+    await _financeService.supprimerMouvement(mouvement);
+    await chargerChantiers();
   }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -57,6 +58,7 @@ public class FinanceService {
         encaissement.setDate(date);
         encaissement.setNature(nature);
         encaissement.setSynchronise(false);
+        encaissement.setLastModifiedDate(LocalDateTime.now());
 
         Encaissement enregistre = mouvementRepository.save(encaissement);
         chantierService.marquerNonSynchronise(chantier);
@@ -82,6 +84,7 @@ public class FinanceService {
         depense.setCategorie(categorie);
         depense.setDescription(description);
         depense.setSynchronise(false);
+        depense.setLastModifiedDate(LocalDateTime.now());
 
         Depense enregistree = mouvementRepository.save(depense);
         chantierService.marquerNonSynchronise(chantier);
@@ -103,6 +106,7 @@ public class FinanceService {
             mouvement.setDate(nouvelleDate);
         }
         mouvement.setSynchronise(false);
+        mouvement.setLastModifiedDate(LocalDateTime.now());
         return mouvementRepository.save(mouvement);
     }
 

@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:local_auth/local_auth.dart';
 import '../services/api_service.dart';
+import '../services/sync_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   bool _estDeverrouille = false;
@@ -147,9 +148,14 @@ class AuthProvider extends ChangeNotifier {
         'identifiant': 'raoul.michel',
         'motDePasse': 'changeme',
       });
-      final String jeton = response.data['jetonAcces'] as String;
-      _api.definirJeton(jeton);
+      final String jetonAcces = response.data['jetonAcces'] as String;
+      final String jetonRafraichissement = response.data['jetonRafraichissement'] as String;
+      _api.definirJetons(
+        jetonAcces: jetonAcces,
+        jetonRafraichissement: jetonRafraichissement,
+      );
       _erreurConnexion = null;
+      await SyncService().synchroniser();
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout ||

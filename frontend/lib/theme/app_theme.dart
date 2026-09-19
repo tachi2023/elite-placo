@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTheme {
   // --- Palette de Couleurs ---
   static const Color anthracite = Color(0xFF161618); // Fond principal
-  static const Color anthraciteClair = Color(0xFF232326); // Cartes, surfaces
+  static const Color anthraciteClair = Color(0xFF1D1D20); // Cartes, surfaces
   static const Color or =
       Color(0xFFD4AF37); // Laiton/Or pour les accents (boutons, icônes)
   static const Color orSombre = Color(0xFFB5952F);
@@ -85,7 +85,7 @@ class AppTheme {
         elevation: 4,
         shadowColor: Colors.black.withValues(alpha: 0.4),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
         ),
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       ),
@@ -98,7 +98,7 @@ class AppTheme {
           elevation: 0,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(9),
           ),
           textStyle: GoogleFonts.outfit(
             fontSize: 16,
@@ -125,11 +125,11 @@ class AppTheme {
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(9),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(9),
           borderSide: const BorderSide(color: or, width: 1.5),
         ),
         labelStyle: const TextStyle(color: grisFonce),

@@ -161,13 +161,16 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                     const SizedBox(height: 20),
 
                     // KPIs en grille
-                    GridView.count(
-                      crossAxisCount: 2,
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final columns = constraints.maxWidth >= 720 ? 4 : 2;
+                        return GridView.count(
+                      crossAxisCount: columns,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
-                      childAspectRatio: 1.4,
+                      childAspectRatio: columns == 4 ? 1.25 : 1.45,
                       children: [
                         _buildKpiCard(
                             'Chiffre d\'Affaires',
@@ -187,6 +190,8 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                             Icons.arrow_circle_up,
                             color: AppTheme.erreur),
                       ],
+                        );
+                      },
                     ),
 
                     const SizedBox(height: 16),

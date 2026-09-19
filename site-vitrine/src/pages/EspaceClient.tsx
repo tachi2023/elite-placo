@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShieldCheck, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import logoImg from '../assets/logo.jpg';
 
 export default function EspaceClient() {
   const [code, setCode] = useState('');
@@ -31,10 +32,11 @@ export default function EspaceClient() {
           transition={{ duration: 0.8 }}
           className="w-full max-w-md"
         >
-          {/* Icon */}
+          {/* Identité de marque */}
           <div className="flex justify-center mb-8">
-            <div className="w-20 h-20 border border-or/30 flex items-center justify-center">
-              <ShieldCheck size={36} className="text-or" />
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-or/20 blur-2xl animate-pulse" />
+              <img src={logoImg} alt="Élite Placo & Déco" className="relative w-24 h-24 rounded-full object-cover border border-or/50 shadow-[0_0_35px_rgba(201,168,76,0.2)]" />
             </div>
           </div>
 
@@ -80,6 +82,13 @@ export default function EspaceClient() {
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </form>
+
+          <div className="mt-6 border border-or/20 bg-noir-surface/70 px-5 py-4 text-center">
+            <p className="text-[10px] tracking-[0.2em] uppercase text-or mb-2">Accès démonstration</p>
+            <button type="button" onClick={() => { setCode('VB-2026-014'); setError(''); }} className="text-sm text-texte hover:text-or transition-colors">
+              Utiliser le chantier Villa Bonanjo · VB-2026-014
+            </button>
+          </div>
 
           {/* Info */}
           <p className="text-center text-xs text-texte-muted mt-8 leading-relaxed">

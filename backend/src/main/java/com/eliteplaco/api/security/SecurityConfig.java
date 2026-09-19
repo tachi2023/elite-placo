@@ -36,13 +36,21 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        boolean localProfile = activeProfile != null && activeProfile.contains("local");
         http
             .csrf(csrf -> csrf.disable()) // API stateless consommée par le client Flutter
+            .cors(org.springframework.security.config.Customizer.withDefaults())
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/actuator/**", "/api/auth/**", "/api/suivi/**").permitAll()
+                .requestMatchers("/", "/actuator/**", "/api/auth/**", "/api/suivi/**", "/api/contenu-site/**").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             )
+            .headers(headers -> {
+                if (localProfile) {
+                    headers.frameOptions(frame -> frame.sameOrigin());
+                }
+            })
             .addFilterBefore(new JwtAuthFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

@@ -10,5 +10,13 @@ public record ChantierSuiviPublicDTO(
         String nomClient,
         String ville,
         String statut,
-        int avancementPourcent
-) {}
+        int avancementPourcent,
+        List<DepenseSuiviDTO> depenses
+) {
+    public record DepenseSuiviDTO(
+            String description,
+            String categorie,
+            java.math.BigDecimal montant,
+            java.time.LocalDate date
+    ) {}
+}

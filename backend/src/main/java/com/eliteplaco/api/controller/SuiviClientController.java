@@ -6,6 +6,7 @@ import com.eliteplaco.api.entity.LienSuiviClient;
 import com.eliteplaco.api.entity.MouvementFinancier;
 import com.eliteplaco.api.exception.AppException;
 import com.eliteplaco.api.repository.LienSuiviClientRepository;
+import com.eliteplaco.api.repository.MouvementFinancierRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,10 +24,14 @@ import java.util.stream.Collectors;
 public class SuiviClientController {
 
     private final LienSuiviClientRepository lienRepository;
+    private final MouvementFinancierRepository mouvementRepository;
     private final org.springframework.core.env.Environment env;
 
-    public SuiviClientController(LienSuiviClientRepository lienRepository, org.springframework.core.env.Environment env) {
+    public SuiviClientController(LienSuiviClientRepository lienRepository,
+                                  MouvementFinancierRepository mouvementRepository,
+                                  org.springframework.core.env.Environment env) {
         this.lienRepository = lienRepository;
+        this.mouvementRepository = mouvementRepository;
         this.env = env;
     }
 
@@ -40,7 +45,8 @@ public class SuiviClientController {
                     "M. Demo Client",
                     "Paris",
                     "EN_COURS",
-                    42
+                    42,
+                    List.of()
             );
         }
 
@@ -63,7 +69,19 @@ public class SuiviClientController {
                 chantier.getNomClient(), 
                 chantier.getVille(), 
                 chantier.getStatut().name(), 
-                avancement
+                avancement,
+                mouvementRepository.findByChantierId(chantier.getId()).stream()
+                        .filter(mouvement -> mouvement instanceof com.eliteplaco.api.entity.Depense)
+                        .map(mouvement -> {
+                            var depense = (com.eliteplaco.api.entity.Depense) mouvement;
+                            return new ChantierSuiviPublicDTO.DepenseSuiviDTO(
+                                    depense.getDescription(),
+                                    depense.getCategorie() == null ? "DIVERS" : depense.getCategorie().name(),
+                                    depense.getMontant(),
+                                    depense.getDate()
+                            );
+                        })
+                        .toList()
         );
     }
 }

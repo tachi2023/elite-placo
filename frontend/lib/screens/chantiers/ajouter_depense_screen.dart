@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../models/mouvement_financier.dart';
+import '../../providers/chantier_provider.dart';
 
 /// Formulaire d'ajout de dépense (scénario type §10.12). Écrit toujours
 /// en local d'abord — aucune perte de donnée tolérée même sans réseau.
@@ -32,9 +34,24 @@ class _AjouterDepenseScreenState extends State<AjouterDepenseScreen> {
       return;
     }
 
-    // TODO Phase 6 : construire un MouvementFinancier et l'enregistrer
-    // via ChantierRepository (local d'abord, sync ensuite).
-    Navigator.of(context).pop();
+    final provider = context.read<ChantierProvider>();
+    provider
+        .ajouterDepense(
+          chantierId: widget.chantierId,
+          montant: montant,
+          date: DateTime.now(),
+          categorie: _categorieChoisie!,
+        )
+        .then((_) {
+          if (!mounted) return;
+          Navigator.of(context).pop();
+        })
+        .catchError((error) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error.toString())),
+          );
+        });
   }
 
   @override
@@ -69,4 +86,3 @@ class _AjouterDepenseScreenState extends State<AjouterDepenseScreen> {
     );
   }
 }
-

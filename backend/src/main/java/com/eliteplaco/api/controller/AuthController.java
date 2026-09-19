@@ -2,6 +2,7 @@ package com.eliteplaco.api.controller;
 
 import com.eliteplaco.api.dto.LoginRequest;
 import com.eliteplaco.api.dto.LoginResponse;
+import com.eliteplaco.api.dto.RefreshTokenRequest;
 import com.eliteplaco.api.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public LoginResponse rafraichir(@RequestBody String refreshToken) {
-        return authService.rafraichir(refreshToken);
+    public LoginResponse rafraichir(@Valid @RequestBody RefreshTokenRequest requete) {
+        return authService.rafraichir(requete.refreshToken());
     }
 }

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Loader2, ShieldCheck, CheckCircle, Clock, MapPin, ReceiptText, Download, AlertTriangle } from 'lucide-react';
+import logoImg from '../assets/logo.jpg';
 
 interface Depense {
   description: string;
@@ -34,7 +35,7 @@ export default function ClientDashboard() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
     axios.get(`${apiBaseUrl}/api/suivi/${code}`)
       .then(res => { setData(res.data); setLoading(false); })
@@ -86,6 +87,7 @@ export default function ClientDashboard() {
       <header className="sticky top-0 z-50 glass border-b border-or/10 px-6 py-4 flex justify-between items-center">
         <Link to="/espace-client" className="flex items-center gap-3 hover:text-or transition-colors">
           <ArrowLeft size={18} />
+          <img src={logoImg} alt="Élite Placo & Déco" className="w-9 h-9 rounded-full object-cover border border-or/40" />
           <div>
             <div className="font-display text-lg font-semibold tracking-widest text-texte">Élite Placo & Déco</div>
             <div className="text-[10px] tracking-[0.3em] text-or uppercase">PRIMA BTP</div>
@@ -225,7 +227,7 @@ export default function ClientDashboard() {
 
             <motion.div
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
-              className="bg-nor-surface border border-or/20 p-8 text-center"
+              className="bg-noir-surface border border-or/20 p-8 text-center"
             >
               <CheckCircle size={24} className="text-or mx-auto mb-3" />
               <p className="text-xs text-texte-muted leading-relaxed font-light">

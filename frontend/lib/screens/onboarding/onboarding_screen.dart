@@ -116,23 +116,21 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       Row(
                         children: [
                           Container(
-                            width: 36,
-                            height: 36,
+                            width: 42,
+                            height: 42,
+                            padding: const EdgeInsets.all(2),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: Border.all(
-                                  color: AppTheme.or.withOpacity(0.3)),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'EP',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppTheme.or,
-                                  letterSpacing: 1.5,
+                              border: Border.all(color: AppTheme.or.withOpacity(0.65)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.or.withOpacity(0.18),
+                                  blurRadius: 18,
                                 ),
-                              ),
+                              ],
+                            ),
+                            child: ClipOval(
+                              child: Image.asset('assets/logo.jpg', fit: BoxFit.cover),
                             ),
                           ),
                           const SizedBox(width: 12),

@@ -46,6 +46,16 @@ class FinanceService {
   }
 
   Future<SituationFinanciere> calculerSituation(Chantier chantier) async {
+    if (chantier.id == null) {
+      return const SituationFinanciere(
+        totalEncaisse: 0,
+        totalDepenses: 0,
+        resteAEncaisser: 0,
+        resultatNet: 0,
+        margeBrutePourcent: 0,
+        indicateur: 'VERT',
+      );
+    }
     final mouvements = await _mouvementRepository.listerParChantier(chantier.id!);
 
     final totalEncaisse = mouvements
@@ -80,6 +90,9 @@ class FinanceService {
     required DateTime date,
     required String nature,
   }) async {
+    if (chantier.id == null) {
+      throw const AppException('Ce chantier doit être synchronisé avant d\'enregistrer un encaissement.');
+    }
     if (montant <= 0) {
       throw const AppException('Le montant doit être un nombre positif.');
     }
@@ -121,6 +134,9 @@ class FinanceService {
     required String categorie,
     String? description,
   }) async {
+    if (chantier.id == null) {
+      throw const AppException('Ce chantier doit être synchronisé avant d\'enregistrer une dépense.');
+    }
     if (montant <= 0) {
       throw const AppException('Le montant doit être un nombre positif.');
     }
@@ -166,6 +182,6 @@ class FinanceService {
   /// §10.13-A2 — la confirmation explicite est de la responsabilité de
   /// l'écran (dialogue de confirmation) ; ce service exécute la suppression
   /// une fois la confirmation obtenue.
-  Future<void> supprimerMouvement(int mouvementId) =>
-      _mouvementRepository.supprimer(mouvementId);
+  Future<void> supprimerMouvement(MouvementFinancier mouvement) =>
+      _mouvementRepository.supprimer(mouvement);
 }

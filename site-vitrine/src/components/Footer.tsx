@@ -1,5 +1,6 @@
 ﻿import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, ArrowRight } from 'lucide-react';
+import logoImg from '../assets/logo.jpg';
 
 export default function Footer() {
   return (
@@ -7,9 +8,12 @@ export default function Footer() {
       <div className="w-full px-6 xl:px-[200px] grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
         {/* Brand */}
         <div className="md:col-span-1">
-          <div className="mb-4">
+          <div className="flex items-center gap-3 mb-5">
+            <img src={logoImg} alt="Élite Placo & Déco" className="w-12 h-12 rounded-full object-cover border border-or/40" />
+            <div>
             <div className="font-display text-xl font-semibold tracking-widest text-texte">Élite Placo & Déco</div>
             <div className="text-[10px] tracking-[0.3em] text-or uppercase font-light">PRIMA BTP</div>
+            </div>
           </div>
           <p className="text-texte-muted text-sm leading-relaxed">
             L'excellence du plâtre, l'art de la décoration. Plâtrerie et décoration intérieure haut de gamme à Douala.

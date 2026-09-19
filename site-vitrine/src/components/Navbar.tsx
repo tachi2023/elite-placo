@@ -38,7 +38,7 @@ export default function Navbar() {
           <img
             src={logoImg}
             alt="Élite Placo logo"
-            className="w-9 h-9 rounded-full object-cover border border-or/30"
+            className="w-11 h-11 rounded-full object-cover border border-or/50 shadow-[0_0_18px_rgba(201,168,76,0.18)]"
           />
           <div className="flex flex-col">
             <span className="font-display text-lg font-semibold tracking-widest text-texte">
@@ -107,7 +107,7 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden glass border-t border-or/10 px-6 py-8 flex flex-col gap-6"
+            className="lg:hidden glass border-t border-or/10 px-6 py-8 flex flex-col gap-6"
           >
             {navLinks.map((link) => (
               <Link

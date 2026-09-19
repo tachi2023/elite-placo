@@ -271,29 +271,14 @@ class _PinLockScreenState extends State<PinLockScreen>
                         ),
                       ],
                     ),
-                    child: Center(
-                      child: auth.isLockedOut
-                          ? const Icon(Icons.lock_outline,
-                              size: 36, color: AppTheme.erreur)
-                          : ShaderMask(
-                              shaderCallback: (bounds) => const LinearGradient(
-                                colors: [
-                                  Color(0xFFD4AF37),
-                                  Color(0xFFE8CC82),
-                                  Color(0xFFD4AF37),
-                                ],
-                              ).createShader(bounds),
-                              child: const Text(
-                                'EP',
-                                style: TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                  letterSpacing: 3,
-                                ),
-                              ),
+                    child: auth.isLockedOut
+                        ? const Icon(Icons.lock_outline, size: 36, color: AppTheme.erreur)
+                        : ClipOval(
+                            child: Padding(
+                              padding: const EdgeInsets.all(5),
+                              child: Image.asset('assets/logo.jpg', fit: BoxFit.cover),
                             ),
-                    ),
+                          ),
                   );
                 },
               ),
