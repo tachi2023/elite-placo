@@ -4,11 +4,13 @@ services:
     env: docker
     region: frankfurt
     plan: free
-    dockerfilePath: backend/Dockerfile
-    dockerContext: backend
+    dockerfilePath: apps/api/Dockerfile
+    dockerContext: apps/api
     envVars:
       - key: JAVA_VERSION
         value: 17
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
       - key: DB_HOST
         fromDatabase:
           name: elite-placo-db
@@ -32,20 +34,25 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://eliteplacodeco.cm,http://localhost:5000,https://elite-placo-site.onrender.com,https://elite-build-flow.lovable.app
+        value: https://eliteplacodeco.cm,https://elite-placo-site.onrender.com,https://elite-placo-app.onrender.com
       - key: APP_DEMO_ENABLED
-        value: "true"
+        value: "false"
 
   - type: web
     name: elite-placo-site
     env: docker
     region: frankfurt
     plan: free
-    dockerfilePath: site-vitrine/Dockerfile
-    dockerContext: site-vitrine
-    envVars:
-      - key: VITE_API_URL
-        value: https://elite-placo-api.onrender.com
+    dockerfilePath: apps/web/Dockerfile
+    dockerContext: apps/web
+
+  - type: web
+    name: elite-placo-app
+    env: docker
+    region: frankfurt
+    plan: free
+    dockerfilePath: apps/mobile/Dockerfile
+    dockerContext: apps/mobile
 
 databases:
   - name: elite-placo-db

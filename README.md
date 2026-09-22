@@ -1,85 +1,139 @@
-# Élite Placo & Déco — Application de Gestion Comptable des Chantiers
+# Elite Placo & Déco
 
-Structure générée automatiquement (Phase 5 de la méthodologie du projet).
-Aucune logique métier n'est encore implémentée : ce squelette pose
-l'architecture (voir `Architecture_Technique_ElitePlaco.md`) et sera complété
-en Phase 6.
+Monorepo de gestion des chantiers pour PRIMA BTP / Élite Placo & Déco.
 
-## Prérequis
+Le dépôt regroupe trois applications complémentaires :
 
-- Java 17+ et Maven (backend)
-- Flutter SDK 3.3+ (frontend)
-- PostgreSQL 14+ (base de données)
+- un site vitrine React/Vite optimisé pour le référencement et l'espace client ;
+- une application Flutter Android et Web pour le dirigeant ;
+- une API Spring Boot avec PostgreSQL, JWT et synchronisation hors ligne.
 
-## Installation — Backend
+## Structure
 
-```bash
-cd backend
-cp .env.example .env        # puis remplir les vraies valeurs
-createdb eliteplaco          # créer la base PostgreSQL locale
-psql eliteplaco < src/main/resources/db/migration/V1__init.sql
-mvn spring-boot:run
-```
-
-L'API démarre sur `http://localhost:8080`.
-
-## Installation — Frontend
-
-```bash
-cd frontend
-flutter pub get
-flutter run                  # mobile Android
-flutter run -d chrome        # version web
-```
-
-## Structure du projet
-
-```
+```text
 elite-placo/
-├── backend/                 # API Spring Boot
-│   └── src/main/java/com/eliteplaco/api/
-│       ├── entity/          # Entités JPA (Chantier, MouvementFinancier...)
-│       ├── repository/      # Accès aux données (Spring Data)
-│       ├── controller/      # Endpoints REST
-│       ├── service/         # Logique métier (à implémenter en Phase 6)
-│       ├── security/        # JWT (accès + rafraîchissement)
-│       └── dto/             # Objets d'échange avec le client
-├── frontend/                # Application Flutter
-│   └── lib/
-│       ├── models/          # Modèles de données
-│       ├── providers/       # Gestion d'état (Provider)
-│       ├── repositories/    # Choix local (SQLite) ou API selon connexion
-│       ├── services/        # Appels API, PDF, partage
-│       └── screens/         # Écrans (auth, chantiers, dashboard)
-└── docs/                    # Cahier des charges, architecture, diagrammes
+├── apps/
+│   ├── api/                 # API Spring Boot, sécurité, services métier, migrations
+│   ├── mobile/              # Flutter Android + Flutter Web, cache SQLite chiffré
+│   └── web/                 # Site vitrine React/Vite et portail client
+├── packages/
+│   └── api-contracts/       # Contrats et conventions partagés entre les clients
+├── docs/                    # Cahier des charges, scénarios et documentation projet
+├── scripts/                 # Scripts reproductibles de build et de vérification
+├── .github/workflows/       # CI Android et déploiement Render
+├── docker-compose.yml       # Environnement local API + PostgreSQL + clients
+└── render.yaml              # Blueprint Render API + site + Flutter Web
 ```
 
-## Périmètre du MVP
+## Démarrage local rapide
 
-Voir `Architecture_Technique_ElitePlaco.md` pour le détail complet des choix
-d'architecture et leur justification. Résumé :
+### API avec H2 de démonstration
 
-- ✅ Inclus : Modules 1, 2, 4 ; authentification JWT avec refresh token ;
-  chiffrement de la base locale ; verrouillage PIN avec blocage progressif.
-- ⏸️ Repoussé en roadmap : Modules 3/5/6/7 complets, synchronisation
-  bidirectionnelle avec résolution de conflits, rate limiting API, audit
-  trail détaillé, biométrie, multi-rôles.
-
-## Prochaine étape (Phase 6)
-
-Implémenter la logique métier : `ChantierService` (calcul résultat net /
-marge / indicateur), `AuthController` + `JwtService` (login/refresh), et les
-écrans Flutter correspondants.
-
-### Lancer en développement sans PostgreSQL
-
-Si vous n'avez pas PostgreSQL localement et que vous voulez démarrer rapidement
-le backend avec une base en mémoire H2 (profil `local`) :
-
-```bash
-cd backend
-mvn -Dspring-boot.run.profiles=local spring-boot:run
+```powershell
+cd apps/api
+mvn -Plocal spring-boot:run
 ```
 
-Ce profil utilise une base H2 en mémoire et désactive Flyway pour éviter
-les migrations PostgreSQL en local.
+L'API locale écoute sur `http://localhost:8081` avec le profil `local`.
+
+### Site vitrine
+
+```powershell
+cd apps/web
+npm ci
+npm run dev -- --host 0.0.0.0 --port 3000
+```
+
+Site : `http://localhost:3000`.
+
+### Application Flutter Web
+
+```powershell
+cd apps/mobile
+flutter pub get
+flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:8081
+```
+
+Version Web compilée :
+
+```powershell
+flutter build web --release --dart-define=API_BASE_URL=http://localhost:8081
+```
+
+### APK Android
+
+```powershell
+.\scripts\build_apk.ps1
+```
+
+L'APK est produite dans `apps/mobile/build/app/outputs/flutter-apk/`.
+
+## Docker local
+
+Depuis la racine :
+
+```powershell
+docker compose up --build
+```
+
+Services :
+
+- API : `http://localhost:8081`
+- site vitrine : `http://localhost:3000`
+- Flutter Web : `http://localhost:5000`
+- PostgreSQL : `localhost:5432`
+- pgAdmin : `http://localhost:5050`
+
+## Fonctionnalités couvertes
+
+- gestion des chantiers et statuts ;
+- suivi des encaissements, dépenses et marges ;
+- calcul des matériaux ;
+- fiches de métrage ;
+- suivi des ouvriers ;
+- tableau de bord global ;
+- export PDF et partage ;
+- authentification JWT, refresh token et verrouillage PIN ;
+- fonctionnement hors ligne avec file d'actions, reprise et synchronisation delta ;
+- idempotence des opérations de synchronisation ;
+- portail client public sans exposition des données financières ;
+- site vitrine avec identité visuelle Élite Placo & Déco.
+
+## Vérifications
+
+API :
+
+```powershell
+cd apps/api
+mvn -Plocal test
+```
+
+Site :
+
+```powershell
+cd apps/web
+npm ci
+npm run build
+```
+
+Flutter :
+
+```powershell
+cd apps/mobile
+flutter pub get
+flutter build web --release --dart-define=API_BASE_URL=http://localhost:8081
+```
+
+## Déploiement
+
+Le fichier `render.yaml` décrit trois services Render :
+
+- `elite-placo-api` : API Spring Boot ;
+- `elite-placo-site` : site vitrine React ;
+- `elite-placo-app` : Flutter Web.
+
+L'APK Android est construite par GitHub Actions et publiée comme artefact de workflow. Une
+application mobile native ne se déploie pas comme une page Render : elle doit être installée via
+l'APK de test ou publiée sur Google Play.
+
+Consulter [README_DEPLOY.md](README_DEPLOY.md) pour la procédure Render et les variables d'environnement.

@@ -2,16 +2,35 @@
 .env
 *.env
 
-# Backend
-backend/target/
-backend/.mvn/
+# Backend / API
+apps/api/target/
+apps/api/.mvn/
+apps/api/.env
+**/target/
+**/.mvn/
 *.class
 
-# Frontend
-frontend/build/
-frontend/.dart_tool/
-frontend/.flutter-plugins
-frontend/.flutter-plugins-dependencies
+# Flutter mobile / web application
+apps/mobile/build/
+apps/mobile/.dart_tool/
+apps/mobile/.flutter-plugins
+apps/mobile/.flutter-plugins-dependencies
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/flutter/ephemeral/
+
+# Local credentials, one-off test payloads and runtime logs
+**/login*.json
+**/run-local*.log
+**/update_pwd.sql
+*.log
+
+# Generated web bundles
+apps/web/dist/
+apps/web/node_modules/
+**/node_modules/
 
 # IDE
 .idea/

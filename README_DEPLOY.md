@@ -8,22 +8,22 @@ Ce fichier rassemble les commandes et étapes pour déployer le projet sur Rende
 - Docker Desktop (pour tests locaux).
 - Java 17, Maven, Node, Flutter (pour builds locaux si nécessaire).
 
-## 2) Commit / Push des changements (déjà modifiés : `render.yaml`, backend, scripts)
+## 2) Commit / Push des changements du monorepo
 ```bash
-git add backend/pom.xml backend/src/main/java/com/eliteplaco/api/controller/SuiviClientController.java \
-  render.yaml scripts/build_apk.ps1 docs/DEMO.md README_DEPLOY.md
-git commit -m "Enable demo endpoint, move H2 to local profile, add APK script and demo docs"
+git add apps/api apps/mobile apps/web render.yaml docker-compose.yml scripts docs .github README.md
+git commit -m "Restructure monorepo and align deployment targets"
 git push origin main
 ```
 
 ## 3) Déploiement sur Render
-- Sur le Dashboard Render, vérifiez que les services existent : `elite-placo-api`, `elite-placo-site`.
+- Sur le Dashboard Render, vérifiez que les services existent : `elite-placo-api`, `elite-placo-site`, `elite-placo-app`.
 - Confirm that `render.yaml` variables are applied; in particular ensure `APP_DEMO_ENABLED=true` is present for the `elite-placo-api` service.
 - Render déclenche automatiquement une build après le push si le repo est connecté.
 - Sur Render, surveillez les logs de build et runtime (Dashboard → service → Logs).
 
 ## 4) URLs publiques attendues (vérifiez votre Dashboard pour URLs exactes)
 - Front (site vitrine) : https://elite-placo-site.onrender.com
+- Flutter Web (application dirigeant) : https://elite-placo-app.onrender.com
 - API : https://elite-placo-api.onrender.com
 
 ## 5) Tester le mode démo (après déploiement)
@@ -41,7 +41,7 @@ Le mode démo renvoie des données factices seulement si `APP_DEMO_ENABLED=true`
 ```powershell
 # depuis la racine du repo
 .\scripts\build_apk.ps1 -buildMode release
-# APK produit : frontend\build\app\outputs\flutter-apk\app-release.apk
+# APK produit : apps\mobile\build\app\outputs\flutter-apk\app-release.apk
 ```
 
 ## 7) Conteneurisation locale (vérifier avant le push)
@@ -63,7 +63,7 @@ docker compose up -d
 ```powershell
 docker compose ps
 # tester API demo en local
-curl http://localhost:8080/api/suivi/DEMO-CLIENT
+curl http://localhost:8081/api/suivi/DEMO-CLIENT
 ```
 
 ## 8) Checklist sécurité (À exécuter avant mise en production finale)
@@ -82,6 +82,7 @@ curl http://localhost:8080/api/suivi/DEMO-CLIENT
 ## 10) Support & debug
 - Logs Backend : Render Dashboard → `elite-placo-api` → Logs
 - Logs Front : Render Dashboard → `elite-placo-site` → Logs
+- Logs Flutter Web : Render Dashboard → `elite-placo-app` → Logs
 - Pour problèmes réseau/Docker local : `docker logs <container>` & `docker run --rm busybox nslookup production.cloudfront.docker.com`
 
 ---

@@ -33,18 +33,18 @@ jobs:
           sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Flutter pub get
-        working-directory: frontend
+        working-directory: apps/mobile
         run: flutter pub get
 
       - name: Build release APK
-        working-directory: frontend
+        working-directory: apps/mobile
         env:
           ANDROID_HOME: ${{ env.ANDROID_HOME }}
           ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
-        run: flutter build apk --release --no-shrink
+        run: flutter build apk --release --no-shrink --dart-define=API_BASE_URL=https://elite-placo-api.onrender.com
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
-          path: frontend/build/app/outputs/flutter-apk/app-release.apk
+          path: apps/mobile/build/app/outputs/flutter-apk/app-release.apk

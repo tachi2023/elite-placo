@@ -16,7 +16,8 @@ Commandes (Windows PowerShell) :
 # Accepter les licences
 & "$env:ANDROID_SDK_ROOT\tools\bin\sdkmanager.bat" --licenses
 
-# Puis dans le dossier frontend
+# Puis depuis le dossier apps/mobile
+cd apps/mobile
 flutter clean
 flutter pub get
 flutter build apk --release

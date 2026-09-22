@@ -23,11 +23,11 @@ services:
       timeout: 5s
       retries: 10
 
-  backend:
+  api:
     build:
-      context: ./backend
+      context: ./apps/api
       dockerfile: Dockerfile
-    image: elite-placo-backend:latest
+    image: elite-placo-api:dev
     depends_on:
       db:
         condition: service_healthy
@@ -36,27 +36,31 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: changeme
       JWT_SECRET: change_me_secure
-      CORS_ORIGINS: http://localhost:5000
+      CORS_ORIGINS: http://localhost:3000,http://localhost:5000
     ports:
-      - "8080:8080"
+      - "8081:8080"
 
-  site-vitrine:
+  site:
     build:
-      context: ./site-vitrine
+      context: ./apps/web
       dockerfile: Dockerfile
-    image: elite-placo-site:latest
+      args:
+        VITE_API_URL: http://localhost:8081
+    image: elite-placo-site:dev
     ports:
       - "3000:80"
     environment:
-      VITE_API_URL: http://localhost:8080
+      VITE_API_URL: http://localhost:8081
 
-  flutter-web:
+  app-web:
     build:
-      context: ./frontend
+      context: ./apps/mobile
       dockerfile: Dockerfile
-    image: elite-placo-flutter-web:latest
+      args:
+        API_BASE_URL: http://localhost:8081
+    image: elite-placo-app:dev
     ports:
-      - "8081:80"
+      - "5000:80"
 
   pgadmin:
     image: dpage/pgadmin4:latest
