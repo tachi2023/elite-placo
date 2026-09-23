@@ -18,6 +18,7 @@ import com.eliteplaco.api.entity.FicheMetrage;
 import com.eliteplaco.api.entity.Ouvrier;
 import com.eliteplaco.api.entity.PieceMetrage;
 import com.eliteplaco.api.exception.AppException;
+import com.eliteplaco.api.exception.ConflictException;
 import com.eliteplaco.api.repository.AffectationOuvrierRepository;
 import com.eliteplaco.api.repository.ChantierRepository;
 import com.eliteplaco.api.repository.FicheMetrageRepository;
@@ -53,6 +54,7 @@ public class SynchronisationService {
     private final PieceMetrageRepository pieceRepository;
     private final OuvrierService ouvrierService;
     private final MetrageService metrageService;
+    private final ConflitSynchronisationService conflitService;
 
     public SynchronisationService(ChantierRepository chantierRepository,
                                   MouvementFinancierRepository mouvementRepository,
@@ -64,7 +66,8 @@ public class SynchronisationService {
                                   FicheMetrageRepository ficheRepository,
                                   PieceMetrageRepository pieceRepository,
                                   OuvrierService ouvrierService,
-                                  MetrageService metrageService) {
+                                  MetrageService metrageService,
+                                  ConflitSynchronisationService conflitService) {
         this.chantierRepository = chantierRepository;
         this.mouvementRepository = mouvementRepository;
         this.chantierService = chantierService;
@@ -76,6 +79,7 @@ public class SynchronisationService {
         this.pieceRepository = pieceRepository;
         this.ouvrierService = ouvrierService;
         this.metrageService = metrageService;
+        this.conflitService = conflitService;
     }
 
     public DeltaSynchronisationDTO renvoyerDeltaServeur(LocalDateTime depuis) {
@@ -141,6 +145,9 @@ public class SynchronisationService {
             } else {
                 resultat = echec(operation, "Entité de synchronisation inconnue.");
             }
+        } catch (ConflictException ex) {
+            conflitService.enregistrer(operation, ex.getMessage());
+            resultat = echec(operation, "Conflit conservé pour résolution manuelle.");
         } catch (RuntimeException ex) {
             resultat = echec(operation, ex.getMessage());
         }

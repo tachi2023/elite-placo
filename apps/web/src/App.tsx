@@ -12,6 +12,8 @@ import DashboardPage from './pages/DashboardPage';
 import NewChantierPage from './pages/NewChantierPage';
 import ParametresPage from './pages/ParametresPage';
 import MateriauxPage from './pages/MateriauxPage';
+import AdminLoginPage from './pages/AdminLoginPage';
+import SiteContentAdminPage from './pages/SiteContentAdminPage';
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
         <Route path="/parametres" element={<ParametresPage />} />
         <Route path="/parametres/materiaux" element={<MateriauxPage />} />
         <Route path="/suivi/:code" element={<ClientDashboard />} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/admin/site" element={<SiteContentAdminPage />} />
       </Routes>
     </BrowserRouter>
   );

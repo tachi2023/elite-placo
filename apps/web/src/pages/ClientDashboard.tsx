@@ -3,7 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Loader2, ShieldCheck, CheckCircle, Clock, MapPin, ReceiptText, Download, AlertTriangle } from 'lucide-react';
-import logoImg from '../assets/logo.jpg';
+import logoImg from '../assets/brand-logo.png';
+import { API_BASE_URL } from '../lib/siteApi';
 
 interface Depense {
   description: string;
@@ -33,6 +34,9 @@ export default function ClientDashboard() {
   const [data, setData] = useState<ChantierSuivi | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [commentaire, setCommentaire] = useState('');
+  const [note, setNote] = useState(5);
+  const [avisMessage, setAvisMessage] = useState('');
 
   useEffect(() => {
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8081';
@@ -80,6 +84,22 @@ export default function ClientDashboard() {
   const isTermine = ['TERMINE', 'ARCHIVE'].includes(data.statut);
   const totalDepenses = data.depenses?.reduce((sum, d) => sum + d.montant, 0) || 0;
 
+  async function envoyerAvis(event: React.FormEvent) {
+    event.preventDefault();
+    try {
+      await axios.post(`${API_BASE_URL}/api/avis`, {
+        codePublic: code,
+        nomClient: data?.nomClient || 'Client',
+        note,
+        commentaire,
+      });
+      setCommentaire('');
+      setAvisMessage('Merci. Votre commentaire sera publié après validation.');
+    } catch (err: any) {
+      setAvisMessage(err.response?.data?.message || 'Impossible d’envoyer le commentaire.');
+    }
+  }
+
   return (
     <div className="min-h-screen bg-noir text-texte pb-20">
 
@@ -87,11 +107,7 @@ export default function ClientDashboard() {
       <header className="sticky top-0 z-50 glass border-b border-or/10 px-6 py-4 flex justify-between items-center">
         <Link to="/espace-client" className="flex items-center gap-3 hover:text-or transition-colors">
           <ArrowLeft size={18} />
-          <img src={logoImg} alt="Élite Placo & Déco" className="w-9 h-9 rounded-full object-cover border border-or/40" />
-          <div>
-            <div className="font-display text-lg font-semibold tracking-widest text-texte">Élite Placo & Déco</div>
-            <div className="text-[10px] tracking-[0.3em] text-or uppercase">PRIMA BTP</div>
-          </div>
+          <img src={logoImg} alt="Élite Placo & Déco" className="h-10 w-auto max-w-[190px] object-contain" />
         </Link>
         <div className="flex items-center gap-2 border border-or/30 px-4 py-2">
           <ShieldCheck size={14} className="text-or" />
@@ -233,6 +249,22 @@ export default function ClientDashboard() {
               <p className="text-xs text-texte-muted leading-relaxed font-light">
                 Données chiffrées et synchronisées en temps réel avec l'application métier Elite Placo & Déco.
               </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.45 }}
+              className="bg-noir-surface border border-or/20 p-8"
+            >
+              <p className="text-xs tracking-[0.2em] uppercase text-or mb-2">Votre expérience</p>
+              <h3 className="font-display text-2xl font-light text-texte mb-4">Laisser un commentaire</h3>
+              <form onSubmit={envoyerAvis} className="space-y-3">
+                <div className="flex gap-1" aria-label="Note sur cinq">
+                  {[1, 2, 3, 4, 5].map((value) => <button type="button" key={value} onClick={() => setNote(value)} className={value <= note ? 'text-or text-xl' : 'text-texte-muted text-xl'} aria-label={`${value} étoile${value > 1 ? 's' : ''}`}>★</button>)}
+                </div>
+                <textarea value={commentaire} onChange={(event) => setCommentaire(event.target.value)} required maxLength={1200} rows={4} placeholder="Votre commentaire" className="w-full border border-or/20 bg-noir px-3 py-3 text-sm text-texte outline-none focus:border-or" />
+                {avisMessage && <p className="text-xs text-texte-muted">{avisMessage}</p>}
+                <button className="w-full bg-or px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-noir">Envoyer</button>
+              </form>
             </motion.div>
 
             <motion.div

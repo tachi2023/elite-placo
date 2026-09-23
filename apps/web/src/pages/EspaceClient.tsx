@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import logoImg from '../assets/logo.jpg';
+import logoImg from '../assets/brand-logo.png';
 
 export default function EspaceClient() {
   const [code, setCode] = useState('');
@@ -36,7 +36,7 @@ export default function EspaceClient() {
           <div className="flex justify-center mb-8">
             <div className="relative">
               <div className="absolute inset-0 rounded-full bg-or/20 blur-2xl animate-pulse" />
-              <img src={logoImg} alt="Élite Placo & Déco" className="relative w-24 h-24 rounded-full object-cover border border-or/50 shadow-[0_0_35px_rgba(201,168,76,0.2)]" />
+              <img src={logoImg} alt="Élite Placo & Déco" className="relative w-full max-w-[290px] h-auto object-contain drop-shadow-[0_0_35px_rgba(201,168,76,0.2)]" />
             </div>
           </div>
 

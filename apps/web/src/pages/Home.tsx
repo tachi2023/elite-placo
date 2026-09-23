@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, MoveUpRight } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { fetchPublicRealisations, fetchPublicReviews, usableImageUrl } from '../lib/siteApi';
 
 const services = [
   { id: '01', title: 'Plâtrerie' },
@@ -14,14 +15,14 @@ const services = [
   { id: '06', title: 'Isolation' },
 ];
 
-const realisations = [
+const fallbackRealisations = [
   { title: 'Villa Bonanjo', location: 'Douala', image: '/assets/realisations/villa.jpg' },
   { title: 'Hôtel Le Méridien', location: 'Douala', image: '/assets/realisations/hotel.jpg' },
   { title: 'Résidence Bonapriso', location: 'Douala', image: '/assets/realisations/residence.jpg' },
   { title: 'Suite Présidentielle', location: 'Kribi', image: '/assets/realisations/suite.jpg' },
 ];
 
-const temoignages = [
+const fallbackTemoignages = [
   { quote: "Un travail d'une finesse remarquable. Notre plafond est devenu la pièce maîtresse de la maison.", name: 'Marie Ndoumbé', role: 'Propriétaire, Bonanjo' },
   { quote: 'Professionnalisme, ponctualité et finitions irréprochables. Nous renouvelons systématiquement notre confiance.', name: 'Hôtel Le Méridien', role: 'Direction technique' },
   { quote: 'Le partenaire idéal pour mes projets résidentiels haut de gamme à Douala.', name: 'Jean-Claude Mbarga', role: 'Architecte' },
@@ -37,14 +38,33 @@ const fadeUp = {
 };
 
 export default function Home() {
+  const [realisations, setRealisations] = useState(fallbackRealisations);
+  const [temoignages, setTemoignages] = useState(fallbackTemoignages);
   const [activeRealisation, setActiveRealisation] = useState(0);
+
+  useEffect(() => {
+    fetchPublicRealisations().then((items) => {
+      if (items.length > 0) setRealisations(items.map((item) => ({
+        title: item.titre || 'Réalisation Élite Placo',
+        location: item.cle?.split('-').slice(-1)[0] || 'Cameroun',
+        image: usableImageUrl(item.imageUrl, '/assets/hero_bg.jpg'),
+      })));
+    }).catch(() => undefined);
+    fetchPublicReviews().then((items) => {
+      if (items.length > 0) setTemoignages(items.slice(0, 3).map((item) => ({
+        quote: item.commentaire,
+        name: item.nomClient,
+        role: `Client vérifié · ${item.note}/5`,
+      })));
+    }).catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
       setActiveRealisation((current) => (current + 1) % realisations.length);
     }, 5500);
     return () => window.clearInterval(timer);
-  }, []);
+  }, [realisations.length]);
 
   const navigateRealisation = (direction: number) => {
     setActiveRealisation((current) => (current + direction + realisations.length) % realisations.length);

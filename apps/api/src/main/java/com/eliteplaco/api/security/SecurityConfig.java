@@ -45,7 +45,8 @@ public class SecurityConfig {
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> {
                 auth.requestMatchers("/", "/actuator/health", "/api/auth/**", "/api/suivi/**").permitAll()
-                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/contenu-site/**").permitAll();
+                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/contenu-site/**", "/api/avis/public").permitAll()
+                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/avis").permitAll();
                 if (localProfile) {
                     auth.requestMatchers("/h2-console/**").permitAll();
                 }

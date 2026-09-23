@@ -1,11 +1,13 @@
 ﻿import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { fetchPublicRealisations, usableImageUrl } from '../lib/siteApi';
 
 const categories = ['Tous', 'Résidentiel', 'Hôtellerie', 'Commercial'];
 
-const realisations = [
+const fallbackRealisations = [
   { title: 'Villa Bonanjo', location: 'Douala', cat: 'Résidentiel', img: '/assets/realisations/villa.jpg' },
   { title: 'Hôtel Le Méridien', location: 'Douala', cat: 'Hôtellerie', img: '/assets/realisations/hotel.jpg' },
   { title: 'Siège Corporate', location: 'Akwa', cat: 'Commercial', img: '/assets/realisations/corporate.jpg' },
@@ -15,7 +17,18 @@ const realisations = [
 ];
 
 export default function Realisations() {
+  const [realisations, setRealisations] = useState(fallbackRealisations);
   const [active, setActive] = useState('Tous');
+  useEffect(() => {
+    fetchPublicRealisations().then((items) => {
+      if (items.length > 0) setRealisations(items.map((item) => ({
+        title: item.titre || 'Réalisation Élite Placo',
+        location: item.cle?.split('-').slice(-1)[0] || 'Cameroun',
+        cat: 'Résidentiel',
+        img: usableImageUrl(item.imageUrl, '/assets/hero_bg.jpg'),
+      })));
+    }).catch(() => undefined);
+  }, []);
   const filtered = active === 'Tous' ? realisations : realisations.filter(r => r.cat === active);
 
   return (

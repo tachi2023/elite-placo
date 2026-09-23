@@ -130,7 +130,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                               ],
                             ),
                             child: ClipOval(
-                              child: Image.asset('assets/logo.jpg', fit: BoxFit.cover),
+                              child: Image.asset('assets/brand-logo.png', fit: BoxFit.contain),
                             ),
                           ),
                           const SizedBox(width: 12),

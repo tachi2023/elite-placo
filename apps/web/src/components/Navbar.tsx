@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import logoImg from '../assets/logo.jpg';
+import logoImg from '../assets/brand-logo.png';
 
 const navLinks = [
   { label: 'Accueil', to: '/' },
@@ -34,20 +34,12 @@ export default function Navbar() {
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${isScrolled ? 'glass border-or/10 h-16' : 'bg-transparent border-transparent h-20'}`}>
       <div className="w-full px-6 md:px-[50px] h-full flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-3 leading-none">
+        <Link to="/" className="flex items-center leading-none">
           <img
             src={logoImg}
             alt="Élite Placo logo"
-            className="w-11 h-11 rounded-full object-cover border border-or/50 shadow-[0_0_18px_rgba(201,168,76,0.18)]"
+            className="h-12 w-auto max-w-[230px] object-contain drop-shadow-[0_0_18px_rgba(201,168,76,0.18)]"
           />
-          <div className="flex flex-col">
-            <span className="font-display text-lg font-semibold tracking-widest text-texte">
-              Élite Placo & Déco
-            </span>
-            <span className="text-[9px] tracking-[0.3em] text-or uppercase font-light">
-              PRIMA BTP
-            </span>
-          </div>
         </Link>
 
         {/* Right side group: Nav links + CTAs */}

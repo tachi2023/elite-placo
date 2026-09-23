@@ -8,6 +8,7 @@ import com.eliteplaco.api.repository.MouvementFinancierRepository;
 import com.eliteplaco.api.repository.OuvrierRepository;
 import com.eliteplaco.api.repository.PieceMetrageRepository;
 import com.eliteplaco.api.repository.SynchronisationOperationRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,6 +32,8 @@ class SynchronisationServiceTest {
     @Mock FinanceService financeService;
     @Mock OuvrierService ouvrierService;
     @Mock MetrageService metrageService;
+    @Mock ConflitSynchronisationService conflitService;
+    @Mock ObjectMapper objectMapper;
 
     @InjectMocks SynchronisationService synchronisationService;
 

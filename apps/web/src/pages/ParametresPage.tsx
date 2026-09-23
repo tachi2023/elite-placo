@@ -21,6 +21,12 @@ const cards = [
     to: '/parametres',
     icon: Settings2,
   },
+  {
+    title: 'Contenu du site',
+    description: 'Changer les images des réalisations et modérer les avis clients.',
+    to: '/admin/site',
+    icon: Settings2,
+  },
 ];
 
 export default function ParametresPage() {

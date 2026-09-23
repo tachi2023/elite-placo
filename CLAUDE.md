@@ -223,18 +223,23 @@ validation avec le dirigeant).
 
 ## 9. Risques & points ouverts à valider avec le client
 
-- Règle de gestion des conflits de synchronisation (deux appareils sur le même chantier) — non
-  précisée dans le cahier des charges. Impacte directement le scénario "Synchroniser les données"
-  (§10.12) et le scénario "Modifier/supprimer une dépense ou un encaissement" (§10.13).
+- Règle de gestion des conflits de synchronisation (décision 23/09/2026) : détection optimiste
+  par horodatage/version serveur, rejet de la modification obsolète avec réponse 409 et mise en
+  quarantaine du payload entrant dans l'historique des conflits. Aucun écrasement silencieux :
+  l'idempotence par operationId empêche les doublons et le payload conservé permet une résolution
+  manuelle ultérieure.
 - Qui héberge le serveur sur la durée (développeur ou entreprise).
 - Durée/étendue exacte de la maintenance gratuite avant qu'elle ne devienne payante.
 - Nombre réel d'utilisateurs/appareils simultanés (cahier des charges décrit un usage par le
   dirigeant seul).
 - TJM réellement applicable — les chiffres du §6 sont des hypothèses de calcul, pas un tarif
   contractuel.
-- Mécanisme de réinitialisation du PIN en cas d'oubli (soulevé au scénario §10.1, non tranché).
-- Comportement exact en cas de désarchivage d'un chantier (soulevé aux scénarios §10.9 et §10.10,
-  fonctionnalité non explicitement prévue dans le cahier des charges).
+- Mécanisme de réinitialisation du PIN (décision 23/09/2026) : l'utilisateur se ré-authentifie
+  avec son mot de passe API, puis définit un nouveau PIN local. La biométrie disponible sur le
+  terminal reste un second facteur de déverrouillage, sans dépendre d'un fournisseur SMS/email.
+- Comportement exact en cas de désarchivage (décision 23/09/2026) : un chantier ARCHIVE revient
+  uniquement à TERMINE, reste exclu de la liste active tant qu'il n'est pas explicitement rouvert,
+  et chaque désarchivage est journalisé.
 - Portée exacte des informations visibles par le client final sur la page de suivi (statut seul,
   ou aussi photos/jalons/dates estimées ?) — à définir avec le dirigeant (Module 7, §10.14-10.16).
 - Durée de validité et mode de révocation des liens de suivi client (expiration automatique après

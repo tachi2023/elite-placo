@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Building2, BarChart3, Settings } from 'lucide-react';
+import logoImg from '../assets/brand-logo.png';
 
 interface ManagementShellProps {
   title: string;
@@ -22,10 +23,12 @@ export default function ManagementShell({ title, subtitle, children }: Managemen
       <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-4 sm:px-6 lg:px-8">
         <header className="mb-4 rounded-[28px] border border-white/10 bg-[#0E0E10]/90 px-5 py-4 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
           <div className="flex items-center justify-between gap-3">
-            <div>
-              <div className="text-xs uppercase tracking-[0.35em] text-[#C9A84C]">Élite Placo & Déco</div>
+            <div className="flex items-center gap-4">
+              <img src={logoImg} alt="Élite Placo & Déco" className="h-10 w-auto max-w-[185px] object-contain" />
+              <div>
               <h1 className="text-xl font-semibold text-white">{title}</h1>
               {subtitle ? <p className="text-sm text-gray-400">{subtitle}</p> : null}
+              </div>
             </div>
             <div className="rounded-full border border-[#C9A84C]/30 bg-[#C9A84C]/10 px-3 py-1.5 text-sm font-semibold text-[#C9A84C]">
               04.0511° N · 09.7679° E

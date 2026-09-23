@@ -167,7 +167,10 @@ public class ChantierService {
         chantier.setStatut(StatutChantier.TERMINE);
         chantier.setLastModifiedDate(LocalDateTime.now());
         chantier.setSynchronise(false);
-        return chantierRepository.save(chantier);
+        Chantier desarchive = chantierRepository.save(chantier);
+        auditService.enregistrer("DESARCHIVAGE", "CHANTIER", chantierId, chantierId,
+                "Chantier remis au statut TERMINE");
+        return desarchive;
     }
 
     /** Calcule la situation financière complète d'un chantier (Module 2). */

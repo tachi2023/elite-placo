@@ -276,7 +276,7 @@ class _PinLockScreenState extends State<PinLockScreen>
                         : ClipOval(
                             child: Padding(
                               padding: const EdgeInsets.all(5),
-                              child: Image.asset('assets/logo.jpg', fit: BoxFit.cover),
+                              child: Image.asset('assets/brand-logo.png', fit: BoxFit.contain),
                             ),
                           ),
                   );
