@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 /**
  * Un ouvrier payé sur chantier (Module 6 — suivi des ouvriers).
  * Les paiements sont portés par AffectationOuvrier, pas ici : un même
@@ -24,4 +26,10 @@ public class Ouvrier {
 
     @Column(length = 30)
     private String telephone;
+
+    @Column(nullable = false)
+    private Boolean synchronise = true;
+
+    @Column(nullable = false)
+    private LocalDateTime lastModifiedDate = LocalDateTime.now();
 }

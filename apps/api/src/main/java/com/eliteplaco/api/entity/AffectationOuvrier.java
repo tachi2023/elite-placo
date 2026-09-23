@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Paiement d'un ouvrier sur un chantier donné. Le total remonte
@@ -37,4 +38,7 @@ public class AffectationOuvrier {
 
     @Column(nullable = false)
     private boolean synchronise = true;
+
+    @Column(nullable = false)
+    private LocalDateTime lastModifiedDate = LocalDateTime.now();
 }

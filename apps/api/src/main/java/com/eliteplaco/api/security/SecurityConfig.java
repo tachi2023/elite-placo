@@ -21,12 +21,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtService jwtService;
+    private final RateLimitService rateLimitService;
 
     @Value("${spring.profiles.active:}")
     private String activeProfile;
 
-    public SecurityConfig(JwtService jwtService) {
+    public SecurityConfig(JwtService jwtService, RateLimitService rateLimitService) {
         this.jwtService = jwtService;
+        this.rateLimitService = rateLimitService;
     }
 
     @Bean
@@ -54,6 +56,7 @@ public class SecurityConfig {
                     headers.frameOptions(frame -> frame.sameOrigin());
                 }
             })
+            .addFilterBefore(new RateLimitingFilter(rateLimitService), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(new JwtAuthFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

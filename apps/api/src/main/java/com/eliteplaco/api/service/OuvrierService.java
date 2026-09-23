@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +48,8 @@ public class OuvrierService {
         Ouvrier ouvrier = new Ouvrier();
         ouvrier.setNomComplet(nomComplet.trim());
         ouvrier.setTelephone(telephone);
+        ouvrier.setSynchronise(false);
+        ouvrier.setLastModifiedDate(LocalDateTime.now());
         return ouvrierRepository.save(ouvrier);
     }
 
@@ -73,6 +76,7 @@ public class OuvrierService {
         affectation.setMontantPaye(montant);
         affectation.setDatePaiement(date);
         affectation.setSynchronise(false);
+        affectation.setLastModifiedDate(LocalDateTime.now());
         AffectationOuvrier enregistree = affectationRepository.save(affectation);
 
         // Remontée automatique en dépense "main d'œuvre" (étape 8 du scénario).

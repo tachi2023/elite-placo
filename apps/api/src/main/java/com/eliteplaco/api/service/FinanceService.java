@@ -25,13 +25,16 @@ public class FinanceService {
     private final MouvementFinancierRepository mouvementRepository;
     private final ChantierRepository chantierRepository;
     private final ChantierService chantierService;
+    private final AuditService auditService;
 
     public FinanceService(MouvementFinancierRepository mouvementRepository,
                            ChantierRepository chantierRepository,
-                           ChantierService chantierService) {
+                           ChantierService chantierService,
+                           AuditService auditService) {
         this.mouvementRepository = mouvementRepository;
         this.chantierRepository = chantierRepository;
         this.chantierService = chantierService;
+        this.auditService = auditService;
     }
 
     @Transactional(readOnly = true)
@@ -65,6 +68,8 @@ public class FinanceService {
         encaissement.setLastModifiedDate(LocalDateTime.now());
 
         Encaissement enregistre = mouvementRepository.save(encaissement);
+        auditService.enregistrer("CREATION", "MOUVEMENT_FINANCIER", enregistre.getId(),
+                chantierId, "Encaissement de " + montant);
         chantierService.marquerNonSynchronise(chantier);
         return enregistre;
     }
@@ -92,6 +97,8 @@ public class FinanceService {
         depense.setLastModifiedDate(LocalDateTime.now());
 
         Depense enregistree = mouvementRepository.save(depense);
+        auditService.enregistrer("CREATION", "MOUVEMENT_FINANCIER", enregistree.getId(),
+                chantierId, "Dépense de " + montant + " / catégorie " + categorie);
         chantierService.marquerNonSynchronise(chantier);
         return enregistree;
     }
@@ -116,7 +123,10 @@ public class FinanceService {
         }
         mouvement.setSynchronise(false);
         mouvement.setLastModifiedDate(LocalDateTime.now());
-        return mouvementRepository.save(mouvement);
+        MouvementFinancier modifie = mouvementRepository.save(mouvement);
+        auditService.enregistrer("MODIFICATION", "MOUVEMENT_FINANCIER", mouvementId,
+                chantierId, "Montant/date du mouvement modifié");
+        return modifie;
     }
 
     /** §10.13-A2 — la confirmation est de la responsabilité de l'appelant (UI/contrôleur). */
@@ -128,6 +138,8 @@ public class FinanceService {
             throw new AppException("Le mouvement n'appartient pas à ce chantier.");
         }
         chantierService.marquerNonSynchronise(mouvement.getChantier());
+        auditService.enregistrer("SUPPRESSION", "MOUVEMENT_FINANCIER", mouvementId,
+                chantierId, "Mouvement financier supprimé");
         mouvementRepository.deleteById(mouvementId);
     }
 }

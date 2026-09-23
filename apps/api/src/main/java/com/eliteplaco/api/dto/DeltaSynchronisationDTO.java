@@ -6,5 +6,9 @@ import java.util.List;
 public record DeltaSynchronisationDTO(
         LocalDateTime serveurDate,
         List<ChantierDTO> chantiers,
-        List<MouvementSynchronisationDTO> mouvements
+        List<MouvementSynchronisationDTO> mouvements,
+        List<OuvrierSynchronisationDTO> ouvriers,
+        List<AffectationOuvrierSynchronisationDTO> affectationsOuvriers,
+        List<FicheMetrageSynchronisationDTO> fichesMetrage,
+        List<PieceMetrageSynchronisationDTO> piecesMetrage
 ) {}

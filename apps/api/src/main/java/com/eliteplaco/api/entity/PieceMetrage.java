@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /** Une pièce dans une fiche de métrage (longueur/largeur en mètres). */
 @Entity
@@ -37,6 +38,12 @@ public class PieceMetrage {
     private BigDecimal surfaceDeduction = BigDecimal.ZERO;
 
     private Integer ordre = 1;
+
+    @Column(nullable = false)
+    private Boolean synchronise = true;
+
+    @Column(nullable = false)
+    private LocalDateTime lastModifiedDate = LocalDateTime.now();
 
     // Calculs dérivés — volontairement absents ici (voir MetrageService),
     // l'entité JPA ne porte aucune règle métier (même principe que Chantier).

@@ -37,6 +37,9 @@ public class FicheMetrage {
     @Column(nullable = false)
     private Boolean synchronise = true;
 
+    @Column(nullable = false)
+    private LocalDateTime lastModifiedDate = LocalDateTime.now();
+
     @OneToMany(mappedBy = "fiche", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PieceMetrage> pieces = new ArrayList<>();
 

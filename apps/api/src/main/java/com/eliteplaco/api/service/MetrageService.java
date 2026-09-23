@@ -9,6 +9,7 @@ import com.eliteplaco.api.repository.FicheMetrageRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,7 @@ public class MetrageService {
         fiche.setChantier(chantier);
         fiche.setSysteme(systeme);
         fiche.setSynchronise(false);
+        fiche.setLastModifiedDate(LocalDateTime.now());
         return ficheRepository.save(fiche);
     }
 
@@ -63,9 +65,12 @@ public class MetrageService {
         piece.setLargeur(requete.largeur());
         piece.setSurfaceDeduction(requete.surfaceDeduction() != null ? requete.surfaceDeduction() : BigDecimal.ZERO);
         piece.setOrdre(fiche.getPieces().size() + 1);
+        piece.setSynchronise(false);
+        piece.setLastModifiedDate(LocalDateTime.now());
 
         fiche.getPieces().add(piece);
         fiche.setSynchronise(false);
+        fiche.setLastModifiedDate(LocalDateTime.now());
         return ficheRepository.save(fiche);
     }
 

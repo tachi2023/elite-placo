@@ -6,6 +6,7 @@ import com.eliteplaco.api.entity.Utilisateur;
 import com.eliteplaco.api.exception.AppException;
 import com.eliteplaco.api.repository.UtilisateurRepository;
 import com.eliteplaco.api.security.JwtService;
+import com.eliteplaco.api.security.LoginAttemptService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,22 +24,29 @@ public class AuthService {
     private final UtilisateurRepository utilisateurRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final LoginAttemptService loginAttemptService;
 
     public AuthService(UtilisateurRepository utilisateurRepository,
                         PasswordEncoder passwordEncoder,
-                        JwtService jwtService) {
+                        JwtService jwtService,
+                        LoginAttemptService loginAttemptService) {
         this.utilisateurRepository = utilisateurRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.loginAttemptService = loginAttemptService;
     }
 
     public LoginResponse login(LoginRequest requete) {
-        Utilisateur utilisateur = utilisateurRepository.findByIdentifiant(requete.identifiant())
-                .orElseThrow(() -> new AppException("Identifiants incorrects.", HttpStatus.UNAUTHORIZED));
+        String identifiant = requete.identifiant();
+        loginAttemptService.verifierNonBloque(identifiant);
+        Utilisateur utilisateur = utilisateurRepository.findByIdentifiant(identifiant).orElse(null);
 
-        if (!passwordEncoder.matches(requete.motDePasse(), utilisateur.getMotDePasseHache())) {
+        if (utilisateur == null || !passwordEncoder.matches(requete.motDePasse(), utilisateur.getMotDePasseHache())) {
+            loginAttemptService.enregistrerEchec(identifiant);
             throw new AppException("Identifiants incorrects.", HttpStatus.UNAUTHORIZED);
         }
+
+        loginAttemptService.enregistrerSucces(identifiant);
 
         String accessToken = jwtService.genererAccessToken(utilisateur.getIdentifiant());
         String refreshToken = jwtService.genererRefreshToken(utilisateur.getIdentifiant());

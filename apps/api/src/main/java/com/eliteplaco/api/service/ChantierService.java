@@ -44,13 +44,16 @@ public class ChantierService {
     private final ChantierRepository chantierRepository;
     private final MouvementFinancierRepository mouvementRepository;
     private final LienSuiviClientRepository lienSuiviClientRepository;
+    private final AuditService auditService;
 
     public ChantierService(ChantierRepository chantierRepository,
                             MouvementFinancierRepository mouvementRepository,
-                            LienSuiviClientRepository lienSuiviClientRepository) {
+                            LienSuiviClientRepository lienSuiviClientRepository,
+                            AuditService auditService) {
         this.chantierRepository = chantierRepository;
         this.mouvementRepository = mouvementRepository;
         this.lienSuiviClientRepository = lienSuiviClientRepository;
+        this.auditService = auditService;
     }
 
     public List<Chantier> listerActifs() {
@@ -84,7 +87,10 @@ public class ChantierService {
         chantier.setLastModifiedDate(LocalDateTime.now());
         chantier.setSynchronise(false);
 
-        return chantierRepository.save(chantier);
+        Chantier cree = chantierRepository.save(chantier);
+        auditService.enregistrer("CREATION", "CHANTIER", cree.getId(), cree.getId(),
+                "Chantier créé pour " + cree.getNomClient());
+        return cree;
     }
 
     /** §10.9 — changement de statut. A1 : pas de saut d'étape autorisé. */
@@ -121,7 +127,10 @@ public class ChantierService {
             });
         }
 
-        return chantierRepository.save(chantier);
+        Chantier modifie = chantierRepository.save(chantier);
+        auditService.enregistrer("CHANGEMENT_STATUT", "CHANTIER", chantierId, chantierId,
+                "Nouveau statut: " + nouveauStatut);
+        return modifie;
     }
 
     /** §10.10 — archivage : uniquement depuis TERMINE (A1). */
@@ -142,7 +151,10 @@ public class ChantierService {
             }
         });
 
-        return chantierRepository.save(chantier);
+        Chantier archive = chantierRepository.save(chantier);
+        auditService.enregistrer("CHANGEMENT_STATUT", "CHANTIER", chantierId, chantierId,
+                "Nouveau statut: ARCHIVE");
+        return archive;
     }
 
     /** §10.10-A3 — désarchivage (point ouvert, à confirmer avec le dirigeant). */
