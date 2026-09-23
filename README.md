@@ -101,6 +101,12 @@ Services :
 
 ## Vérifications
 
+Vérification de la structure et des fichiers sensibles :
+
+```powershell
+.\scripts\verify_structure.ps1 -SkipBuilds
+```
+
 API :
 
 ```powershell
