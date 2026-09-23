@@ -1,6 +1,7 @@
 package com.eliteplaco.api.security;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -17,6 +18,7 @@ public class RateLimitService {
     private final Clock clock;
     private final ConcurrentHashMap<String, WindowState> states = new ConcurrentHashMap<>();
 
+    @Autowired
     public RateLimitService(
             @Value("${app.security.rate-limit.auth.max-requests:10}") int maxRequests,
             @Value("${app.security.rate-limit.auth.window-seconds:60}") long windowSeconds) {

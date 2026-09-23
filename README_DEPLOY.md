@@ -20,6 +20,9 @@ git push origin main
 - Confirm that `render.yaml` variables are applied; in particular ensure `APP_DEMO_ENABLED=true` is present for the `elite-placo-api` service.
 - Render déclenche automatiquement une build après le push si le repo est connecté.
 - Sur Render, surveillez les logs de build et runtime (Dashboard → service → Logs).
+- Définissez obligatoirement `ADMIN_PASSWORD` dans les variables privées du service API. Si elle
+  est absente, l'installation de secours accepte `raoul.michel` / `changeme` uniquement pour le
+  premier démarrage ; remplacez-la immédiatement.
 
 ## 4) URLs publiques attendues (vérifiez votre Dashboard pour URLs exactes)
 - Front (site vitrine) : https://elite-placo-site.onrender.com

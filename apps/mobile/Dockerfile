@@ -1,6 +1,6 @@
 # Ce Dockerfile sert à construire l'application Flutter Web.
 # Il n'est pas recommandé pour Android direct car il nécessite un SDK complet.
-FROM cirrusci/flutter:stable AS build
+FROM ghcr.io/cirruslabs/flutter:stable AS build
 WORKDIR /app
 ARG API_BASE_URL=https://elite-placo-api.onrender.com
 COPY pubspec.* ./

@@ -1,6 +1,7 @@
 package com.eliteplaco.api.security;
 
 import com.eliteplaco.api.exception.AppException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class LoginAttemptService {
     private final Clock clock;
     private final ConcurrentHashMap<String, AttemptState> states = new ConcurrentHashMap<>();
 
+    @Autowired
     public LoginAttemptService(
             @Value("${app.security.brute-force.max-failures:5}") int maxFailures,
             @Value("${app.security.brute-force.block-minutes:15}") long blockMinutes) {

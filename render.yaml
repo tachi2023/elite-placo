@@ -1,11 +1,12 @@
 services:
   - type: web
     name: elite-placo-api
-    env: docker
+    runtime: docker
     region: frankfurt
     plan: free
     dockerfilePath: apps/api/Dockerfile
     dockerContext: apps/api
+    healthCheckPath: /actuator/health
     envVars:
       - key: JAVA_VERSION
         value: 17
@@ -33,6 +34,8 @@ services:
           property: password
       - key: JWT_SECRET
         generateValue: true
+      - key: ADMIN_PASSWORD
+        sync: false
       - key: CORS_ORIGINS
         value: https://eliteplacodeco.cm,https://elite-placo-site.onrender.com,https://elite-placo-app.onrender.com
       - key: APP_DEMO_ENABLED
@@ -40,19 +43,21 @@ services:
 
   - type: web
     name: elite-placo-site
-    env: docker
+    runtime: docker
     region: frankfurt
     plan: free
     dockerfilePath: apps/web/Dockerfile
     dockerContext: apps/web
+    healthCheckPath: /
 
   - type: web
     name: elite-placo-app
-    env: docker
+    runtime: docker
     region: frankfurt
     plan: free
     dockerfilePath: apps/mobile/Dockerfile
     dockerContext: apps/mobile
+    healthCheckPath: /
 
 databases:
   - name: elite-placo-db
