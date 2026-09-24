@@ -20,6 +20,8 @@ git push origin main
 - Confirm that `render.yaml` variables are applied; in particular ensure `APP_DEMO_ENABLED=true` is present for the `elite-placo-api` service.
 - Render déclenche automatiquement une build après le push si le repo est connecté.
 - Sur Render, surveillez les logs de build et runtime (Dashboard → service → Logs).
+- Le workflow GitHub `Deploy to Render` utilise en complément le secret `RENDER_DEPLOY_HOOK_URL`.
+  Sans ce secret, reliez le dépôt GitHub au Blueprint Render et activez l'auto-deploy.
 - Définissez obligatoirement `ADMIN_PASSWORD` dans les variables privées du service API. Si elle
   est absente, l'installation de secours accepte `raoul.michel` / `changeme` uniquement pour le
   premier démarrage ; remplacez-la immédiatement.

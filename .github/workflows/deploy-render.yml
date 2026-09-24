@@ -7,8 +7,9 @@ on:
 
 jobs:
   deploy:
+    if: ${{ secrets.RENDER_DEPLOY_HOOK_URL != '' }}
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Render deploy
         run: |
-          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+          curl --fail-with-body --retry 3 --retry-all-errors -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
