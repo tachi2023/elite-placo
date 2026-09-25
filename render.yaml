@@ -37,7 +37,7 @@ services:
       - key: ADMIN_PASSWORD
         sync: false
       - key: CORS_ORIGINS
-        value: https://eliteplacodeco.cm,https://elite-placo-site.onrender.com,https://elite-placo-app.onrender.com
+        value: https://eliteplacodeco.cm,https://elite-placo-site.onrender.com,https://elite-placo-app.onrender.com,https://elite-placo-site-9q65.onrender.com,https://elite-placo-app-9q65.onrender.com
       - key: APP_DEMO_ENABLED
         value: "false"
 
