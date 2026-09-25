@@ -146,7 +146,7 @@ class _PinLockScreenState extends State<PinLockScreen>
     }
   }
 
-  Widget _buildKeypadButton(String text) {
+  Widget _buildKeypadButton(String text, {double size = 76}) {
     final isDel = text == 'DEL';
     final auth = context.watch<AuthProvider>();
     final disabled = auth.isLockedOut || _isLoading;
@@ -161,8 +161,8 @@ class _PinLockScreenState extends State<PinLockScreen>
           splashColor: AppTheme.or.withOpacity(0.15),
           highlightColor: AppTheme.or.withOpacity(0.05),
           child: Container(
-            width: 76,
-            height: 76,
+            width: size,
+            height: size,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: isDel || disabled
@@ -285,13 +285,16 @@ class _PinLockScreenState extends State<PinLockScreen>
               const SizedBox(height: 20),
 
               // Titre
-              Text(
-                'ÉLITE PLACO & DÉCO',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.or,
-                  letterSpacing: 6,
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  'ÉLITE PLACO & DÉCO',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.or,
+                    letterSpacing: 6,
+                  ),
                 ),
               ),
               const SizedBox(height: 4),
@@ -387,63 +390,67 @@ class _PinLockScreenState extends State<PinLockScreen>
               const Spacer(flex: 1),
 
               // --- Clavier numérique ---
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 36),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children:
-                          ['1', '2', '3'].map(_buildKeypadButton).toList(),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children:
-                          ['4', '5', '6'].map(_buildKeypadButton).toList(),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children:
-                          ['7', '8', '9'].map(_buildKeypadButton).toList(),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final buttonSize = min(76.0,
+                      max(54.0, (constraints.maxWidth - 24) / 3 - 12));
+                  final buttonSlot = buttonSize + 12;
+                  Widget row(List<String> keys) => Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: keys
+                            .map((key) => _buildKeypadButton(key,
+                                size: buttonSize))
+                            .toList(),
+                      );
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Column(
                       children: [
-                        if (auth.isPinConfigured && auth.peutUtiliserBiometrie)
-                          Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: _isLoading
-                                    ? null
-                                    : () => auth.verifierBiometrie(),
-                                borderRadius: BorderRadius.circular(40),
-                                child: Container(
-                                  width: 76,
-                                  height: 76,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: AppTheme.or.withOpacity(0.3),
-                                      width: 1,
+                        row(['1', '2', '3']),
+                        row(['4', '5', '6']),
+                        row(['7', '8', '9']),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            if (auth.isPinConfigured && auth.peutUtiliserBiometrie)
+                              Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    onTap: _isLoading
+                                        ? null
+                                        : () => auth.verifierBiometrie(),
+                                    borderRadius: BorderRadius.circular(40),
+                                    child: Container(
+                                      width: buttonSize,
+                                      height: buttonSize,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: AppTheme.or.withOpacity(0.3),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Icon(Icons.fingerprint,
+                                          size: min(32, buttonSize * .42),
+                                          color: AppTheme.or),
                                     ),
                                   ),
-                                  alignment: Alignment.center,
-                                  child: const Icon(Icons.fingerprint,
-                                      size: 32, color: AppTheme.or),
                                 ),
-                              ),
-                            ),
-                          )
-                        else
-                          const SizedBox(width: 88),
-                        _buildKeypadButton('0'),
-                        _buildKeypadButton('DEL'),
+                              )
+                            else
+                              SizedBox(width: buttonSlot),
+                            _buildKeypadButton('0', size: buttonSize),
+                            _buildKeypadButton('DEL', size: buttonSize),
+                          ],
+                        ),
                       ],
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
               const Spacer(flex: 2),
             ],

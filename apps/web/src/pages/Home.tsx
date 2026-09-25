@@ -74,16 +74,16 @@ export default function Home() {
     <div className="min-h-screen bg-noir text-texte">
       <Navbar />
 
-      <section className="relative min-h-screen flex items-end pb-28 overflow-hidden">
+      <section className="relative min-h-[700px] sm:min-h-screen flex items-end pb-16 sm:pb-28 overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/assets/hero_bg.jpg')" }} />
         <div className="absolute inset-0 bg-gradient-to-t from-noir via-noir/70 to-noir/30" />
         <div className="absolute inset-0 bg-gradient-to-r from-noir/60 via-transparent to-transparent" />
-        <div className="relative z-10 w-full px-6 xl:px-[200px] flex flex-col items-center text-center mt-32">
+        <div className="relative z-10 w-full min-w-0 px-4 sm:px-6 xl:px-[200px] flex flex-col items-center text-center mt-24 sm:mt-32">
           <motion.p variants={fadeUp} initial="hidden" animate="visible" custom={0} className="text-xs tracking-[0.4em] uppercase text-or mb-8 font-light">Douala · Cameroun</motion.p>
-          <motion.h1 variants={fadeUp} initial="hidden" animate="visible" custom={1} className="font-display font-light text-5xl md:text-7xl lg:text-8xl text-texte mb-8 leading-[1.0] max-w-4xl mx-auto">
+          <motion.h1 variants={fadeUp} initial="hidden" animate="visible" custom={1} className="w-full max-w-4xl break-words font-display font-light text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-texte mb-8 leading-[1.0] mx-auto">
             L'excellence du plâtre,<br /><em className="not-italic text-or">l'art de la décoration.</em>
           </motion.h1>
-          <motion.p variants={fadeUp} initial="hidden" animate="visible" custom={2} className="text-texte-muted text-lg max-w-2xl mx-auto mb-12 font-light leading-relaxed">
+          <motion.p variants={fadeUp} initial="hidden" animate="visible" custom={2} className="w-full max-w-2xl px-2 text-texte-muted text-base sm:text-lg mx-auto mb-9 sm:mb-12 font-light leading-relaxed">
             Élite Placo & Déco transforme vos espaces résidentiels, commerciaux et hôteliers en lieux d'exception, où chaque détail révèle la maîtrise du geste.
           </motion.p>
           <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={3} className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -94,9 +94,9 @@ export default function Home() {
       </section>
 
       <section className="home-realisations-showcase border-y border-or/20 bg-noir-surface">
-        <div className="w-full px-6 xl:px-[200px] pt-16">
+        <div className="w-full min-w-0 px-4 sm:px-6 xl:px-[200px] pt-12 sm:pt-16">
           <div className="flex items-end justify-between gap-6">
-            <div><p className="text-xs tracking-[0.4em] uppercase text-or mb-3 font-light">Réalisations choisies</p><h2 className="font-display text-4xl md:text-5xl font-light text-texte">Le geste, <em className="text-or not-italic">en images.</em></h2></div>
+            <div className="min-w-0"><p className="text-xs tracking-[0.3em] sm:tracking-[0.4em] uppercase text-or mb-3 font-light">Réalisations choisies</p><h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-light text-texte">Le geste, <em className="text-or not-italic">en images.</em></h2></div>
             <Link to="/realisations" className="hidden md:inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase text-or hover:text-or-clair">Tout voir <ArrowRight size={15} /></Link>
           </div>
         </div>
@@ -124,14 +124,14 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-32 w-full px-6 xl:px-[200px]">
+      <section className="py-20 sm:py-32 w-full min-w-0 px-4 sm:px-6 xl:px-[200px]">
         <div className="mb-16">
           <p className="text-xs tracking-[0.4em] uppercase text-or mb-4 font-light">Nos savoir-faire</p>
           <h2 className="font-display text-5xl md:text-6xl font-light text-texte">Un univers d'élégance</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
-            <motion.div key={service.id} initial={{ opacity: 0, y: 25 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.08 }} viewport={{ once: true }} className="relative group bg-noir-surface border border-or/10 p-12 hover:border-or/40 hover:shadow-[0_0_40px_rgba(201,168,76,0.05)] transition-all duration-500 overflow-hidden">
+            <motion.div key={service.id} initial={{ opacity: 0, y: 25 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.08 }} viewport={{ once: true }} className="relative group bg-noir-surface border border-or/10 p-7 sm:p-12 hover:border-or/40 hover:shadow-[0_0_40px_rgba(201,168,76,0.05)] transition-all duration-500 overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-or/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
               <div className="text-xs text-texte-muted tracking-[0.3em] mb-12">{service.id}</div>
               <h3 className="font-display text-2xl font-light text-texte mb-6 group-hover:text-or transition-colors duration-300 relative z-10">{service.title}</h3>
@@ -141,8 +141,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-32 bg-noir-surface border-y border-or/20">
-        <div className="w-full px-6 xl:px-[200px]">
+      <section className="py-20 sm:py-32 bg-noir-surface border-y border-or/20">
+        <div className="w-full min-w-0 px-4 sm:px-6 xl:px-[200px]">
           <div className="mb-20"><p className="text-xs tracking-[0.4em] uppercase text-or mb-4 font-light">Pourquoi nous choisir</p><h2 className="font-display text-5xl md:text-6xl font-light text-texte">Le souci du détail</h2></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
             {[
@@ -159,11 +159,11 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-32 w-full px-6 xl:px-[200px]">
+      <section className="py-20 sm:py-32 w-full min-w-0 px-4 sm:px-6 xl:px-[200px]">
         <div className="mb-16"><p className="text-xs tracking-[0.4em] uppercase text-or mb-4 font-light">Témoignages</p><h2 className="font-display text-5xl md:text-6xl font-light text-texte">Ils nous font confiance</h2></div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {temoignages.map((testimonial, index) => (
-            <motion.div key={testimonial.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.12 }} viewport={{ once: true }} className="bg-noir-surface border border-or/20 p-10 hover:border-or/40 transition-all duration-300">
+            <motion.div key={testimonial.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.12 }} viewport={{ once: true }} className="bg-noir-surface border border-or/20 p-7 sm:p-10 hover:border-or/40 transition-all duration-300">
               <p className="font-display text-lg italic text-texte mb-10 leading-relaxed">“{testimonial.quote}”</p><p className="font-medium text-texte text-sm">{testimonial.name}</p><p className="text-texte-muted text-xs mt-1 tracking-widest">{testimonial.role}</p>
             </motion.div>
           ))}

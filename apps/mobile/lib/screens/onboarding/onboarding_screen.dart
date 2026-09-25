@@ -75,302 +75,313 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF050505),
-      body: Stack(
-        children: [
-          // --- Background gradient qui pulse ---
-          AnimatedBuilder(
-            animation: _bgController,
-            builder: (context, _) {
-              return Container(
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    center: Alignment(
-                      -0.5 + _currentPage * 0.5,
-                      -0.3 + _bgController.value * 0.2,
-                    ),
-                    radius: 1.5,
-                    colors: [
-                      AppTheme.or.withOpacity(0.05 + 0.03 * _bgController.value),
-                      const Color(0xFF0A0A0B),
-                      const Color(0xFF050505),
-                    ],
-                    stops: const [0.0, 0.4, 1.0],
-                  ),
-                ),
-              );
-            },
-          ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isCompact = constraints.maxWidth < 420;
+          final horizontalPadding = isCompact ? 18.0 : 32.0;
 
-          // --- Contenu principal ---
-          SafeArea(
-            child: Column(
-              children: [
-                // Header : Logo + Bouton Passer
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 24, vertical: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Logo
-                      Row(
+          return Stack(
+            children: [
+              // --- Background gradient qui pulse ---
+              AnimatedBuilder(
+                animation: _bgController,
+                builder: (context, _) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: Alignment(
+                          -0.5 + _currentPage * 0.5,
+                          -0.3 + _bgController.value * 0.2,
+                        ),
+                        radius: 1.5,
+                        colors: [
+                          AppTheme.or.withOpacity(0.05 + 0.03 * _bgController.value),
+                          const Color(0xFF0A0A0B),
+                          const Color(0xFF050505),
+                        ],
+                        stops: const [0.0, 0.4, 1.0],
+                      ),
+                    ),
+                  );
+                },
+              ),
+
+              // --- Contenu principal ---
+              SafeArea(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: isCompact ? 16 : 24, vertical: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            width: 42,
-                            height: 42,
-                            padding: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: AppTheme.or.withOpacity(0.65)),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppTheme.or.withOpacity(0.18),
-                                  blurRadius: 18,
+                          Flexible(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 42,
+                                  height: 42,
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        color: AppTheme.or.withOpacity(0.65)),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppTheme.or.withOpacity(0.18),
+                                        blurRadius: 18,
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipOval(
+                                    child: Image.asset('assets/brand-logo.png',
+                                        fit: BoxFit.contain),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text('ÉLITE PLACO',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppTheme.or,
+                                            letterSpacing: 3,
+                                          )),
+                                      Text('PRIMA BTP',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 9,
+                                            color: Colors.white.withOpacity(0.3),
+                                            letterSpacing: 2,
+                                          )),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
-                            child: ClipOval(
-                              child: Image.asset('assets/brand-logo.png', fit: BoxFit.contain),
-                            ),
                           ),
-                          const SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'ÉLITE PLACO',
+                          TextButton(
+                            onPressed: _terminerOnboarding,
+                            style: TextButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text('Passer',
                                 style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppTheme.or,
-                                  letterSpacing: 3,
-                                ),
-                              ),
-                              Text(
-                                'PRIMA BTP',
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  color: Colors.white.withOpacity(0.3),
-                                  letterSpacing: 2,
-                                ),
-                              ),
-                            ],
+                                  color: Colors.white.withOpacity(0.4),
+                                  fontSize: 13,
+                                  letterSpacing: 1,
+                                )),
                           ),
                         ],
                       ),
-                      // Bouton Passer
-                      TextButton(
-                        onPressed: _terminerOnboarding,
-                        child: Text(
-                          'Passer',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.4),
-                            fontSize: 13,
-                            letterSpacing: 1,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Slides
-                Expanded(
-                  child: PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: (index) =>
-                        setState(() => _currentPage = index),
-                    itemCount: _slides.length,
-                    itemBuilder: (context, index) {
-                      final slide = _slides[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 32),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Spacer(flex: 1),
-
-                            // Badge doré
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                    color: AppTheme.or.withOpacity(0.2)),
-                                color: AppTheme.or.withOpacity(0.05),
-                              ),
-                              child: Text(
-                                slide.badge,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppTheme.or,
-                                  letterSpacing: 2.5,
+                    ),
+                    Expanded(
+                      child: PageView.builder(
+                        controller: _pageController,
+                        onPageChanged: (index) =>
+                            setState(() => _currentPage = index),
+                        itemCount: _slides.length,
+                        itemBuilder: (context, index) {
+                          final slide = _slides[index];
+                          return Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: horizontalPadding),
+                            child: Center(
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: 620),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Spacer(flex: 1),
+                                    Flexible(
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 8),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(20),
+                                          border: Border.all(
+                                              color: AppTheme.or.withOpacity(0.2)),
+                                          color: AppTheme.or.withOpacity(0.05),
+                                        ),
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(slide.badge,
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w600,
+                                                color: AppTheme.or,
+                                                letterSpacing: 2.5,
+                                              )),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 28),
+                                    Container(
+                                      width: isCompact ? 104 : 120,
+                                      height: isCompact ? 104 : 120,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white.withOpacity(0.02),
+                                        border: Border.all(
+                                            color: AppTheme.or.withOpacity(0.15)),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: AppTheme.or.withOpacity(0.1),
+                                            blurRadius: 40,
+                                            spreadRadius: 8,
+                                          ),
+                                        ],
+                                      ),
+                                      child: ShaderMask(
+                                        shaderCallback: (bounds) =>
+                                            const LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            Color(0xFFE8CC82),
+                                            Color(0xFFD4AF37),
+                                            Color(0xFFB5952F),
+                                          ],
+                                        ).createShader(bounds),
+                                        child: Icon(slide.icon,
+                                            size: isCompact ? 46 : 52,
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                    SizedBox(height: isCompact ? 30 : 48),
+                                    Text(slide.titre,
+                                        textAlign: TextAlign.center,
+                                        softWrap: true,
+                                        style: TextStyle(
+                                          fontSize: isCompact ? 32 : 36,
+                                          fontWeight: FontWeight.w300,
+                                          color: Colors.white,
+                                          height: 1.2,
+                                          letterSpacing: -0.5,
+                                        )),
+                                    const SizedBox(height: 16),
+                                    ConstrainedBox(
+                                      constraints:
+                                          const BoxConstraints(maxWidth: 500),
+                                      child: Text(slide.description,
+                                          textAlign: TextAlign.center,
+                                          softWrap: true,
+                                          style: TextStyle(
+                                            fontSize: isCompact ? 14 : 15,
+                                            color: Colors.white.withOpacity(0.45),
+                                            height: 1.6,
+                                            fontWeight: FontWeight.w300,
+                                          )),
+                                    ),
+                                    const Spacer(flex: 2),
+                                  ],
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 32),
-
-                            // Icône avec glow
-                            Container(
-                              width: 120,
-                              height: 120,
+                          );
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(horizontalPadding, 0,
+                          horizontalPadding, isCompact ? 24 : 40),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: List.generate(
+                              _slides.length,
+                              (index) => AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeOutCubic,
+                                margin: const EdgeInsets.only(right: 8),
+                                height: 3,
+                                width: _currentPage == index ? 28 : 8,
+                                decoration: BoxDecoration(
+                                  color: _currentPage == index
+                                      ? AppTheme.or
+                                      : Colors.white.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              if (_currentPage == _slides.length - 1) {
+                                _terminerOnboarding();
+                              } else {
+                                _pageController.nextPage(
+                                  duration: const Duration(milliseconds: 500),
+                                  curve: Curves.easeOutCubic,
+                                );
+                              }
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: isCompact ? 20 : 28, vertical: 14),
                               decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white.withOpacity(0.02),
-                                border: Border.all(
-                                    color: AppTheme.or.withOpacity(0.15)),
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFFD4AF37),
+                                    Color(0xFFE8CC82),
+                                    Color(0xFFD4AF37),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(30),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppTheme.or.withOpacity(0.1),
-                                    blurRadius: 40,
-                                    spreadRadius: 8,
+                                    color: AppTheme.or.withOpacity(0.3),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 4),
                                   ),
                                 ],
                               ),
-                              child: ShaderMask(
-                                shaderCallback: (bounds) =>
-                                    const LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Color(0xFFE8CC82),
-                                    Color(0xFFD4AF37),
-                                    Color(0xFFB5952F),
-                                  ],
-                                ).createShader(bounds),
-                                child: Icon(slide.icon,
-                                    size: 52, color: Colors.white),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    _currentPage == _slides.length - 1
+                                        ? 'COMMENCER'
+                                        : 'SUIVANT',
+                                    style: TextStyle(
+                                      fontSize: isCompact ? 11 : 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFF050505),
+                                      letterSpacing: isCompact ? 1.3 : 2,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Icon(
+                                    _currentPage == _slides.length - 1
+                                        ? Icons.arrow_forward_rounded
+                                        : Icons.chevron_right_rounded,
+                                    size: 18,
+                                    color: const Color(0xFF050505),
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(height: 48),
-
-                            // Titre
-                            Text(
-                              slide.titre,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 36,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.white,
-                                height: 1.2,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-
-                            // Description
-                            Text(
-                              slide.description,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.white.withOpacity(0.45),
-                                height: 1.6,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
-
-                            const Spacer(flex: 2),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
-                // --- Bottom : Dots + Bouton ---
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 40),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Dots
-                      Row(
-                        children: List.generate(
-                          _slides.length,
-                          (index) => AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeOutCubic,
-                            margin: const EdgeInsets.only(right: 8),
-                            height: 3,
-                            width: _currentPage == index ? 28 : 8,
-                            decoration: BoxDecoration(
-                              color: _currentPage == index
-                                  ? AppTheme.or
-                                  : Colors.white.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(2),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-
-                      // Bouton Suivant / Commencer
-                      GestureDetector(
-                        onTap: () {
-                          if (_currentPage == _slides.length - 1) {
-                            _terminerOnboarding();
-                          } else {
-                            _pageController.nextPage(
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.easeOutCubic,
-                            );
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 28, vertical: 14),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFFD4AF37),
-                                Color(0xFFE8CC82),
-                                Color(0xFFD4AF37),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppTheme.or.withOpacity(0.3),
-                                blurRadius: 16,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                _currentPage == _slides.length - 1
-                                    ? 'COMMENCER'
-                                    : 'SUIVANT',
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xFF050505),
-                                  letterSpacing: 2,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Icon(
-                                _currentPage == _slides.length - 1
-                                    ? Icons.arrow_forward_rounded
-                                    : Icons.chevron_right_rounded,
-                                size: 18,
-                                color: const Color(0xFF050505),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }

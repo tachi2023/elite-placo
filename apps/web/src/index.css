@@ -4,12 +4,36 @@
 @config "../tailwind.config.js";
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
   body {
     @apply bg-noir text-texte font-sans antialiased cursor-default selection:bg-or/30 selection:text-or-clair;
     text-rendering: optimizeLegibility;
+    min-width: 320px;
+    overflow-x: hidden;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    max-width: 100%;
+  }
+
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    max-width: 100%;
   }
 }
 

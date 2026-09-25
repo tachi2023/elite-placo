@@ -17,8 +17,9 @@
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Application de gestion des chantiers Élite Placo & Déco.">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -29,10 +30,45 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>elite</title>
+  <title>Élite Placo & Déco</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    html, body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100%;
+      background: #050505;
+    }
+
+    #app-loading {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 50% 35%, rgba(212, 175, 55, .12), #050505 62%);
+      transition: opacity .35s ease;
+    }
+
+    #app-loading img {
+      width: min(220px, 58vw);
+      height: auto;
+      filter: drop-shadow(0 0 28px rgba(212, 175, 55, .22));
+    }
+  </style>
 </head>
 <body>
+  <div id="app-loading" aria-label="Chargement de l'application">
+    <img src="assets/assets/brand-logo.png" alt="Élite Placo & Déco">
+  </div>
   <script src="flutter_bootstrap.js" async></script>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      const splash = document.getElementById('app-loading');
+      if (!splash) return;
+      splash.style.opacity = '0';
+      window.setTimeout(() => splash.remove(), 400);
+    });
+  </script>
 </body>
 </html>

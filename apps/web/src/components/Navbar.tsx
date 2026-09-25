@@ -32,13 +32,13 @@ export default function Navbar() {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${isScrolled ? 'glass border-or/10 h-16' : 'bg-transparent border-transparent h-20'}`}>
-      <div className="w-full px-6 md:px-[50px] h-full flex items-center justify-between">
+      <div className="w-full min-w-0 px-4 sm:px-6 md:px-[50px] h-full flex items-center justify-between gap-4">
         {/* Logo */}
-        <Link to="/" className="flex items-center leading-none">
+        <Link to="/" className="flex min-w-0 items-center leading-none">
           <img
             src={logoImg}
             alt="Élite Placo logo"
-            className="h-12 w-auto max-w-[230px] object-contain drop-shadow-[0_0_18px_rgba(201,168,76,0.18)]"
+            className="h-10 sm:h-12 w-auto max-w-[min(230px,65vw)] object-contain drop-shadow-[0_0_18px_rgba(201,168,76,0.18)]"
           />
         </Link>
 
@@ -85,7 +85,10 @@ export default function Navbar() {
 
         {/* Mobile burger */}
         <button
-          className="lg:hidden text-texte p-2"
+          type="button"
+          aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
+          aria-expanded={open}
+          className="lg:hidden shrink-0 text-texte p-2"
           onClick={() => setOpen(!open)}
         >
           {open ? <X size={24} /> : <Menu size={24} />}
@@ -99,7 +102,7 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden glass border-t border-or/10 px-6 py-8 flex flex-col gap-6"
+            className="lg:hidden glass border-t border-or/10 px-5 sm:px-6 py-6 sm:py-8 flex max-h-[calc(100vh-4rem)] overflow-y-auto flex-col gap-6"
           >
             {navLinks.map((link) => (
               <Link
