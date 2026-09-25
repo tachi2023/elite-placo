@@ -17,7 +17,7 @@ git push origin main
 
 ## 3) Déploiement sur Render
 - Sur le Dashboard Render, vérifiez que les services existent : `elite-placo-api`, `elite-placo-site`, `elite-placo-app`.
-- Confirm that `render.yaml` variables are applied; in particular ensure `APP_DEMO_ENABLED=true` is present for the `elite-placo-api` service.
+- Confirm that `render.yaml` variables are applied; in particular ensure `APP_DEMO_ENABLED=false` is present for the `elite-placo-api-oregon` service.
 - Render déclenche automatiquement une build après le push si le repo est connecté.
 - Sur Render, surveillez les logs de build et runtime (Dashboard → service → Logs).
 - Le workflow GitHub `Deploy to Render` utilise en complément le secret `RENDER_DEPLOY_HOOK_URL`.
@@ -29,12 +29,12 @@ git push origin main
 ## 4) URLs publiques attendues (vérifiez votre Dashboard pour URLs exactes)
 - Front (site vitrine) : https://elite-placo-site.onrender.com
 - Flutter Web (application dirigeant) : https://elite-placo-app.onrender.com
-- API : https://elite-placo-api.onrender.com
+- API : https://elite-placo-api-oregon.onrender.com
 
 ## 5) Tester le mode démo (après déploiement)
 - Endpoint JSON demo :
 ```bash
-curl -s https://elite-placo-api.onrender.com/api/suivi/DEMO-CLIENT | jq
+curl -s https://elite-placo-api-oregon.onrender.com/api/suivi/DEMO-CLIENT | jq
 ```
 - Page client (navigateur) :
 
@@ -85,7 +85,7 @@ curl http://localhost:8081/api/suivi/DEMO-CLIENT
 - Ou `git revert <sha>` puis push pour forcer une nouvelle build.
 
 ## 10) Support & debug
-- Logs Backend : Render Dashboard → `elite-placo-api` → Logs
+- Logs Backend : Render Dashboard → `elite-placo-api-oregon` → Logs
 - Logs Front : Render Dashboard → `elite-placo-site` → Logs
 - Logs Flutter Web : Render Dashboard → `elite-placo-app` → Logs
 - Pour problèmes réseau/Docker local : `docker logs <container>` & `docker run --rm busybox nslookup production.cloudfront.docker.com`

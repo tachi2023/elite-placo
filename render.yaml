@@ -1,8 +1,8 @@
 services:
   - type: web
-    name: elite-placo-api
+    name: elite-placo-api-oregon
     runtime: docker
-    region: frankfurt
+    region: oregon
     plan: free
     dockerfilePath: apps/api/Dockerfile
     dockerContext: apps/api
@@ -14,23 +14,23 @@ services:
         value: prod
       - key: DB_HOST
         fromDatabase:
-          name: elite-placo-db-frankfurt
+          name: elite-placo-db
           property: host
       - key: DB_PORT
         fromDatabase:
-          name: elite-placo-db-frankfurt
+          name: elite-placo-db
           property: port
       - key: DB_NAME
         fromDatabase:
-          name: elite-placo-db-frankfurt
+          name: elite-placo-db
           property: database
       - key: DB_USER
         fromDatabase:
-          name: elite-placo-db-frankfurt
+          name: elite-placo-db
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: elite-placo-db-frankfurt
+          name: elite-placo-db
           property: password
       - key: JWT_SECRET
         generateValue: true
@@ -60,8 +60,8 @@ services:
     healthCheckPath: /
 
 databases:
-  - name: elite-placo-db-frankfurt
-    region: frankfurt
+  - name: elite-placo-db
+    region: oregon
     databaseName: eliteplaco
     user: eliteplaco
     plan: free

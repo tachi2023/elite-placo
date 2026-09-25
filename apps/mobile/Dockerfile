@@ -2,7 +2,7 @@
 # Il n'est pas recommandé pour Android direct car il nécessite un SDK complet.
 FROM ghcr.io/cirruslabs/flutter:stable AS build
 WORKDIR /app
-ARG API_BASE_URL=https://elite-placo-api-9q65.onrender.com
+ARG API_BASE_URL=https://elite-placo-api-oregon.onrender.com
 COPY pubspec.* ./
 RUN flutter pub get
 COPY . ./
