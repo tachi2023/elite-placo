@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/brand_logo.dart';
 
 class PinLockScreen extends StatefulWidget {
   const PinLockScreen({super.key});
@@ -272,41 +273,17 @@ class _PinLockScreenState extends State<PinLockScreen>
                       ],
                     ),
                     child: auth.isLockedOut
-                        ? const Icon(Icons.lock_outline, size: 36, color: AppTheme.erreur)
-                        : ClipOval(
-                            child: Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: Image.asset('assets/brand-logo.png', fit: BoxFit.contain),
-                            ),
-                          ),
+                        ? const Icon(Icons.lock_outline,
+                            size: 36, color: AppTheme.erreur)
+                        : const Icon(Icons.architecture_rounded,
+                            size: 36, color: AppTheme.or),
                   );
                 },
               ),
               const SizedBox(height: 20),
 
               // Titre
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  'ÉLITE PLACO & DÉCO',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.or,
-                    letterSpacing: 6,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'PRIMA BTP',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w400,
-                  color: AppTheme.or.withOpacity(0.5),
-                  letterSpacing: 4,
-                ),
-              ),
+              const BrandLogo(titleSize: 20, centered: true),
               const SizedBox(height: 28),
 
               // Message d'état

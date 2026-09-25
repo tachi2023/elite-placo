@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/brand_logo.dart';
 import '../auth/pin_lock_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -119,52 +120,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           Flexible(
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 42,
-                                  height: 42,
-                                  padding: const EdgeInsets.all(2),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: AppTheme.or.withOpacity(0.65)),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppTheme.or.withOpacity(0.18),
-                                        blurRadius: 18,
-                                      ),
-                                    ],
-                                  ),
-                                  child: ClipOval(
-                                    child: Image.asset('assets/brand-logo.png',
-                                        fit: BoxFit.contain),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Flexible(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text('ÉLITE PLACO',
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppTheme.or,
-                                            letterSpacing: 3,
-                                          )),
-                                      Text('PRIMA BTP',
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 9,
-                                            color: Colors.white.withOpacity(0.3),
-                                            letterSpacing: 2,
-                                          )),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                              children: const [BrandLogo(titleSize: 16)],
                             ),
                           ),
                           TextButton(

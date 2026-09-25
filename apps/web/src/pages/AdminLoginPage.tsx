@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, LockKeyhole } from 'lucide-react';
-import logoImg from '../assets/brand-logo.png';
+import BrandLogo from '../components/BrandLogo';
 import { API_BASE_URL } from '../lib/siteApi';
 
 export default function AdminLoginPage() {
@@ -39,7 +39,7 @@ export default function AdminLoginPage() {
       <div className="mx-auto flex min-h-[80vh] max-w-md flex-col justify-center">
         <Link to="/" className="mb-10 inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-or"><ArrowLeft size={15} /> Retour au site</Link>
         <div className="border border-or/20 bg-noir-surface p-8 shadow-[0_25px_80px_rgba(0,0,0,0.35)]">
-          <img src={logoImg} alt="Élite Placo & Déco" className="mb-10 h-14 w-auto max-w-[250px] object-contain" />
+          <BrandLogo titleClassName="text-3xl" className="mb-10" />
           <div className="mb-8 flex items-center gap-3"><LockKeyhole className="text-or" size={20} /><div><p className="text-xs uppercase tracking-[0.25em] text-or">Administration</p><h1 className="font-display text-3xl font-light">Accès sécurisé</h1></div></div>
           <form onSubmit={submit} className="space-y-4">
             <input value={identifiant} onChange={(event) => setIdentifiant(event.target.value)} required placeholder="Identifiant" className="w-full border border-or/20 bg-noir px-4 py-3 text-sm outline-none focus:border-or" />

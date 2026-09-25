@@ -1,16 +1,19 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Eye, EyeOff } from 'lucide-react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import logoImg from '../assets/brand-logo.png';
+import { ArrowLeft, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import BrandLogo from '../components/BrandLogo';
 
 export default function EspaceClient() {
   const [code, setCode] = useState('');
   const [showCode, setShowCode] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  const goBackToSite = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate('/');
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,9 +26,16 @@ export default function EspaceClient() {
 
   return (
     <div className="min-h-screen bg-noir text-texte">
-      <Navbar />
+      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8">
+        <button
+          type="button"
+          onClick={goBackToSite}
+          className="inline-flex w-fit items-center gap-2 text-xs uppercase tracking-[0.2em] text-texte-muted transition-colors hover:text-or"
+        >
+          <ArrowLeft size={15} /> Retour au site
+        </button>
 
-      <div className="min-h-screen flex items-center justify-center px-6 pt-20">
+        <div className="flex flex-1 items-center justify-center py-12 sm:py-16">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -36,7 +46,7 @@ export default function EspaceClient() {
           <div className="flex justify-center mb-8">
             <div className="relative">
               <div className="absolute inset-0 rounded-full bg-or/20 blur-2xl animate-pulse" />
-              <img src={logoImg} alt="Élite Placo & Déco" className="relative w-full max-w-[290px] h-auto object-contain drop-shadow-[0_0_35px_rgba(201,168,76,0.2)]" />
+              <BrandLogo titleClassName="text-3xl sm:text-4xl" subtitleClassName="text-[10px]" className="relative text-center" />
             </div>
           </div>
 
@@ -100,8 +110,7 @@ export default function EspaceClient() {
           </p>
         </motion.div>
       </div>
-
-      <Footer />
+      </div>
     </div>
   );
 }

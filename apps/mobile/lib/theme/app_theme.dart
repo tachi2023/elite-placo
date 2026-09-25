@@ -23,30 +23,30 @@ class AppTheme {
 
   // --- Typographie ---
   static TextTheme get _textTheme {
-    // Utilisation de Outfit (très moderne, ronde et géométrique)
-    // ou Inter (épurée) pour un aspect haut de gamme.
-    return GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme).copyWith(
-      displayLarge: GoogleFonts.outfit(
+    // Même couple typographique que le prototype : Playfair pour les titres,
+    // DM Sans pour les données et les contrôles métier.
+    return GoogleFonts.dmSansTextTheme(ThemeData.dark().textTheme).copyWith(
+      displayLarge: GoogleFonts.playfairDisplay(
         color: blanc,
         fontSize: 32,
         fontWeight: FontWeight.bold,
         letterSpacing: -0.5,
       ),
-      displayMedium: GoogleFonts.outfit(
+      displayMedium: GoogleFonts.playfairDisplay(
         color: blanc,
         fontSize: 28,
         fontWeight: FontWeight.w700,
       ),
-      titleLarge: GoogleFonts.outfit(
+      titleLarge: GoogleFonts.playfairDisplay(
         color: or,
         fontSize: 22,
         fontWeight: FontWeight.w600,
       ),
-      bodyLarge: GoogleFonts.inter(
+      bodyLarge: GoogleFonts.dmSans(
         color: grisClair,
         fontSize: 16,
       ),
-      bodyMedium: GoogleFonts.inter(
+      bodyMedium: GoogleFonts.dmSans(
         color: grisClair,
         fontSize: 14,
       ),
@@ -100,7 +100,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(9),
           ),
-          textStyle: GoogleFonts.outfit(
+          textStyle: GoogleFonts.dmSans(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             letterSpacing: 0.5,
@@ -112,7 +112,7 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: or,
-          textStyle: GoogleFonts.outfit(
+        textStyle: GoogleFonts.dmSans(
             fontWeight: FontWeight.w600,
           ),
         ),

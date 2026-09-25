@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Loader2, ShieldCheck, CheckCircle, Clock, MapPin, ReceiptText, Download, AlertTriangle } from 'lucide-react';
-import logoImg from '../assets/brand-logo.png';
+import BrandLogo from '../components/BrandLogo';
 import { API_BASE_URL } from '../lib/siteApi';
 
 interface Depense {
@@ -107,7 +107,7 @@ export default function ClientDashboard() {
       <header className="sticky top-0 z-50 glass border-b border-or/10 px-6 py-4 flex justify-between items-center">
         <Link to="/espace-client" className="flex items-center gap-3 hover:text-or transition-colors">
           <ArrowLeft size={18} />
-          <img src={logoImg} alt="Élite Placo & Déco" className="h-10 w-auto max-w-[190px] object-contain" />
+          <BrandLogo titleClassName="text-lg" />
         </Link>
         <div className="flex items-center gap-2 border border-or/30 px-4 py-2">
           <ShieldCheck size={14} className="text-or" />
