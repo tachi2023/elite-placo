@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
 import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import Services from './pages/Services';
@@ -34,6 +34,7 @@ function App() {
         <Route path="/suivi/:code" element={<ClientDashboard />} />
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin/site" element={<SiteContentAdminPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

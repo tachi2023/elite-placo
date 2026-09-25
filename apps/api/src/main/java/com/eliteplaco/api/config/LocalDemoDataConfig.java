@@ -65,6 +65,11 @@ public class LocalDemoDataConfig {
                         Chantier.StatutChantier.EN_PAUSE, "SP-2026-007", "8200000",
                         List.of(new BigDecimal("3500000")),
                         List.of(new BigDecimal("2600000"), new BigDecimal("1300000")));
+                creerChantier(chantierRepository, mouvementRepository, lienRepository,
+                        "Siege Corporate", "Akwa", "Platrerie et peinture decorative",
+                        Chantier.StatutChantier.TERMINE, "SC-2025-041", "9500000",
+                        List.of(new BigDecimal("7800000")),
+                        List.of(new BigDecimal("3200000"), new BigDecimal("2440000")));
             }
 
             if (contenuRepository.count() == 0) {

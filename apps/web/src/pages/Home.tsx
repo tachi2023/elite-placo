@@ -20,6 +20,7 @@ const fallbackRealisations = [
   { title: 'Hôtel Le Méridien', location: 'Douala', image: '/assets/realisations/hotel.jpg' },
   { title: 'Résidence Bonapriso', location: 'Douala', image: '/assets/realisations/residence.jpg' },
   { title: 'Suite Présidentielle', location: 'Kribi', image: '/assets/realisations/suite.jpg' },
+  { title: 'Siège Corporate', location: 'Akwa', image: '/assets/realisations/corporate.jpg' },
 ];
 
 const fallbackTemoignages = [

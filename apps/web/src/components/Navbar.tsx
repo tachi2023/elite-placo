@@ -14,7 +14,6 @@ const navLinks = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const scrollTimer = useRef<number | undefined>(undefined);
   const location = useLocation();
@@ -25,7 +24,6 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 8);
       setIsScrolling(true);
       window.clearTimeout(scrollTimer.current);
       scrollTimer.current = window.setTimeout(() => setIsScrolling(false), 900);
