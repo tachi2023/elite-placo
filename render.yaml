@@ -61,6 +61,7 @@ services:
 
 databases:
   - name: elite-placo-db
+    region: frankfurt
     databaseName: eliteplaco
     user: eliteplaco
     plan: free
