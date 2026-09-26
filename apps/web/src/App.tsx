@@ -26,6 +26,7 @@ function App() {
         <Route path="/devis" element={<Devis />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/espace-client" element={<EspaceClient />} />
+        <Route path="/admin" element={<DashboardPage />} />
         <Route path="/chantiers" element={<ChantiersPage />} />
         <Route path="/chantiers/new" element={<NewChantierPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />

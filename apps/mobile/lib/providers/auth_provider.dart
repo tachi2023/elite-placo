@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -111,10 +112,9 @@ class AuthProvider extends ChangeNotifier {
     _tentativesEchouees = 0;
     _lockoutUntil = null;
 
-    await _tenterConnexionApi();
-
     _estDeverrouille = true;
     notifyListeners();
+    unawaited(_tenterConnexionApi());
     return true;
   }
 
@@ -201,10 +201,9 @@ class AuthProvider extends ChangeNotifier {
         _tentativesEchouees = 0;
         _lockoutUntil = null;
 
-        await _tenterConnexionApi();
-
         _estDeverrouille = true;
         notifyListeners();
+        unawaited(_tenterConnexionApi());
         return true;
       }
     } catch (_) {

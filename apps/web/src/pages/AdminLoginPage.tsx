@@ -14,22 +14,32 @@ export default function AdminLoginPage() {
 
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (!identifiant.trim() || !motDePasse) {
+      setError('Saisissez votre identifiant et votre mot de passe.');
+      return;
+    }
     setLoading(true);
     setError('');
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 12000);
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identifiant, motDePasse }),
+        signal: controller.signal,
       });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.message || 'Identifiants incorrects.');
-      localStorage.setItem('elite_access_token', payload.accessToken);
-      localStorage.setItem('elite_refresh_token', payload.refreshToken);
-      navigate('/admin/site');
+      localStorage.setItem('elite_access_token', payload.jetonAcces);
+      localStorage.setItem('elite_refresh_token', payload.jetonRafraichissement);
+      navigate('/admin');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Connexion impossible.');
+      setError(err instanceof DOMException && err.name === 'AbortError'
+        ? 'Le serveur met trop de temps à répondre. Réessayez dans quelques secondes.'
+        : err instanceof Error ? err.message : 'Connexion impossible.');
     } finally {
+      window.clearTimeout(timeout);
       setLoading(false);
     }
   }

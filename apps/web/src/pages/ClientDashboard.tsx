@@ -3,7 +3,6 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Loader2, ShieldCheck, CheckCircle, Clock, MapPin, ReceiptText, Download, AlertTriangle } from 'lucide-react';
-import BrandLogo from '../components/BrandLogo';
 import { API_BASE_URL } from '../lib/siteApi';
 
 interface Depense {
@@ -39,12 +38,24 @@ export default function ClientDashboard() {
   const [avisMessage, setAvisMessage] = useState('');
 
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/api/suivi/${code}`)
-      .then(res => { setData(res.data); setLoading(false); })
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 12000);
+    axios.get(`${API_BASE_URL}/api/suivi/${code}`, { signal: controller.signal })
+      .then(res => setData(res.data))
       .catch(err => {
-        setError(err.response?.data?.message || "Code invalide ou chantier introuvable. Vérifiez votre code.");
+        const timeoutMessage = err.code === 'ERR_CANCELED'
+          ? 'Le service met trop de temps à répondre. Vérifiez que l’API Render est active puis réessayez.'
+          : "Code invalide ou chantier introuvable. Vérifiez votre code.";
+        setError(err.response?.data?.message || timeoutMessage);
+      })
+      .finally(() => {
+        window.clearTimeout(timeout);
         setLoading(false);
       });
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
   }, [code]);
 
   const formatCurrency = (val: number) =>
@@ -105,7 +116,7 @@ export default function ClientDashboard() {
       <header className="sticky top-0 z-50 glass border-b border-or/10 px-6 py-4 flex justify-between items-center">
         <Link to="/espace-client" className="flex items-center gap-3 hover:text-or transition-colors">
           <ArrowLeft size={18} />
-          <BrandLogo titleClassName="text-lg" />
+          <span className="text-sm font-semibold uppercase tracking-[0.22em] text-or">Espace client</span>
         </Link>
         <div className="flex items-center gap-2 border border-or/30 px-4 py-2">
           <ShieldCheck size={14} className="text-or" />

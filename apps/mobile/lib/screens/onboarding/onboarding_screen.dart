@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../theme/app_theme.dart';
-import '../../widgets/brand_logo.dart';
+
 import '../auth/pin_lock_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -14,45 +14,49 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen>
     with SingleTickerProviderStateMixin {
   final PageController _pageController = PageController();
+  late final AnimationController _glowController;
   int _currentPage = 0;
-  late AnimationController _bgController;
 
-  final List<_OnboardingSlide> _slides = [
+  static const _indigo = Color(0xFF5146E5);
+  static const _ink = Color(0xFF171724);
+  static const _muted = Color(0xFF777791);
+
+  final List<_OnboardingSlide> _slides = const [
     _OnboardingSlide(
-      titre: 'L\'Excellence\ndu Plâtre',
+      title: 'Des chantiers\nplus ',
+      accent: 'maîtrisés',
       description:
-          'Gérez vos chantiers de plâtrerie et décoration haut de gamme avec une précision d\'artisan.',
-      icon: Icons.architecture_rounded,
-      badge: 'GESTION DE CHANTIERS',
+          'Centralisez vos projets, vos équipes et vos finances dans une seule application pensée pour le terrain.',
+      icon: Icons.auto_awesome_rounded,
     ),
     _OnboardingSlide(
-      titre: 'Suivi Financier\nen Temps Réel',
+      title: 'Chaque détail\n',
+      accent: 'au bon endroit',
       description:
-          'Acomptes, dépenses, matériaux — une vue claire et instantanée sur la rentabilité de chaque projet.',
-      icon: Icons.insights_rounded,
-      badge: 'COMPTABILITÉ INTELLIGENTE',
+          'Retrouvez vos métrés, matériaux, ouvriers et documents sans perdre de temps entre deux rendez-vous.',
+      icon: Icons.dashboard_customize_rounded,
     ),
     _OnboardingSlide(
-      titre: 'Travaillez\nPartout',
+      title: 'Travaillez\n',
+      accent: 'même hors-ligne',
       description:
-          'Saisissez vos données directement sur le chantier, même sans internet. La synchronisation se fait automatiquement.',
+          'Saisissez vos informations sur chantier. Elles restent disponibles et se synchronisent dès que le réseau revient.',
       icon: Icons.cloud_done_rounded,
-      badge: 'MODE HORS-LIGNE',
     ),
   ];
 
   @override
   void initState() {
     super.initState();
-    _bgController = AnimationController(
+    _glowController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
+      duration: const Duration(seconds: 5),
     )..repeat(reverse: true);
   }
 
   @override
   void dispose() {
-    _bgController.dispose();
+    _glowController.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -63,80 +67,79 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        transitionDuration: const Duration(milliseconds: 800),
+        transitionDuration: const Duration(milliseconds: 450),
         pageBuilder: (_, __, ___) => const PinLockScreen(),
-        transitionsBuilder: (_, animation, __, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
+        transitionsBuilder: (_, animation, __, child) =>
+            FadeTransition(opacity: animation, child: child),
       ),
+    );
+  }
+
+  void _continuer() {
+    if (_currentPage == _slides.length - 1) {
+      _terminerOnboarding();
+      return;
+    }
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 420),
+      curve: Curves.easeOutCubic,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF050505),
+      backgroundColor: Colors.white,
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final isCompact = constraints.maxWidth < 420;
-          final horizontalPadding = isCompact ? 18.0 : 32.0;
+          final compact = constraints.maxWidth < 430;
+          final horizontal = compact ? 28.0 : 48.0;
 
           return Stack(
             children: [
-              // --- Background gradient qui pulse ---
               AnimatedBuilder(
-                animation: _bgController,
-                builder: (context, _) {
-                  return Container(
+                animation: _glowController,
+                builder: (context, child) => Positioned.fill(
+                  child: DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: RadialGradient(
                         center: Alignment(
-                          -0.5 + _currentPage * 0.5,
-                          -0.3 + _bgController.value * 0.2,
+                          -0.72 + (_currentPage * 0.35),
+                          -0.65 + (_glowController.value * 0.12),
                         ),
-                        radius: 1.5,
-                        colors: [
-                          AppTheme.or.withOpacity(0.05 + 0.03 * _bgController.value),
-                          const Color(0xFF0A0A0B),
-                          const Color(0xFF050505),
+                        radius: 1.25,
+                        colors: const [
+                          Color(0xFFECEBFF),
+                          Color(0xFFF9F9FE),
+                          Colors.white,
                         ],
-                        stops: const [0.0, 0.4, 1.0],
+                        stops: const [0, 0.42, 1],
                       ),
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
-
-              // --- Contenu principal ---
               SafeArea(
                 child: Column(
                   children: [
                     Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: isCompact ? 16 : 24, vertical: 16),
+                      padding: EdgeInsets.fromLTRB(horizontal, 18, horizontal, 0),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Flexible(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: const [BrandLogo(titleSize: 16)],
-                            ),
-                          ),
                           TextButton(
                             onPressed: _terminerOnboarding,
                             style: TextButton.styleFrom(
-                              minimumSize: Size.zero,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 8),
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              foregroundColor: _muted,
+                              padding: const EdgeInsets.symmetric(horizontal: 4),
                             ),
-                            child: Text('Passer',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.4),
-                                  fontSize: 13,
-                                  letterSpacing: 1,
-                                )),
+                            child: Text(
+                              'Passer',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -144,188 +147,88 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     Expanded(
                       child: PageView.builder(
                         controller: _pageController,
-                        onPageChanged: (index) =>
-                            setState(() => _currentPage = index),
                         itemCount: _slides.length,
-                        itemBuilder: (context, index) {
-                          final slide = _slides[index];
-                          return Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: horizontalPadding),
-                            child: Center(
-                              child: ConstrainedBox(
-                                constraints: const BoxConstraints(maxWidth: 620),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Spacer(flex: 1),
-                                    Flexible(
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16, vertical: 8),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(20),
-                                          border: Border.all(
-                                              color: AppTheme.or.withOpacity(0.2)),
-                                          color: AppTheme.or.withOpacity(0.05),
-                                        ),
-                                        child: FittedBox(
-                                          fit: BoxFit.scaleDown,
-                                          child: Text(slide.badge,
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w600,
-                                                color: AppTheme.or,
-                                                letterSpacing: 2.5,
-                                              )),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 28),
-                                    Container(
-                                      width: isCompact ? 104 : 120,
-                                      height: isCompact ? 104 : 120,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.white.withOpacity(0.02),
-                                        border: Border.all(
-                                            color: AppTheme.or.withOpacity(0.15)),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: AppTheme.or.withOpacity(0.1),
-                                            blurRadius: 40,
-                                            spreadRadius: 8,
-                                          ),
-                                        ],
-                                      ),
-                                      child: ShaderMask(
-                                        shaderCallback: (bounds) =>
-                                            const LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: [
-                                            Color(0xFFE8CC82),
-                                            Color(0xFFD4AF37),
-                                            Color(0xFFB5952F),
-                                          ],
-                                        ).createShader(bounds),
-                                        child: Icon(slide.icon,
-                                            size: isCompact ? 46 : 52,
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                    SizedBox(height: isCompact ? 30 : 48),
-                                    Text(slide.titre,
-                                        textAlign: TextAlign.center,
-                                        softWrap: true,
-                                        style: TextStyle(
-                                          fontSize: isCompact ? 32 : 36,
-                                          fontWeight: FontWeight.w300,
-                                          color: Colors.white,
-                                          height: 1.2,
-                                          letterSpacing: -0.5,
-                                        )),
-                                    const SizedBox(height: 16),
-                                    ConstrainedBox(
-                                      constraints:
-                                          const BoxConstraints(maxWidth: 500),
-                                      child: Text(slide.description,
-                                          textAlign: TextAlign.center,
-                                          softWrap: true,
-                                          style: TextStyle(
-                                            fontSize: isCompact ? 14 : 15,
-                                            color: Colors.white.withOpacity(0.45),
-                                            height: 1.6,
-                                            fontWeight: FontWeight.w300,
-                                          )),
-                                    ),
-                                    const Spacer(flex: 2),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
+                        onPageChanged: (page) => setState(() => _currentPage = page),
+                        itemBuilder: (context, index) => _buildSlide(
+                          _slides[index],
+                          compact: compact,
+                          horizontal: horizontal,
+                        ),
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.fromLTRB(horizontalPadding, 0,
-                          horizontalPadding, isCompact ? 24 : 40),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      padding: EdgeInsets.fromLTRB(horizontal, 0, horizontal, 24),
+                      child: Column(
                         children: [
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: List.generate(
                               _slides.length,
                               (index) => AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeOutCubic,
-                                margin: const EdgeInsets.only(right: 8),
-                                height: 3,
+                                duration: const Duration(milliseconds: 250),
+                                margin: const EdgeInsets.symmetric(horizontal: 4),
                                 width: _currentPage == index ? 28 : 8,
+                                height: 8,
                                 decoration: BoxDecoration(
                                   color: _currentPage == index
-                                      ? AppTheme.or
-                                      : Colors.white.withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(2),
+                                      ? _indigo
+                                      : const Color(0xFFDCDCE8),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
                             ),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              if (_currentPage == _slides.length - 1) {
-                                _terminerOnboarding();
-                              } else {
-                                _pageController.nextPage(
-                                  duration: const Duration(milliseconds: 500),
-                                  curve: Curves.easeOutCubic,
-                                );
-                              }
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: isCompact ? 20 : 28, vertical: 14),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFFD4AF37),
-                                    Color(0xFFE8CC82),
-                                    Color(0xFFD4AF37),
-                                  ],
+                          const SizedBox(height: 28),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 58,
+                            child: FilledButton(
+                              onPressed: _continuer,
+                              style: FilledButton.styleFrom(
+                                backgroundColor: _indigo,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
-                                borderRadius: BorderRadius.circular(30),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppTheme.or.withOpacity(0.3),
-                                    blurRadius: 16,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
+                                elevation: 0,
                               ),
                               child: Row(
-                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
                                     _currentPage == _slides.length - 1
-                                        ? 'COMMENCER'
-                                        : 'SUIVANT',
-                                    style: TextStyle(
-                                      fontSize: isCompact ? 11 : 13,
+                                        ? 'Accéder à mon espace'
+                                        : 'Commencer',
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 16,
                                       fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF050505),
-                                      letterSpacing: isCompact ? 1.3 : 2,
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  Icon(
-                                    _currentPage == _slides.length - 1
-                                        ? Icons.arrow_forward_rounded
-                                        : Icons.chevron_right_rounded,
-                                    size: 18,
-                                    color: const Color(0xFF050505),
-                                  ),
+                                  const SizedBox(width: 10),
+                                  const Icon(Icons.arrow_forward_rounded, size: 19),
                                 ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 54,
+                            child: OutlinedButton(
+                              onPressed: _terminerOnboarding,
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: _ink,
+                                side: const BorderSide(color: Color(0xFFE2E2EA)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: Text(
+                                'J’ai déjà un compte',
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                           ),
@@ -341,18 +244,81 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       ),
     );
   }
+
+  Widget _buildSlide(
+    _OnboardingSlide slide, {
+    required bool compact,
+    required double horizontal,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: horizontal),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: compact ? 124 : 142,
+                height: compact ? 124 : 142,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFECEEFF),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Icon(slide.icon, color: _indigo, size: compact ? 56 : 64),
+              ),
+              SizedBox(height: compact ? 38 : 48),
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(text: slide.title),
+                    TextSpan(
+                      text: slide.accent,
+                      style: const TextStyle(
+                        color: _indigo,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+                style: GoogleFonts.playfairDisplay(
+                  color: _ink,
+                  fontSize: compact ? 34 : 42,
+                  height: 1.12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 390),
+                child: Text(
+                  slide.description,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.dmSans(
+                    color: _muted,
+                    fontSize: compact ? 15 : 16,
+                    height: 1.65,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _OnboardingSlide {
-  final String titre;
+  final String title;
+  final String accent;
   final String description;
   final IconData icon;
-  final String badge;
 
-  _OnboardingSlide({
-    required this.titre,
+  const _OnboardingSlide({
+    required this.title,
+    required this.accent,
     required this.description,
     required this.icon,
-    required this.badge,
   });
 }

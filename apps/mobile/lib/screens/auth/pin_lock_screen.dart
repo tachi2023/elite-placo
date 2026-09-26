@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/brand_logo.dart';
 
 class PinLockScreen extends StatefulWidget {
   const PinLockScreen({super.key});
@@ -249,7 +248,7 @@ class _PinLockScreenState extends State<PinLockScreen>
             children: [
               const Spacer(flex: 2),
 
-              // --- Logo & Branding ---
+              // --- Simple decorative mark: the full wordmark stays out of the lock screen. ---
               AnimatedBuilder(
                 animation: _pulseController,
                 builder: (context, child) {
@@ -283,7 +282,15 @@ class _PinLockScreenState extends State<PinLockScreen>
               const SizedBox(height: 20),
 
               // Titre
-              const BrandLogo(titleSize: 20, centered: true),
+              Text(
+                'ESPACE PRIVÉ',
+                style: TextStyle(
+                  color: AppTheme.or,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 2.8,
+                ),
+              ),
               const SizedBox(height: 28),
 
               // Message d'état

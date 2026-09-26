@@ -2,6 +2,7 @@ package com.eliteplaco.api.controller;
 
 import com.eliteplaco.api.dto.ChantierSuiviPublicDTO;
 import com.eliteplaco.api.entity.Chantier;
+import com.eliteplaco.api.entity.Depense;
 import com.eliteplaco.api.entity.LienSuiviClient;
 import com.eliteplaco.api.entity.MouvementFinancier;
 import com.eliteplaco.api.exception.AppException;
@@ -45,7 +46,8 @@ public class SuiviClientController {
                     "M. Demo Client",
                     "Paris",
                     "EN_COURS",
-                    42
+                    42,
+                    List.of()
             );
         }
 
@@ -64,11 +66,22 @@ public class SuiviClientController {
             case TERMINE, ARCHIVE -> 100;
         };
 
+        List<ChantierSuiviPublicDTO.DepenseSuiviDTO> depenses = mouvementRepository.findByChantierId(chantier.getId()).stream()
+                .filter(Depense.class::isInstance)
+                .map(Depense.class::cast)
+                .map(depense -> new ChantierSuiviPublicDTO.DepenseSuiviDTO(
+                        depense.getDescription(),
+                        depense.getCategorie() == null ? null : depense.getCategorie().name(),
+                        depense.getMontant(),
+                        depense.getDate()))
+                .toList();
+
         return new ChantierSuiviPublicDTO(
                 chantier.getNomClient(), 
                 chantier.getVille(), 
                 chantier.getStatut().name(), 
-                avancement
+                avancement,
+                depenses
         );
     }
 }

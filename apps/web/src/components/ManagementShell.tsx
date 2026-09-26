@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import { Home, Building2, BarChart3, Settings } from 'lucide-react';
 import BrandLogo from './BrandLogo';
 
@@ -11,8 +11,12 @@ interface ManagementShellProps {
 export default function ManagementShell({ title, subtitle, children }: ManagementShellProps) {
   const location = useLocation();
 
+  if (!localStorage.getItem('elite_access_token')) {
+    return <Navigate to="/admin/login" replace state={{ from: location.pathname }} />;
+  }
+
   const navItems = [
-    { to: '/', icon: Home, label: 'ACCUEIL' },
+    { to: '/admin', icon: Home, label: 'ACCUEIL' },
     { to: '/chantiers', icon: Building2, label: 'CHANTIERS' },
     { to: '/dashboard', icon: BarChart3, label: 'BILAN' },
     { to: '/parametres', icon: Settings, label: 'RÉGLAGES' },

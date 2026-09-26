@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Eye, EyeOff } from 'lucide-react';
-import BrandLogo from '../components/BrandLogo';
 
 export default function EspaceClient() {
   const [code, setCode] = useState('');
@@ -42,12 +41,8 @@ export default function EspaceClient() {
           transition={{ duration: 0.8 }}
           className="w-full max-w-md"
         >
-          {/* Identité de marque */}
-          <div className="flex justify-center mb-8">
-            <div className="relative">
-              <div className="absolute inset-0 rounded-full bg-or/20 blur-2xl animate-pulse" />
-              <BrandLogo titleClassName="text-3xl sm:text-4xl" subtitleClassName="text-[10px]" className="relative text-center" />
-            </div>
+          <div className="mx-auto mb-8 grid h-16 w-16 place-items-center rounded-2xl border border-or/25 bg-or/10 text-or">
+            <span className="font-display text-2xl">EP</span>
           </div>
 
           {/* Heading */}
