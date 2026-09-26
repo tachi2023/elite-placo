@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,8 +14,7 @@ const navLinks = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [isScrolling, setIsScrolling] = useState(false);
-  const scrollTimer = useRef<number | undefined>(undefined);
+  const [hasScrolled, setHasScrolled] = useState(() => window.scrollY > 8);
   const location = useLocation();
 
   useEffect(() => {
@@ -24,9 +23,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolling(true);
-      window.clearTimeout(scrollTimer.current);
-      scrollTimer.current = window.setTimeout(() => setIsScrolling(false), 900);
+      setHasScrolled(window.scrollY > 8);
     };
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setOpen(false);
@@ -37,7 +34,6 @@ export default function Navbar() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('keydown', handleKeyDown);
-      window.clearTimeout(scrollTimer.current);
     };
   }, []);
 
@@ -48,7 +44,7 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', closeOnScroll);
   }, [open]);
 
-  const darkMode = isScrolling || open;
+  const darkMode = hasScrolled || open;
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-500 ${darkMode ? 'h-16 border-or/15 bg-noir/95 shadow-[0_12px_40px_rgba(0,0,0,.3)] backdrop-blur-xl' : 'h-20 border-transparent bg-transparent'}`}>

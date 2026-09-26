@@ -17,6 +17,7 @@ import 'providers/ouvrier_provider.dart';
 import 'providers/materiaux_provider.dart';
 import 'providers/metrage_provider.dart';
 import 'services/sync_service.dart';
+import 'widgets/network_status_banner.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,18 +40,21 @@ class ElitePlacoApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => ChantierProvider(
-          chantierRepository: chantierRepository,
-          mouvementRepository: mouvementRepository,
-        )),
-        ChangeNotifierProvider(create: (_) => DashboardProvider(
-          chantierRepository: chantierRepository,
-          mouvementRepository: mouvementRepository,
-        )),
-        ChangeNotifierProvider(create: (_) => OuvrierProvider(
-          chantierRepository: chantierRepository,
-          mouvementRepository: mouvementRepository,
-        )),
+        ChangeNotifierProvider(
+            create: (_) => ChantierProvider(
+                  chantierRepository: chantierRepository,
+                  mouvementRepository: mouvementRepository,
+                )),
+        ChangeNotifierProvider(
+            create: (_) => DashboardProvider(
+                  chantierRepository: chantierRepository,
+                  mouvementRepository: mouvementRepository,
+                )),
+        ChangeNotifierProvider(
+            create: (_) => OuvrierProvider(
+                  chantierRepository: chantierRepository,
+                  mouvementRepository: mouvementRepository,
+                )),
         ChangeNotifierProvider(create: (_) => MateriauxProvider()),
         ChangeNotifierProvider(create: (_) => MetrageProvider()),
       ],
@@ -58,7 +62,8 @@ class ElitePlacoApp extends StatelessWidget {
         title: 'Élite Placo & Déco',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme, // Thème Premium Anthracite/Or
-        home: onboardingVu ? const _RouteurPrincipal() : const OnboardingScreen(),
+        home:
+            onboardingVu ? const _RouteurPrincipal() : const OnboardingScreen(),
       ),
     );
   }
@@ -71,7 +76,8 @@ class _RouteurPrincipal extends StatefulWidget {
   State<_RouteurPrincipal> createState() => _RouteurPrincipalState();
 }
 
-class _RouteurPrincipalState extends State<_RouteurPrincipal> with WidgetsBindingObserver {
+class _RouteurPrincipalState extends State<_RouteurPrincipal>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -86,7 +92,8 @@ class _RouteurPrincipalState extends State<_RouteurPrincipal> with WidgetsBindin
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
       // Reverrouiller automatiquement l'application lorsqu'elle passe en arrière-plan
       final auth = context.read<AuthProvider>();
       if (auth.estDeverrouille) {
@@ -99,7 +106,16 @@ class _RouteurPrincipalState extends State<_RouteurPrincipal> with WidgetsBindin
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, auth, _) {
-        return auth.estDeverrouille ? const TableauDeBordScreen() : const PinLockScreen();
+        return Column(
+          children: [
+            const NetworkStatusBanner(),
+            Expanded(
+              child: auth.estDeverrouille
+                  ? const TableauDeBordScreen()
+                  : const PinLockScreen(),
+            ),
+          ],
+        );
       },
     );
   }

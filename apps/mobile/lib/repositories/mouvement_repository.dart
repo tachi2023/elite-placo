@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../models/mouvement_financier.dart';
 import '../services/api_service.dart';
 import '../services/local_db_service.dart';
@@ -12,15 +13,22 @@ class MouvementRepository {
   /// GET /api/chantiers/{id}/mouvements
   Future<List<MouvementFinancier>> listerParChantier(int chantierId) async {
     try {
-      final response = await _api.client.get('/api/chantiers/$chantierId/mouvements');
+      final response =
+          await _api.client.get('/api/chantiers/$chantierId/mouvements');
       final List<dynamic> data = response.data;
+      final mouvementsServeur = data
+          .map((json) => MouvementFinancier.fromJson(
+              json as Map<String, dynamic>,
+              chantierId: chantierId))
+          .toList();
+
+      if (kIsWeb) return mouvementsServeur;
 
       final db = await _localDb.database;
       await db.delete('mouvement_local',
           where: 'chantierId = ? AND synchronise = 1', whereArgs: [chantierId]);
 
-      for (var json in data) {
-        final mvmt = MouvementFinancier.fromJson(json as Map<String, dynamic>, chantierId: chantierId);
+      for (final mvmt in mouvementsServeur) {
         final valeurs = {
           'apiId': mvmt.id,
           'typeMouvement': mvmt.typeMouvement,
@@ -32,8 +40,8 @@ class MouvementRepository {
           'description': mvmt.description,
           'synchronise': 1,
         };
-        final existant = await db.query(
-          'mouvement_local', where: 'apiId = ?', whereArgs: [mvmt.id], limit: 1);
+        final existant = await db.query('mouvement_local',
+            where: 'apiId = ?', whereArgs: [mvmt.id], limit: 1);
         if (existant.isEmpty) {
           await db.insert('mouvement_local', valeurs);
         } else if (existant.first['synchronise'] == 1) {
@@ -43,6 +51,7 @@ class MouvementRepository {
       }
     } catch (e) {
       // Offline : on conserve le cache local.
+      if (kIsWeb) return const [];
     }
 
     final db = await _localDb.database;
@@ -53,17 +62,19 @@ class MouvementRepository {
       orderBy: 'date DESC',
     );
 
-    return localData.map((row) => MouvementFinancier(
-          id: row['apiId'] as int?,
-          typeMouvement: row['typeMouvement'] as String,
-          date: DateTime.parse(row['date'] as String),
-          montant: (row['montant'] as num).toDouble(),
-          chantierId: row['chantierId'] as int,
-          nature: row['nature'] as String?,
-          categorie: row['categorie'] as String?,
-          description: row['description'] as String?,
-          synchronise: row['synchronise'] == 1,
-        )).toList();
+    return localData
+        .map((row) => MouvementFinancier(
+              id: row['apiId'] as int?,
+              typeMouvement: row['typeMouvement'] as String,
+              date: DateTime.parse(row['date'] as String),
+              montant: (row['montant'] as num).toDouble(),
+              chantierId: row['chantierId'] as int,
+              nature: row['nature'] as String?,
+              categorie: row['categorie'] as String?,
+              description: row['description'] as String?,
+              synchronise: row['synchronise'] == 1,
+            ))
+        .toList();
   }
 
   Future<List<MouvementFinancier>> listerTous() async {
@@ -86,7 +97,32 @@ class MouvementRepository {
 
   /// Création Offline-First générique
   Future<MouvementFinancier> creer(MouvementFinancier mouvement) async {
-    final isEncaissement = mouvement.typeMouvement == TypeMouvement.encaissement;
+    final isEncaissement =
+        mouvement.typeMouvement == TypeMouvement.encaissement;
+
+    if (kIsWeb) {
+      final endpoint = isEncaissement ? 'encaissements' : 'depenses';
+      final donnees = isEncaissement
+          ? {
+              'montant': mouvement.montant,
+              'date': mouvement.date.toIso8601String().split('T').first,
+              'nature': mouvement.nature,
+            }
+          : {
+              'montant': mouvement.montant,
+              'date': mouvement.date.toIso8601String().split('T').first,
+              'categorie': mouvement.categorie,
+              'description': mouvement.description,
+            };
+      final response = await _api.client.post(
+        '/api/chantiers/${mouvement.chantierId}/mouvements/$endpoint',
+        data: donnees,
+      );
+      return MouvementFinancier.fromJson(
+        response.data as Map<String, dynamic>,
+        chantierId: mouvement.chantierId,
+      );
+    }
 
     final localId = await _localDb.inserer('mouvement_local', {
       'typeMouvement': mouvement.typeMouvement,
@@ -112,7 +148,8 @@ class MouvementRepository {
             'description': mouvement.description,
           };
 
-    final action = isEncaissement ? 'CREATION_ENCAISSEMENT' : 'CREATION_DEPENSE';
+    final action =
+        isEncaissement ? 'CREATION_ENCAISSEMENT' : 'CREATION_DEPENSE';
     await _localDb.ajouterAFileAttente(
       'mouvement',
       action,
@@ -142,22 +179,29 @@ class MouvementRepository {
         data: {
           'montant': mouvement.montant,
           'date': mouvement.date.toIso8601String().split('T').first,
-          if (mouvement.typeMouvement == TypeMouvement.encaissement) 'nature': mouvement.nature,
-          if (mouvement.typeMouvement == TypeMouvement.depense) 'categorie': mouvement.categorie,
-          if (mouvement.description != null) 'description': mouvement.description,
+          if (mouvement.typeMouvement == TypeMouvement.encaissement)
+            'nature': mouvement.nature,
+          if (mouvement.typeMouvement == TypeMouvement.depense)
+            'categorie': mouvement.categorie,
+          if (mouvement.description != null)
+            'description': mouvement.description,
         },
       );
       final mouvementServeur = MouvementFinancier.fromJson(
         response.data as Map<String, dynamic>,
         chantierId: mouvement.chantierId,
       );
+      if (kIsWeb) return mouvementServeur;
       await _mettreAJourCacheLocal(mouvementServeur, synchronise: true);
       return mouvementServeur;
     } on DioException {
+      if (kIsWeb) rethrow;
       if (mouvement.id == null) {
-        throw Exception('Impossible de synchroniser un mouvement local sans identifiant serveur.');
+        throw Exception(
+            'Impossible de synchroniser un mouvement local sans identifiant serveur.');
       }
-      final localRowId = await _mettreAJourCacheLocal(mouvement, synchronise: false);
+      final localRowId =
+          await _mettreAJourCacheLocal(mouvement, synchronise: false);
       final donnees = mouvement.toJson()..['chantierId'] = mouvement.chantierId;
       await _localDb.ajouterAFileAttente(
         'mouvement',
@@ -175,16 +219,23 @@ class MouvementRepository {
       if (mouvement.id == null) {
         throw Exception('Identifiant mouvement manquant.');
       }
-      await _api.client.delete('/api/chantiers/${mouvement.chantierId}/mouvements/${mouvement.id}');
+      await _api.client.delete(
+          '/api/chantiers/${mouvement.chantierId}/mouvements/${mouvement.id}');
+      if (kIsWeb) return;
       final db = await _localDb.database;
-      await db.delete('mouvement_local', where: 'apiId = ?', whereArgs: [mouvement.id]);
+      await db.delete('mouvement_local',
+          where: 'apiId = ?', whereArgs: [mouvement.id]);
     } on DioException {
+      if (kIsWeb) rethrow;
       if (mouvement.id == null) {
-        throw Exception('Impossible de synchroniser un mouvement local sans identifiant serveur.');
+        throw Exception(
+            'Impossible de synchroniser un mouvement local sans identifiant serveur.');
       }
       final db = await _localDb.database;
-      final existing = await db.query('mouvement_local', where: 'apiId = ?', whereArgs: [mouvement.id], limit: 1);
-      await db.delete('mouvement_local', where: 'apiId = ?', whereArgs: [mouvement.id]);
+      final existing = await db.query('mouvement_local',
+          where: 'apiId = ?', whereArgs: [mouvement.id], limit: 1);
+      await db.delete('mouvement_local',
+          where: 'apiId = ?', whereArgs: [mouvement.id]);
       await _localDb.ajouterAFileAttente(
         'mouvement',
         'SUPPRESSION_MOUVEMENT',
@@ -198,7 +249,8 @@ class MouvementRepository {
     }
   }
 
-  Future<int> _mettreAJourCacheLocal(MouvementFinancier mouvement, {required bool synchronise}) async {
+  Future<int> _mettreAJourCacheLocal(MouvementFinancier mouvement,
+      {required bool synchronise}) async {
     final db = await _localDb.database;
     final valeurs = {
       'apiId': mouvement.id,
@@ -211,9 +263,11 @@ class MouvementRepository {
       'description': mouvement.description,
       'synchronise': synchronise ? 1 : 0,
     };
-    final dejaPresent = await db.query('mouvement_local', where: 'apiId = ?', whereArgs: [mouvement.id], limit: 1);
+    final dejaPresent = await db.query('mouvement_local',
+        where: 'apiId = ?', whereArgs: [mouvement.id], limit: 1);
     if (dejaPresent.isNotEmpty) {
-      await db.update('mouvement_local', valeurs, where: 'apiId = ?', whereArgs: [mouvement.id]);
+      await db.update('mouvement_local', valeurs,
+          where: 'apiId = ?', whereArgs: [mouvement.id]);
       return dejaPresent.first['id'] as int;
     } else {
       return db.insert('mouvement_local', valeurs);

@@ -39,9 +39,7 @@ export default function ClientDashboard() {
   const [avisMessage, setAvisMessage] = useState('');
 
   useEffect(() => {
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8081';
-
-    axios.get(`${apiBaseUrl}/api/suivi/${code}`)
+    axios.get(`${API_BASE_URL}/api/suivi/${code}`)
       .then(res => { setData(res.data); setLoading(false); })
       .catch(err => {
         setError(err.response?.data?.message || "Code invalide ou chantier introuvable. Vérifiez votre code.");
@@ -139,7 +137,7 @@ export default function ClientDashboard() {
               </span>
             </div>
           </div>
-          <button className="inline-flex items-center gap-2 border border-or/20 text-texte-muted hover:border-or hover:text-or text-xs tracking-widest uppercase px-5 py-3 transition-all">
+          <button onClick={() => window.print()} className="inline-flex items-center gap-2 border border-or/20 text-texte-muted hover:border-or hover:text-or text-xs tracking-widest uppercase px-5 py-3 transition-all">
             <Download size={16} /> Exporter le rapport
           </button>
         </motion.div>
@@ -152,7 +150,7 @@ export default function ClientDashboard() {
             {/* Avancement */}
             <motion.div
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-              className="bg-noir-surface border border-or/20 p-10"
+              className="bg-noir-surface border border-or/20 p-6 sm:p-10"
             >
               <div className="flex justify-between items-end mb-8">
                 <div>
@@ -178,7 +176,7 @@ export default function ClientDashboard() {
             {/* Dépenses */}
             <motion.div
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-              className="bg-noir-surface border border-or/20 p-10"
+              className="bg-noir-surface border border-or/20 p-6 sm:p-10"
             >
               <div className="flex items-center justify-between mb-8">
                 <div>

@@ -7,6 +7,9 @@ import '../chantiers/nouveau_chantier_screen.dart';
 import '../settings/gestion_site_screen.dart';
 import '../../theme/app_theme.dart';
 import '../../models/chantier.dart';
+import '../../providers/auth_provider.dart';
+import '../chantiers/chantiers_list_screen.dart';
+import '../materiaux/calcul_materiaux_screen.dart';
 
 class TableauDeBordScreen extends StatefulWidget {
   const TableauDeBordScreen({super.key});
@@ -37,6 +40,11 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        leading: IconButton(
+          tooltip: 'Ouvrir le menu',
+          icon: const Icon(Icons.menu_rounded, color: AppTheme.or),
+          onPressed: _ouvrirMenu,
+        ),
         title: const Text('Tableau de Bord',
             style: TextStyle(fontWeight: FontWeight.w600)),
         backgroundColor: Colors.transparent,
@@ -165,31 +173,31 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                       builder: (context, constraints) {
                         final columns = constraints.maxWidth >= 720 ? 4 : 2;
                         return GridView.count(
-                      crossAxisCount: columns,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: columns == 4 ? 1.25 : 1.45,
-                      children: [
-                        _buildKpiCard(
-                            'Chiffre d\'Affaires',
-                            _fmt(vue.chiffreAffairesTotal),
-                            Icons.account_balance),
-                        _buildKpiCard('Résultat Net',
-                            _fmt(vue.resultatNetGlobal), Icons.insights,
-                            isHighlight: true),
-                        _buildKpiCard(
-                            'Total Encaissé',
-                            _fmt(vue.totalEncaisseGlobal),
-                            Icons.arrow_circle_down,
-                            color: AppTheme.succes),
-                        _buildKpiCard(
-                            'Total Dépenses',
-                            _fmt(vue.totalDepensesGlobal),
-                            Icons.arrow_circle_up,
-                            color: AppTheme.erreur),
-                      ],
+                          crossAxisCount: columns,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: columns == 4 ? 1.25 : 1.45,
+                          children: [
+                            _buildKpiCard(
+                                'Chiffre d\'Affaires',
+                                _fmt(vue.chiffreAffairesTotal),
+                                Icons.account_balance),
+                            _buildKpiCard('Résultat Net',
+                                _fmt(vue.resultatNetGlobal), Icons.insights,
+                                isHighlight: true),
+                            _buildKpiCard(
+                                'Total Encaissé',
+                                _fmt(vue.totalEncaisseGlobal),
+                                Icons.arrow_circle_down,
+                                color: AppTheme.succes),
+                            _buildKpiCard(
+                                'Total Dépenses',
+                                _fmt(vue.totalDepensesGlobal),
+                                Icons.arrow_circle_up,
+                                color: AppTheme.erreur),
+                          ],
                         );
                       },
                     ),
@@ -372,6 +380,72 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  void _ouvrirMenu() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppTheme.anthraciteClair,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Élite Placo & Déco',
+                      style: TextStyle(
+                          color: AppTheme.or,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600)),
+                ),
+                const SizedBox(height: 12),
+                _menuItem(sheetContext, Icons.dashboard_rounded,
+                    'Tableau de bord', null),
+                _menuItem(sheetContext, Icons.business_rounded, 'Mes chantiers',
+                    () => const ChantiersListScreen()),
+                _menuItem(sheetContext, Icons.calculate_rounded,
+                    'Calcul matériaux', () => const CalculMateriauxScreen()),
+                _menuItem(sheetContext, Icons.settings_rounded,
+                    'Paramètres du site', () => const GestionSiteScreen()),
+                const Divider(color: Colors.white12),
+                ListTile(
+                  leading: const Icon(Icons.lock_outline_rounded,
+                      color: AppTheme.grisClair),
+                  title: const Text('Verrouiller l’application'),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    context.read<AuthProvider>().verrouiller();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _menuItem(BuildContext sheetContext, IconData icon, String label,
+      Widget Function()? page) {
+    final destination = page;
+    return ListTile(
+      leading: Icon(icon, color: AppTheme.or),
+      title: Text(label),
+      trailing: destination == null
+          ? const Icon(Icons.check, color: AppTheme.or, size: 18)
+          : const Icon(Icons.chevron_right),
+      onTap: destination == null
+          ? () => Navigator.pop(sheetContext)
+          : () {
+              Navigator.pop(sheetContext);
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => destination()));
+            },
     );
   }
 }
