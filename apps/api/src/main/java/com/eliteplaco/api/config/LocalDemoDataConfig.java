@@ -15,7 +15,7 @@ import com.eliteplaco.api.repository.UtilisateurRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
@@ -23,9 +23,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/** Donnees de demonstration locales, jamais activees avec le profil production. */
+/** Donnees de demonstration opt-in, protegees par APP_DEMO_ENABLED. */
 @Configuration
-@Profile("local")
+@ConditionalOnProperty(name = "app.demo.enabled", havingValue = "true")
 public class LocalDemoDataConfig {
 
     @Bean
@@ -44,33 +44,31 @@ public class LocalDemoDataConfig {
                 utilisateurRepository.save(utilisateur);
             }
 
-            if (chantierRepository.count() == 0) {
-                creerChantier(chantierRepository, mouvementRepository, lienRepository,
+            creerChantierSiAbsent(chantierRepository, mouvementRepository, lienRepository,
                         "Villa Bonanjo", "Douala", "Platrerie et decoration interieure",
                         Chantier.StatutChantier.EN_COURS, "VB-2026-014", "15800000",
                         List.of(new BigDecimal("4500000"), new BigDecimal("3200000"), new BigDecimal("1500000")),
                         List.of(new BigDecimal("2100000"), new BigDecimal("2300000"), new BigDecimal("900000")));
-                creerChantier(chantierRepository, mouvementRepository, lienRepository,
+            creerChantierSiAbsent(chantierRepository, mouvementRepository, lienRepository,
                         "Hotel Le Meridien", "Douala", "Faux plafonds et revetements muraux",
                         Chantier.StatutChantier.EN_COURS, "HM-2026-009", "26000000",
                         List.of(new BigDecimal("8000000"), new BigDecimal("6000000")),
                         List.of(new BigDecimal("4200000"), new BigDecimal("5100000")));
-                creerChantier(chantierRepository, mouvementRepository, lienRepository,
+            creerChantierSiAbsent(chantierRepository, mouvementRepository, lienRepository,
                         "Residence Bonapriso", "Douala", "Decoration interieure sur mesure",
                         Chantier.StatutChantier.A_VENIR, "RB-2026-022", "11200000",
                         List.of(new BigDecimal("3000000")),
                         List.of(new BigDecimal("450000")));
-                creerChantier(chantierRepository, mouvementRepository, lienRepository,
+            creerChantierSiAbsent(chantierRepository, mouvementRepository, lienRepository,
                         "Suite Presidentielle", "Kribi", "Faux plafonds decoratifs",
                         Chantier.StatutChantier.EN_PAUSE, "SP-2026-007", "8200000",
                         List.of(new BigDecimal("3500000")),
                         List.of(new BigDecimal("2600000"), new BigDecimal("1300000")));
-                creerChantier(chantierRepository, mouvementRepository, lienRepository,
+            creerChantierSiAbsent(chantierRepository, mouvementRepository, lienRepository,
                         "Siege Corporate", "Akwa", "Platrerie et peinture decorative",
                         Chantier.StatutChantier.TERMINE, "SC-2025-041", "9500000",
                         List.of(new BigDecimal("7800000")),
                         List.of(new BigDecimal("3200000"), new BigDecimal("2440000")));
-            }
 
             if (contenuRepository.count() == 0) {
                 contenuRepository.saveAll(List.of(
@@ -92,6 +90,20 @@ public class LocalDemoDataConfig {
                 ));
             }
         };
+    }
+
+    private void creerChantierSiAbsent(ChantierRepository chantierRepository,
+                               MouvementFinancierRepository mouvementRepository,
+                               LienSuiviClientRepository lienRepository,
+                               String nomClient, String ville, String travaux,
+                               Chantier.StatutChantier statut, String code,
+                               String montantDevis, List<BigDecimal> encaissements,
+                               List<BigDecimal> depenses) {
+        if (chantierRepository.findByCodeAccesClient(code).isPresent()) {
+            return;
+        }
+        creerChantier(chantierRepository, mouvementRepository, lienRepository,
+                nomClient, ville, travaux, statut, code, montantDevis, encaissements, depenses);
     }
 
     private void creerChantier(ChantierRepository chantierRepository,

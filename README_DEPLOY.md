@@ -17,7 +17,7 @@ git push origin main
 
 ## 3) Déploiement sur Render
 - Sur le Dashboard Render, vérifiez que les services existent : `elite-placo-api`, `elite-placo-site`, `elite-placo-app`.
-- Confirm that `render.yaml` variables are applied; in particular ensure `APP_DEMO_ENABLED=false` is present for the `elite-placo-api-oregon` service.
+- Confirm that `render.yaml` variables are applied; `APP_DEMO_ENABLED=true` enables the five idempotent demo chantier records used to validate the client area.
 - Render déclenche automatiquement une build après le push si le repo est connecté.
 - Sur Render, surveillez les logs de build et runtime (Dashboard → service → Logs).
 - Le workflow GitHub `Deploy to Render` utilise en complément le secret `RENDER_DEPLOY_HOOK_URL`.
