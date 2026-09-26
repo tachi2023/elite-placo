@@ -50,4 +50,4 @@ jobs:
           flutter-version: '3.38.7'
           channel: stable
       - run: flutter pub get
-      - run: flutter build web --release --dart-define=API_BASE_URL=https://elite-placo-api.onrender.com
+      - run: flutter build web --release --dart-define=API_BASE_URL=https://elite-placo-api-oregon-9q65.onrender.com

@@ -28,7 +28,7 @@ jobs:
         run: flutter pub get
 
       - name: Build release APK
-        run: flutter build apk --release --no-shrink --dart-define=API_BASE_URL=https://elite-placo-api-oregon.onrender.com
+        run: flutter build apk --release --no-shrink --dart-define=API_BASE_URL=https://elite-placo-api-oregon-9q65.onrender.com
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

@@ -45,7 +45,7 @@ jobs:
 
       - name: Build release APK
         working-directory: apps/mobile
-        run: flutter build apk --release --no-shrink --dart-define=API_BASE_URL=https://elite-placo-api.onrender.com
+        run: flutter build apk --release --no-shrink --dart-define=API_BASE_URL=https://elite-placo-api-oregon-9q65.onrender.com
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4

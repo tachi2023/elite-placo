@@ -1,6 +1,6 @@
 FROM node:20-alpine AS build
 WORKDIR /app
-ARG VITE_API_URL=https://elite-placo-api-oregon.onrender.com
+ARG VITE_API_URL=https://elite-placo-api-oregon-9q65.onrender.com
 ENV VITE_API_URL=$VITE_API_URL
 COPY package*.json ./
 COPY tsconfig*.json ./
