@@ -5,8 +5,8 @@ import '../../providers/ouvrier_provider.dart';
 /// §10.8 — liste des ouvriers connus + création + paiement rapide sur un
 /// chantier donné (le chantier est présélectionné, comme prévu au scénario).
 class OuvriersScreen extends StatefulWidget {
-  final int chantierId;
-  const OuvriersScreen({super.key, required this.chantierId});
+  final int? chantierId;
+  const OuvriersScreen({super.key, this.chantierId});
 
   @override
   State<OuvriersScreen> createState() => _OuvriersScreenState();
@@ -63,7 +63,7 @@ class _OuvriersScreenState extends State<OuvriersScreen> {
               final montant = double.tryParse(montantController.text.replaceAll(' ', '')) ?? -1;
               final ok = await context.read<OuvrierProvider>().enregistrerPaiement(
                     ouvrierId: ouvrierId,
-                    chantierId: widget.chantierId,
+                  chantierId: widget.chantierId!,
                     montant: montant,
                     date: DateTime.now(),
                   );
@@ -99,7 +99,7 @@ class _OuvriersScreenState extends State<OuvriersScreen> {
                 title: Text(o.nomComplet),
                 subtitle: Text(o.telephone ?? ''),
                 trailing: TextButton(
-                  onPressed: () => _enregistrerPaiement(o.id!),
+                  onPressed: widget.chantierId == null ? null : () => _enregistrerPaiement(o.id!),
                   child: const Text('Payer'),
                 ),
               );

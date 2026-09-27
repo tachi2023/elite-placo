@@ -10,6 +10,8 @@ import '../../models/chantier.dart';
 import '../../providers/auth_provider.dart';
 import '../chantiers/chantiers_list_screen.dart';
 import '../materiaux/calcul_materiaux_screen.dart';
+import '../finances/finances_screen.dart';
+import '../ouvriers/ouvriers_screen.dart';
 
 class TableauDeBordScreen extends StatefulWidget {
   const TableauDeBordScreen({super.key});
@@ -63,6 +65,7 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: _buildBottomNavigation(),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppTheme.or,
         foregroundColor: AppTheme.anthracite,
@@ -319,6 +322,33 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
     );
   }
 
+  Widget _buildBottomNavigation() {
+    return NavigationBar(
+      selectedIndex: 0,
+      backgroundColor: AppTheme.anthraciteClair,
+      indicatorColor: AppTheme.or.withValues(alpha: 0.18),
+      onDestinationSelected: (index) {
+        if (index == 0) return;
+        if (index == 1) {
+          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ChantiersListScreen()));
+        } else if (index == 2) {
+          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FinancesScreen()));
+        } else if (index == 3) {
+          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CalculMateriauxScreen()));
+        } else {
+          _ouvrirMenu();
+        }
+      },
+      destinations: const [
+        NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Accueil'),
+        NavigationDestination(icon: Icon(Icons.folder_copy_outlined), selectedIcon: Icon(Icons.folder_copy), label: 'Projets'),
+        NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: 'Finances'),
+        NavigationDestination(icon: Icon(Icons.straighten_outlined), selectedIcon: Icon(Icons.straighten), label: 'Métrés'),
+        NavigationDestination(icon: Icon(Icons.more_horiz), selectedIcon: Icon(Icons.menu), label: 'Plus'),
+      ],
+    );
+  }
+
   Widget _buildKpiCard(String label, String valeur, IconData icon,
       {bool fullWidth = false, bool isHighlight = false, Color? color}) {
     return Container(
@@ -410,6 +440,10 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                     () => const ChantiersListScreen()),
                 _menuItem(sheetContext, Icons.calculate_rounded,
                     'Calcul matériaux', () => const CalculMateriauxScreen()),
+                _menuItem(sheetContext, Icons.payments_rounded,
+                    'Finances', () => const FinancesScreen()),
+                _menuItem(sheetContext, Icons.engineering_rounded,
+                    'Ouvriers', () => const OuvriersScreen()),
                 _menuItem(sheetContext, Icons.settings_rounded,
                     'Paramètres du site', () => const GestionSiteScreen()),
                 const Divider(color: Colors.white12),

@@ -6,11 +6,10 @@ import 'package:google_fonts/google_fonts.dart';
 /// Couleurs principales : Anthracite profond (fond), Or/Laiton (accents).
 class AppTheme {
   // --- Palette de Couleurs ---
-  static const Color anthracite = Color(0xFF161618); // Fond principal
-  static const Color anthraciteClair = Color(0xFF1D1D20); // Cartes, surfaces
-  static const Color or =
-      Color(0xFFD4AF37); // Laiton/Or pour les accents (boutons, icônes)
-  static const Color orSombre = Color(0xFFB5952F);
+  static const Color anthracite = Color(0xFF1E1E1E); // Fond prototype
+  static const Color anthraciteClair = Color(0xFF272727); // Surfaces prototype
+  static const Color or = Color(0xFFC9A84C); // Accent or du prototype
+  static const Color orSombre = Color(0xFF9E7D2F);
   static const Color blanc = Color(0xFFFFFFFF);
   static const Color grisClair = Color(0xFFE0E0E0);
   static const Color grisFonce = Color(0xFF888888);
@@ -116,6 +115,18 @@ class AppTheme {
             fontWeight: FontWeight.w600,
           ),
         ),
+      ),
+
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: anthraciteClair,
+        indicatorColor: or.withValues(alpha: 0.18),
+        labelTextStyle: WidgetStatePropertyAll(
+          GoogleFonts.dmSans(fontSize: 11, fontWeight: FontWeight.w600),
+        ),
+        iconTheme: WidgetStateProperty.resolveWith((states) => IconThemeData(
+              color: states.contains(WidgetState.selected) ? or : grisFonce,
+              size: 21,
+            )),
       ),
 
       // Champs de saisie

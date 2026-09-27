@@ -17,9 +17,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   late final AnimationController _glowController;
   int _currentPage = 0;
 
-  static const _indigo = Color(0xFF5146E5);
-  static const _ink = Color(0xFF171724);
-  static const _muted = Color(0xFF777791);
+  static const _gold = Color(0xFFC9A84C);
+  static const _ink = Color(0xFFF5F5F5);
+  static const _muted = Color(0xFFA6A6A6);
 
   final List<_OnboardingSlide> _slides = const [
     _OnboardingSlide(
@@ -27,7 +27,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       accent: 'maîtrisés',
       description:
           'Centralisez vos projets, vos équipes et vos finances dans une seule application pensée pour le terrain.',
-      icon: Icons.auto_awesome_rounded,
+      icon: Icons.architecture_rounded,
     ),
     _OnboardingSlide(
       title: 'Chaque détail\n',
@@ -89,7 +89,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF1E1E1E),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final compact = constraints.maxWidth < 430;
@@ -109,9 +109,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         ),
                         radius: 1.25,
                         colors: const [
-                          Color(0xFFECEBFF),
-                          Color(0xFFF9F9FE),
-                          Colors.white,
+                          Color(0xFF3A3320),
+                          Color(0xFF272727),
+                          Color(0xFF1E1E1E),
                         ],
                         stops: const [0, 0.42, 1],
                       ),
@@ -130,7 +130,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           TextButton(
                             onPressed: _terminerOnboarding,
                             style: TextButton.styleFrom(
-                              foregroundColor: _muted,
+                              foregroundColor: _gold,
                               padding: const EdgeInsets.symmetric(horizontal: 4),
                             ),
                             child: Text(
@@ -171,8 +171,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                 height: 8,
                                 decoration: BoxDecoration(
                                   color: _currentPage == index
-                                      ? _indigo
-                                      : const Color(0xFFDCDCE8),
+                                      ? _gold
+                                      : const Color(0xFF5E5A50),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
@@ -185,8 +185,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             child: FilledButton(
                               onPressed: _continuer,
                               style: FilledButton.styleFrom(
-                                backgroundColor: _indigo,
-                                foregroundColor: Colors.white,
+                                backgroundColor: _gold,
+                                foregroundColor: const Color(0xFF1E1E1E),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
@@ -218,7 +218,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                               onPressed: _terminerOnboarding,
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: _ink,
-                                side: const BorderSide(color: Color(0xFFE2E2EA)),
+                                side: const BorderSide(color: Color(0xFF5E5E5E)),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
@@ -261,10 +261,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 width: compact ? 124 : 142,
                 height: compact ? 124 : 142,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFECEEFF),
+                  color: const Color(0x33C9A84C),
                   borderRadius: BorderRadius.circular(30),
                 ),
-                child: Icon(slide.icon, color: _indigo, size: compact ? 56 : 64),
+                child: Icon(slide.icon, color: _gold, size: compact ? 56 : 64),
               ),
               SizedBox(height: compact ? 38 : 48),
               Text.rich(
@@ -274,7 +274,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     TextSpan(
                       text: slide.accent,
                       style: const TextStyle(
-                        color: _indigo,
+                        color: _gold,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
