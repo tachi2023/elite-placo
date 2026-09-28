@@ -47,7 +47,7 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
           icon: const Icon(Icons.menu_rounded, color: AppTheme.or),
           onPressed: _ouvrirMenu,
         ),
-        title: const Text('Tableau de Bord',
+        title: const Text('Tableau de bord',
             style: TextStyle(fontWeight: FontWeight.w600)),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -87,9 +87,9 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF1E1E24), // Anthracite légèrement plus clair
-              AppTheme.anthracite, // Anthracite profond
-              Color(0xFF0F0F12), // Presque noir
+              Color(0xFF1E1E24),
+              AppTheme.anthracite,
+              Color(0xFF0F0F12),
             ],
             stops: [0.0, 0.5, 1.0],
           ),
@@ -135,28 +135,27 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                 backgroundColor: AppTheme.anthracite,
                 onRefresh: () => provider.charger(),
                 child: ListView(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
                   physics: const BouncingScrollPhysics(),
                   children: [
                     if (vue.donneesPartiellementNonSynchronisees)
                       Container(
-                        margin: const EdgeInsets.only(bottom: 24),
-                        padding: const EdgeInsets.all(16),
+                        margin: const EdgeInsets.only(bottom: 18),
+                        padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: AppTheme.or.withValues(alpha: 0.1),
+                          color: AppTheme.or.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                              color: AppTheme.or.withValues(alpha: 0.3)),
+                              color: AppTheme.or.withValues(alpha: 0.25)),
                         ),
                         child: Row(
                           children: [
                             const Icon(Icons.cloud_off_rounded,
-                                color: AppTheme.or, size: 24),
+                                color: AppTheme.or, size: 22),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                'Mode hors-ligne : Données en attente de synchronisation.',
+                                'Mode hors-ligne : données en attente de synchronisation.',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium
@@ -166,12 +165,70 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                           ],
                         ),
                       ),
-
-                    Text('Aperçu Financier',
-                        style: Theme.of(context).textTheme.titleLarge),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Bonjour, Raoul',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayMedium
+                                    ?.copyWith(fontSize: 28),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Voici le statut général de vos chantiers et finances.',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: AppTheme.grisClair),
+                              ),
+                              const SizedBox(height: 10),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.or.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(999),
+                                  border: Border.all(
+                                    color: AppTheme.or.withValues(alpha: 0.2),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'PRIMA BTP · ÉLITE PLACO',
+                                  style: TextStyle(
+                                    color: AppTheme.or,
+                                    fontSize: 10,
+                                    letterSpacing: 1.8,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppTheme.or.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: AppTheme.or.withValues(alpha: 0.18),
+                            ),
+                          ),
+                          child: const Icon(Icons.notifications_none_rounded,
+                              color: AppTheme.or),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 20),
-
-                    // KPIs en grille
                     LayoutBuilder(
                       builder: (context, constraints) {
                         final columns = constraints.maxWidth >= 720 ? 4 : 2;
@@ -179,69 +236,79 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                           crossAxisCount: columns,
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          childAspectRatio: columns == 4 ? 1.25 : 1.45,
+                          crossAxisSpacing: 14,
+                          mainAxisSpacing: 14,
+                          childAspectRatio: columns == 4 ? 1.28 : 1.42,
                           children: [
                             _buildKpiCard(
-                                'Chiffre d\'Affaires',
+                                'Chiffre d\'affaires',
                                 _fmt(vue.chiffreAffairesTotal),
-                                Icons.account_balance),
-                            _buildKpiCard('Résultat Net',
-                                _fmt(vue.resultatNetGlobal), Icons.insights,
+                                Icons.account_balance_wallet_rounded),
+                            _buildKpiCard(
+                                'Résultat net',
+                                _fmt(vue.resultatNetGlobal),
+                                Icons.insights_rounded,
                                 isHighlight: true),
                             _buildKpiCard(
-                                'Total Encaissé',
+                                'Total encaissé',
                                 _fmt(vue.totalEncaisseGlobal),
-                                Icons.arrow_circle_down,
+                                Icons.arrow_downward_rounded,
                                 color: AppTheme.succes),
                             _buildKpiCard(
-                                'Total Dépenses',
+                                'Total dépenses',
                                 _fmt(vue.totalDepensesGlobal),
-                                Icons.arrow_circle_up,
+                                Icons.arrow_upward_rounded,
                                 color: AppTheme.erreur),
                           ],
                         );
                       },
                     ),
-
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 18),
                     _buildKpiCard(
-                        'Marge Globale',
+                        'Marge globale',
                         '${vue.margeGlobalePourcent.toStringAsFixed(1)}%',
-                        Icons.donut_large,
+                        Icons.pie_chart_outline_rounded,
                         fullWidth: true,
                         isHighlight: true),
-
-                    const SizedBox(height: 40),
-                    Text('Projets Récents',
-                        style: Theme.of(context).textTheme.titleLarge),
-                    const SizedBox(height: 20),
-
+                    const SizedBox(height: 30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Projets récents',
+                            style: Theme.of(context).textTheme.titleLarge),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (_) => const ChantiersListScreen())),
+                          child: const Text('Voir tout'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
                     ...vue.resumesChantiers.map((resume) => Container(
-                          margin: const EdgeInsets.only(bottom: 16),
+                          margin: const EdgeInsets.only(bottom: 14),
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.03),
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(18),
                             border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.05)),
+                                color: Colors.white.withValues(alpha: 0.06)),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.2),
-                                blurRadius: 10,
+                                color: Colors.black.withValues(alpha: 0.18),
+                                blurRadius: 12,
                                 offset: const Offset(0, 4),
-                              )
+                              ),
                             ],
                           ),
                           child: ListTile(
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 12),
+                                horizontal: 16, vertical: 14),
                             leading: Container(
-                              padding: const EdgeInsets.all(3),
+                              padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                    color: AppTheme.or.withValues(alpha: 0.5)),
+                                    color: AppTheme.or.withValues(alpha: 0.45)),
                               ),
                               child: IndicateurPastille(
                                   indicateur: resume.situation.indicateur),
@@ -249,7 +316,7 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                             title: Text(
                               resume.chantier.nomClient,
                               style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w700,
                                   fontSize: 16,
                                   color: AppTheme.blanc),
                             ),
@@ -262,16 +329,21 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                                       color:
                                           AppTheme.or.withValues(alpha: 0.8)),
                                   const SizedBox(width: 4),
-                                  Text(resume.chantier.ville ?? 'N/A',
+                                  Expanded(
+                                    child: Text(
+                                      resume.chantier.ville ?? 'N/A',
+                                      overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
-                                          color: AppTheme.grisClair)),
-                                  const SizedBox(width: 12),
+                                          color: AppTheme.grisClair),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
                                   Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 2),
+                                        horizontal: 8, vertical: 3),
                                     decoration: BoxDecoration(
                                       color: AppTheme.or.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(4),
+                                      borderRadius: BorderRadius.circular(999),
                                     ),
                                     child: Text(
                                       StatutChantier.libelle(
@@ -279,7 +351,7 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                                       style: const TextStyle(
                                           color: AppTheme.or,
                                           fontSize: 10,
-                                          fontWeight: FontWeight.bold),
+                                          fontWeight: FontWeight.w700),
                                     ),
                                   ),
                                 ],
@@ -301,7 +373,7 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                                   '${resume.situation.margeBrutePourcent.toStringAsFixed(1)}%',
                                   style: TextStyle(
                                     fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.w700,
                                     color:
                                         resume.situation.margeBrutePourcent < 0
                                             ? AppTheme.erreur
@@ -330,21 +402,39 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
       onDestinationSelected: (index) {
         if (index == 0) return;
         if (index == 1) {
-          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ChantiersListScreen()));
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ChantiersListScreen()));
         } else if (index == 2) {
-          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FinancesScreen()));
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (_) => const FinancesScreen()));
         } else if (index == 3) {
-          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CalculMateriauxScreen()));
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const CalculMateriauxScreen()));
         } else {
           _ouvrirMenu();
         }
       },
       destinations: const [
-        NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Accueil'),
-        NavigationDestination(icon: Icon(Icons.folder_copy_outlined), selectedIcon: Icon(Icons.folder_copy), label: 'Projets'),
-        NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: 'Finances'),
-        NavigationDestination(icon: Icon(Icons.straighten_outlined), selectedIcon: Icon(Icons.straighten), label: 'Métrés'),
-        NavigationDestination(icon: Icon(Icons.more_horiz), selectedIcon: Icon(Icons.menu), label: 'Plus'),
+        NavigationDestination(
+            icon: Icon(Icons.dashboard_outlined),
+            selectedIcon: Icon(Icons.dashboard),
+            label: 'Accueil'),
+        NavigationDestination(
+            icon: Icon(Icons.folder_copy_outlined),
+            selectedIcon: Icon(Icons.folder_copy),
+            label: 'Projets'),
+        NavigationDestination(
+            icon: Icon(Icons.account_balance_wallet_outlined),
+            selectedIcon: Icon(Icons.account_balance_wallet),
+            label: 'Finances'),
+        NavigationDestination(
+            icon: Icon(Icons.straighten_outlined),
+            selectedIcon: Icon(Icons.straighten),
+            label: 'Métrés'),
+        NavigationDestination(
+            icon: Icon(Icons.more_horiz),
+            selectedIcon: Icon(Icons.menu),
+            label: 'Plus'),
       ],
     );
   }
@@ -440,10 +530,10 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                     () => const ChantiersListScreen()),
                 _menuItem(sheetContext, Icons.calculate_rounded,
                     'Calcul matériaux', () => const CalculMateriauxScreen()),
-                _menuItem(sheetContext, Icons.payments_rounded,
-                    'Finances', () => const FinancesScreen()),
-                _menuItem(sheetContext, Icons.engineering_rounded,
-                    'Ouvriers', () => const OuvriersScreen()),
+                _menuItem(sheetContext, Icons.payments_rounded, 'Finances',
+                    () => const FinancesScreen()),
+                _menuItem(sheetContext, Icons.engineering_rounded, 'Ouvriers',
+                    () => const OuvriersScreen()),
                 _menuItem(sheetContext, Icons.settings_rounded,
                     'Paramètres du site', () => const GestionSiteScreen()),
                 const Divider(color: Colors.white12),
