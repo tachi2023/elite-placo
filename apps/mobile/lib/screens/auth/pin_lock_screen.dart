@@ -285,7 +285,8 @@ class _PinLockScreenState extends State<PinLockScreen>
                                 style: TextStyle(
                                   fontSize: 9,
                                   letterSpacing: 1.7,
-                                  color: AppTheme.grisClair.withValues(alpha: 0.8),
+                                  color:
+                                      AppTheme.grisClair.withValues(alpha: 0.8),
                                 ),
                               ),
                             ],

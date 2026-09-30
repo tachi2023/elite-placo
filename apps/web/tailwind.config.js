@@ -22,7 +22,7 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
-        display: ['Playfair Display', 'Cormorant Garamond', 'serif'],
+        display: ['"Playfair Display"', '"Cormorant Garamond"', 'serif'],
       },
       keyframes: {
         shimmer: {

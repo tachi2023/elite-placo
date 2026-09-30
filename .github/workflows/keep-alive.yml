@@ -1,0 +1,15 @@
+name: Keep API awake
+
+# Réveille l'API Render (plan gratuit) toutes les 10 minutes.
+# Contournement temporaire : à supprimer après passage en plan payant.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health
+        run: curl -fsS --max-time 90 https://elite-placo-api-oregon-9q65.onrender.com/actuator/health || true

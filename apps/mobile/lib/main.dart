@@ -16,11 +16,14 @@ import 'providers/dashboard_provider.dart';
 import 'providers/ouvrier_provider.dart';
 import 'providers/materiaux_provider.dart';
 import 'providers/metrage_provider.dart';
+import 'services/api_service.dart';
 import 'services/sync_service.dart';
 import 'widgets/network_status_banner.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // ignore: unawaited_futures
+  ApiService().reveiller();
   SyncService().init();
   final prefs = await SharedPreferences.getInstance();
   final bool onboardingVu = prefs.getBool('onboarding_vu') ?? false;

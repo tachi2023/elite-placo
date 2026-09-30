@@ -2,9 +2,8 @@ package com.eliteplaco.api.controller;
 
 import com.eliteplaco.api.dto.ChantierSuiviPublicDTO;
 import com.eliteplaco.api.entity.Chantier;
-import com.eliteplaco.api.entity.Depense;
+import com.eliteplaco.api.entity.Encaissement;
 import com.eliteplaco.api.entity.LienSuiviClient;
-import com.eliteplaco.api.entity.MouvementFinancier;
 import com.eliteplaco.api.exception.AppException;
 import com.eliteplaco.api.repository.LienSuiviClientRepository;
 import com.eliteplaco.api.repository.MouvementFinancierRepository;
@@ -13,12 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.math.BigDecimal;
 
 /**
- * Endpoint PUBLIC
- * Modifié pour inclure un résumé des dépenses pour rassurer le client final.
+ * Endpoint PUBLIC.
+ * N'expose que : identité du chantier, statut, avancement, devis, encaissé, reste à payer.
+ * Les dépenses détaillées et la marge ne sont JAMAIS renvoyées (cahier des charges, Module 7.2).
  */
 @RestController
 @RequestMapping("/api/suivi")
@@ -44,10 +43,12 @@ public class SuiviClientController {
         if ("true".equalsIgnoreCase(demoEnabled) && "DEMO-CLIENT".equalsIgnoreCase(code)) {
             return new ChantierSuiviPublicDTO(
                     "M. Demo Client",
-                    "Paris",
+                    "Douala",
                     "EN_COURS",
                     42,
-                    List.of()
+                    new BigDecimal("10000000"),
+                    new BigDecimal("4000000"),
+                    new BigDecimal("6000000")
             );
         }
 
@@ -66,22 +67,21 @@ public class SuiviClientController {
             case TERMINE, ARCHIVE -> 100;
         };
 
-        List<ChantierSuiviPublicDTO.DepenseSuiviDTO> depenses = mouvementRepository.findByChantierId(chantier.getId()).stream()
-                .filter(Depense.class::isInstance)
-                .map(Depense.class::cast)
-                .map(depense -> new ChantierSuiviPublicDTO.DepenseSuiviDTO(
-                        depense.getDescription(),
-                        depense.getCategorie() == null ? null : depense.getCategorie().name(),
-                        depense.getMontant(),
-                        depense.getDate()))
-                .toList();
+        BigDecimal devis = chantier.getMontantDevis() == null ? BigDecimal.ZERO : chantier.getMontantDevis();
+        BigDecimal encaisse = mouvementRepository.findByChantierId(chantier.getId()).stream()
+                .filter(Encaissement.class::isInstance)
+                .map(mouvement -> mouvement.getMontant() == null ? BigDecimal.ZERO : mouvement.getMontant())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal reste = devis.subtract(encaisse).max(BigDecimal.ZERO);
 
         return new ChantierSuiviPublicDTO(
-                chantier.getNomClient(), 
-                chantier.getVille(), 
-                chantier.getStatut().name(), 
+                chantier.getNomClient(),
+                chantier.getVille(),
+                chantier.getStatut().name(),
                 avancement,
-                depenses
+                devis,
+                encaisse,
+                reste
         );
     }
 }

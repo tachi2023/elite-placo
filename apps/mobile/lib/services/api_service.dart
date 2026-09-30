@@ -14,6 +14,18 @@ class ApiService {
   String? _jetonRafraichissement;
   Future<void>? _refreshEnCours;
 
+  /// Réveille l'API (plan gratuit Render) sans bloquer l'interface.
+  Future<void> reveiller() async {
+    try {
+      await _authDio.get(
+        '/actuator/health',
+        options: Options(receiveTimeout: const Duration(seconds: 90)),
+      );
+    } catch (_) {
+      // Sans importance : le but est seulement de sortir l'API de veille.
+    }
+  }
+
   ApiService._interne() {
     const apiBaseUrl = String.fromEnvironment(
       'API_BASE_URL',
@@ -22,15 +34,15 @@ class ApiService {
 
     _dio = Dio(BaseOptions(
       baseUrl: apiBaseUrl,
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 5),
+      connectTimeout: const Duration(seconds: 60),
+      receiveTimeout: const Duration(seconds: 60),
       headers: {'Content-Type': 'application/json'},
     ));
 
     _authDio = Dio(BaseOptions(
       baseUrl: apiBaseUrl,
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 5),
+      connectTimeout: const Duration(seconds: 60),
+      receiveTimeout: const Duration(seconds: 60),
       headers: {'Content-Type': 'application/json'},
     ));
 

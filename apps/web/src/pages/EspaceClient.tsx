@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
 export default function EspaceClient() {
   const [code, setCode] = useState('');
@@ -29,82 +29,95 @@ export default function EspaceClient() {
         <button
           type="button"
           onClick={goBackToSite}
-          className="inline-flex w-fit items-center gap-2 text-xs uppercase tracking-[0.2em] text-texte-muted transition-colors hover:text-or"
+          className="inline-flex w-fit items-center gap-2 text-[10px] uppercase tracking-[0.28em] text-texte-muted transition-colors hover:text-or"
         >
           <ArrowLeft size={15} /> Retour au site
         </button>
 
-        <div className="flex flex-1 items-center justify-center py-12 sm:py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="w-full max-w-md"
-        >
-          <div className="mx-auto mb-8 grid h-16 w-16 place-items-center rounded-2xl border border-or/25 bg-or/10 text-or">
-            <span className="font-display text-2xl">EP</span>
-          </div>
-
-          {/* Heading */}
-          <div className="text-center mb-12">
-            <p className="text-xs tracking-[0.4em] uppercase text-or mb-3 font-light">Accès sécurisé</p>
-            <h1 className="font-display text-4xl font-light text-texte mb-3">Espace Client</h1>
-            <p className="text-texte-muted text-sm font-light leading-relaxed">
-              Entrez le code unique de votre chantier pour accéder à votre espace de suivi personnalisé.
-            </p>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-xs tracking-[0.3em] uppercase text-texte-muted mb-3">
-                Code d'accès chantier
-              </label>
-              <div className="relative">
-                <input
-                  type={showCode ? 'text' : 'password'}
-                  value={code}
-                  onChange={(e) => { setCode(e.target.value); setError(''); }}
-                  placeholder="Ex: EPC-8492"
-                  className="w-full bg-noir-surface border border-or/20 focus:border-or text-texte text-center tracking-[0.4em] uppercase text-lg px-6 py-4 outline-none transition-colors placeholder:text-texte-muted/30 placeholder:normal-case placeholder:tracking-normal"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowCode(!showCode)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-texte-muted hover:text-texte transition-colors"
-                >
-                  {showCode ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
+        <div className="flex flex-1 items-center justify-center py-10 sm:py-16">
+          <motion.div
+            initial={{ opacity: 0, y: 26 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.75 }}
+            className="w-full max-w-xl rounded-[32px] border border-or/20 bg-noir-surface/80 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:p-10"
+          >
+            <div className="mb-8 flex items-center justify-between gap-3 border-b border-or/15 pb-5">
+              <div className="flex items-center gap-3">
+                <div className="grid h-14 w-14 place-items-center rounded-full border border-or/40 bg-or/10 text-or shadow-[0_0_30px_rgba(201,168,76,0.2)]">
+                  <span className="font-display text-2xl leading-none">EP</span>
+                </div>
+                <div>
+                  <p className="text-[10px] tracking-[0.28em] uppercase text-or">Elite Placo</p>
+                  <p className="font-display text-2xl font-light text-texte">Espace Client</p>
+                </div>
               </div>
-              {error && <p className="mt-2 text-xs text-erreur">{error}</p>}
+              <div className="inline-flex items-center gap-2 rounded-full border border-or/20 bg-or/5 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.2em] text-or">
+                <ShieldCheck size={12} /> Sécurisé
+              </div>
             </div>
 
-            <button
-              type="submit"
-              className="w-full flex items-center justify-center gap-2 bg-or text-noir font-semibold tracking-widest uppercase text-sm py-4 hover:bg-or-clair transition-all duration-300 group"
-            >
-              Accéder au dossier
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </button>
-          </form>
+            <div className="mb-8 text-center">
+              <p className="mb-3 text-[10px] tracking-[0.38em] uppercase text-or">Accès sécurisé</p>
+              <h1 className="font-display text-4xl font-light text-texte sm:text-5xl">Suivi de chantier</h1>
+              <p className="mt-4 text-sm leading-relaxed text-texte-muted">
+                Entrez le code unique de votre chantier pour accéder à votre espace de suivi personnalisé.
+              </p>
+            </div>
 
-          <div className="mt-6 border border-or/20 bg-noir-surface/70 px-5 py-4 text-center">
-            <p className="text-[10px] tracking-[0.2em] uppercase text-or mb-2">Accès démonstration</p>
-            <button type="button" onClick={() => { setCode('VB-2026-014'); setError(''); }} className="text-sm text-texte hover:text-or transition-colors">
-              Utiliser le chantier Villa Bonanjo · VB-2026-014
-            </button>
-          </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="mb-3 block text-[10px] tracking-[0.34em] uppercase text-texte-muted">
+                  Code d'accès chantier
+                </label>
+                <div className="relative">
+                  <input
+                    type={showCode ? 'text' : 'password'}
+                    value={code}
+                    onChange={(e) => { setCode(e.target.value); setError(''); }}
+                    placeholder="Ex: VB-2026-014"
+                    className="w-full rounded-2xl border border-or/20 bg-noir px-6 py-4 text-center text-lg uppercase tracking-[0.35em] text-texte outline-none transition-all placeholder:text-texte-muted/30 placeholder:normal-case placeholder:tracking-normal focus:border-or focus:shadow-[0_0_0_3px_rgba(201,168,76,0.12)]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCode(!showCode)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-texte-muted transition-colors hover:text-texte"
+                    aria-label={showCode ? 'Masquer le code' : 'Afficher le code'}
+                  >
+                    {showCode ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {error && <p className="mt-2 text-xs text-erreur">{error}</p>}
+              </div>
 
-          {/* Info */}
-          <p className="text-center text-xs text-texte-muted mt-8 leading-relaxed">
-            Votre code d'accès vous a été remis par notre équipe lors du démarrage de votre chantier.{' '}
-            <Link to="/contact" className="text-or hover:text-or-clair transition-colors">
-              Contactez-nous
-            </Link>{' '}
-            si vous l'avez perdu.
-          </p>
-        </motion.div>
-      </div>
+              <button
+                type="submit"
+                className="group flex w-full items-center justify-center gap-2 rounded-full bg-or px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-noir transition-all duration-300 hover:bg-or-clair"
+              >
+                Accéder au dossier
+                <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+              </button>
+            </form>
+
+            <div className="mt-6 rounded-2xl border border-or/20 bg-noir/40 px-4 py-4 text-center">
+              <p className="mb-2 text-[9px] tracking-[0.28em] uppercase text-or">Accès démonstration</p>
+              <button
+                type="button"
+                onClick={() => { setCode('VB-2026-014'); setError(''); }}
+                className="text-sm text-texte transition-colors hover:text-or"
+              >
+                Utiliser le chantier Villa Bonanjo · VB-2026-014
+              </button>
+            </div>
+
+            <p className="mt-8 text-center text-xs leading-relaxed text-texte-muted">
+              Votre code d'accès vous a été remis par notre équipe lors du démarrage de votre chantier.{' '}
+              <Link to="/contact" className="text-or transition-colors hover:text-or-clair">
+                Contactez-nous
+              </Link>{' '}
+              si vous l'avez perdu.
+            </p>
+          </motion.div>
+        </div>
       </div>
     </div>
   );

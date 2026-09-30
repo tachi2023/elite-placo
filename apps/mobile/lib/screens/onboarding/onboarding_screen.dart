@@ -156,7 +156,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             onPressed: _terminerOnboarding,
                             style: TextButton.styleFrom(
                               foregroundColor: _gold,
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
                             ),
                             child: Text(
                               'Passer',

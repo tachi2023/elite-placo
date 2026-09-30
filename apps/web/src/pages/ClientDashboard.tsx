@@ -5,23 +5,18 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Loader2, ShieldCheck, CheckCircle, Clock, MapPin, ReceiptText, Download, AlertTriangle } from 'lucide-react';
 import { API_BASE_URL } from '../lib/siteApi';
 
-interface Depense {
-  description: string;
-  categorie: string;
-  montant: number;
-  date: string;
-}
-
 interface ChantierSuivi {
   nomClient: string;
   ville: string;
   statut: string;
   avancementPourcent: number;
-  depenses: Depense[];
+  montantDevis: number;
+  totalEncaisse: number;
+  resteAPayer: number;
 }
 
 const statutLabel: Record<string, string> = {
-  'A_VENIR': 'à€ venir',
+  'A_VENIR': 'À venir',
   'EN_COURS': 'En cours',
   'EN_PAUSE': 'En pause',
   'TERMINE': 'Terminé',
@@ -36,24 +31,28 @@ export default function ClientDashboard() {
   const [commentaire, setCommentaire] = useState('');
   const [note, setNote] = useState(5);
   const [avisMessage, setAvisMessage] = useState('');
+  const [lent, setLent] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 12000);
+    const lentTimer = window.setTimeout(() => setLent(true), 6000);
+    const timeout = window.setTimeout(() => controller.abort(), 60000);
     axios.get(`${API_BASE_URL}/api/suivi/${code}`, { signal: controller.signal })
       .then(res => setData(res.data))
       .catch(err => {
         const timeoutMessage = err.code === 'ERR_CANCELED'
-          ? 'Le service met trop de temps à répondre. Vérifiez que l’API Render est active puis réessayez.'
+          ? 'Le serveur met trop de temps à répondre. Patientez une minute puis réessayez.'
           : "Code invalide ou chantier introuvable. Vérifiez votre code.";
         setError(err.response?.data?.message || timeoutMessage);
       })
       .finally(() => {
         window.clearTimeout(timeout);
+        window.clearTimeout(lentTimer);
         setLoading(false);
       });
     return () => {
       window.clearTimeout(timeout);
+      window.clearTimeout(lentTimer);
       controller.abort();
     };
   }, [code]);
@@ -61,13 +60,10 @@ export default function ClientDashboard() {
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XAF', maximumFractionDigits: 0 }).format(val);
 
-  const formatDate = (d: string) =>
-    d ? new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }) : '';
-
   if (loading) return (
     <div className="min-h-screen bg-noir flex flex-col items-center justify-center gap-6">
       <Loader2 className="animate-spin text-or" size={48} />
-      <p className="text-texte-muted text-xs tracking-[0.4em] uppercase animate-pulse">Vérification du code...</p>
+      <p className="text-texte-muted text-xs tracking-[0.4em] uppercase animate-pulse">{lent ? 'Réveil du serveur, patientez jusqu’à une minute…' : 'Vérification du code...'}</p>
     </div>
   );
 
@@ -91,7 +87,6 @@ export default function ClientDashboard() {
   );
 
   const isTermine = ['TERMINE', 'ARCHIVE'].includes(data.statut);
-  const totalDepenses = data.depenses?.reduce((sum, d) => sum + d.montant, 0) || 0;
 
   async function envoyerAvis(event: React.FormEvent) {
     event.preventDefault();
@@ -184,49 +179,32 @@ export default function ClientDashboard() {
               </div>
             </motion.div>
 
-            {/* Dépenses */}
+            {/* Suivi financier (aucune dépense détaillée : données internes) */}
             <motion.div
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
               className="bg-noir-surface border border-or/20 p-6 sm:p-10"
             >
               <div className="flex items-center justify-between mb-8">
                 <div>
-                  <p className="text-xs tracking-[0.3em] uppercase text-or mb-2">Transparence totale</p>
-                  <h2 className="font-display text-3xl font-light text-texte">Dépenses engagées</h2>
+                  <p className="text-xs tracking-[0.3em] uppercase text-or mb-2">Transparence financière</p>
+                  <h2 className="font-display text-3xl font-light text-texte">Suivi des paiements</h2>
                 </div>
                 <ReceiptText size={24} className="text-or" />
               </div>
-
-              {data.depenses && data.depenses.length > 0 ? (
-                <>
-                  <div className="space-y-3 mb-6">
-                    {data.depenses.map((d, idx) => (
-                      <motion.div
-                        key={idx}
-                        initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 + idx * 0.08 }}
-                        className="flex justify-between items-center border-b border-or/20 pb-3 hover:border-or/30 transition-colors"
-                      >
-                        <div>
-                          <p className="text-sm text-texte font-light">{d.description || d.categorie}</p>
-                          <p className="text-xs text-texte-muted mt-0.5">{d.categorie} · {formatDate(d.date)}</p>
-                        </div>
-                        <span className="font-display text-or text-lg">{formatCurrency(d.montant)}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-                  <div className="flex justify-between items-center pt-4 border-t border-or/20">
-                    <span className="text-xs tracking-widest uppercase text-texte-muted">Total engagé</span>
-                    <span className="font-display text-2xl text-or">{formatCurrency(totalDepenses)}</span>
-                  </div>
-                </>
-              ) : (
-                <div className="border border-or/20 border-dashed p-10 text-center">
-                  <ReceiptText size={32} className="text-texte-muted mx-auto mb-3" />
-                  <p className="text-texte font-light">Aucune dépense enregistrée</p>
-                  <p className="text-xs text-texte-muted mt-1">Les dépenses apparaîtront ici au fur et à mesure.</p>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center border-b border-or/20 pb-3">
+                  <span className="text-xs tracking-widest uppercase text-texte-muted">Montant du devis</span>
+                  <span className="font-display text-texte text-lg">{formatCurrency(data.montantDevis)}</span>
                 </div>
-              )}
+                <div className="flex justify-between items-center border-b border-or/20 pb-3">
+                  <span className="text-xs tracking-widest uppercase text-texte-muted">Total encaissé</span>
+                  <span className="font-display text-or text-lg">{formatCurrency(data.totalEncaisse)}</span>
+                </div>
+                <div className="flex justify-between items-center pt-2">
+                  <span className="text-xs tracking-widest uppercase text-texte-muted">Reste à payer</span>
+                  <span className="font-display text-2xl text-or">{formatCurrency(data.resteAPayer)}</span>
+                </div>
+              </div>
             </motion.div>
           </div>
 
