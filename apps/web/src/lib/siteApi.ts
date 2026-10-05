@@ -2,12 +2,14 @@ export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:80
 
 export interface SiteContent {
   id?: number;
-  type: 'REALISATIONS' | 'SERVICE' | 'PARAMETRE_GLOBAL';
+  type: 'REALISATIONS' | 'SERVICE' | 'PROJET' | 'A_PROPOS' | 'PARAMETRE_GLOBAL';
   cle?: string;
   titre?: string;
   description?: string;
   imageUrl?: string;
   ordre?: number;
+  visible?: boolean;
+  publicId?: string;
 }
 
 export interface ClientReview {
@@ -19,6 +21,18 @@ export interface ClientReview {
   statut: 'EN_ATTENTE' | 'APPROUVE' | 'REJETE';
   dateCreation: string;
   datePublication?: string;
+}
+
+export interface DemandeDevisPayload {
+  nom: string;
+  email?: string;
+  telephone: string;
+  ville?: string;
+  typeTravaux: string;
+  superficie?: string;
+  budgetEstime?: string;
+  message?: string;
+  honeypot?: string;
 }
 
 export function usableImageUrl(url: string | undefined, fallback: string): string {
@@ -35,6 +49,21 @@ export async function fetchPublicRealisations(): Promise<SiteContent[]> {
 export async function fetchPublicReviews(): Promise<ClientReview[]> {
   const response = await fetch(`${API_BASE_URL}/api/avis/public`);
   if (!response.ok) throw new Error('Avis publics indisponibles');
+  return response.json();
+}
+
+export async function submitDemandeDevis(payload: DemandeDevisPayload) {
+  const response = await fetch(`${API_BASE_URL}/api/devis`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorPayload = await response.json().catch(() => ({}));
+    throw new Error(errorPayload.message || 'La demande de devis n’a pas pu être envoyée.');
+  }
+
   return response.json();
 }
 

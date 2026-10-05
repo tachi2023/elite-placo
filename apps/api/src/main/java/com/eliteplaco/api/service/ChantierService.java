@@ -7,6 +7,8 @@ import com.eliteplaco.api.exception.AppException;
 import com.eliteplaco.api.repository.ChantierRepository;
 import com.eliteplaco.api.repository.MouvementFinancierRepository;
 import com.eliteplaco.api.repository.LienSuiviClientRepository;
+import com.eliteplaco.api.repository.EtapeChantierRepository;
+import com.eliteplaco.api.entity.EtapeChantier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -45,15 +47,18 @@ public class ChantierService {
     private final MouvementFinancierRepository mouvementRepository;
     private final LienSuiviClientRepository lienSuiviClientRepository;
     private final AuditService auditService;
+    private final EtapeChantierRepository etapeRepository;
 
     public ChantierService(ChantierRepository chantierRepository,
                             MouvementFinancierRepository mouvementRepository,
                             LienSuiviClientRepository lienSuiviClientRepository,
-                            AuditService auditService) {
+                            AuditService auditService,
+                            EtapeChantierRepository etapeRepository) {
         this.chantierRepository = chantierRepository;
         this.mouvementRepository = mouvementRepository;
         this.lienSuiviClientRepository = lienSuiviClientRepository;
         this.auditService = auditService;
+        this.etapeRepository = etapeRepository;
     }
 
     public List<Chantier> listerActifs() {
@@ -88,9 +93,24 @@ public class ChantierService {
         chantier.setSynchronise(false);
 
         Chantier cree = chantierRepository.save(chantier);
+        creerEtapesParDefaut(cree);
         auditService.enregistrer("CREATION", "CHANTIER", cree.getId(), cree.getId(),
                 "Chantier créé pour " + cree.getNomClient());
         return cree;
+    }
+
+    private void creerEtapesParDefaut(Chantier chantier) {
+        String[] libelles = {"Métrage", "Ossature", "Pose BA13", "Finitions", "Réception"};
+        List<EtapeChantier> etapes = new java.util.ArrayList<>();
+        for (int i = 0; i < libelles.length; i++) {
+            EtapeChantier etape = new EtapeChantier();
+            etape.setChantier(chantier);
+            etape.setLibelle(libelles[i]);
+            etape.setOrdre(i + 1);
+            etape.setStatut(EtapeChantier.StatutEtape.A_FAIRE);
+            etapes.add(etape);
+        }
+        etapeRepository.saveAll(etapes);
     }
 
     /** §10.9 — changement de statut. A1 : pas de saut d'étape autorisé. */

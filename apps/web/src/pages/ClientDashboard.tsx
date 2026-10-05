@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Loader2, ShieldCheck, CheckCircle, Clock, MapPin, ReceiptText, Download, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Loader2, ShieldCheck, CheckCircle, Clock, MapPin, Download, AlertTriangle } from 'lucide-react';
 import { API_BASE_URL } from '../lib/siteApi';
 
 interface ChantierSuivi {
@@ -10,9 +10,9 @@ interface ChantierSuivi {
   ville: string;
   statut: string;
   avancementPourcent: number;
-  montantDevis: number;
-  totalEncaisse: number;
-  resteAPayer: number;
+  etapes?: { libelle: string; ordre: number; statut: 'A_FAIRE' | 'EN_COURS' | 'TERMINEE'; dateFin?: string }[];
+  photos?: { url: string; libelle?: string; avantApres?: string }[];
+  documents?: { url: string; libelle?: string }[];
 }
 
 const statutLabel: Record<string, string> = {
@@ -56,9 +56,6 @@ export default function ClientDashboard() {
       controller.abort();
     };
   }, [code]);
-
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XAF', maximumFractionDigits: 0 }).format(val);
 
   if (loading) return (
     <div className="min-h-screen bg-noir flex flex-col items-center justify-center gap-6">
@@ -179,31 +176,32 @@ export default function ClientDashboard() {
               </div>
             </motion.div>
 
-            {/* Suivi financier (aucune dépense détaillée : données internes) */}
+            {data.etapes && data.etapes.length > 0 && <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }} className="bg-noir-surface border border-or/20 p-6 sm:p-10">
+              <p className="text-xs tracking-[0.3em] uppercase text-or mb-2">Étapes du chantier</p>
+              <h2 className="font-display text-3xl font-light text-texte mb-6">Le parcours de réalisation</h2>
+              <div className="space-y-3">{data.etapes.map((etape) => <div key={`${etape.ordre}-${etape.libelle}`} className="flex items-center gap-4 border-b border-white/10 pb-3 last:border-0"><span className={`h-3 w-3 rounded-full ${etape.statut === 'TERMINEE' ? 'bg-succes' : etape.statut === 'EN_COURS' ? 'bg-or animate-pulse' : 'bg-texte-muted/40'}`} /><span className="flex-1 text-sm text-texte">{etape.libelle}</span><span className="text-[10px] uppercase tracking-[0.15em] text-texte-muted">{etape.statut === 'TERMINEE' ? 'Terminée' : etape.statut === 'EN_COURS' ? 'En cours' : 'À faire'}</span></div>)}</div>
+            </motion.div>}
+
+            {data.photos && data.photos.length > 0 && <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }} className="bg-noir-surface border border-or/20 p-6 sm:p-10">
+              <p className="text-xs tracking-[0.3em] uppercase text-or mb-2">Journal visuel</p>
+              <h2 className="font-display text-3xl font-light text-texte mb-6">Dernières réalisations</h2>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{data.photos.map((photo) => <figure key={photo.url} className="overflow-hidden border border-white/10 bg-noir"><img src={photo.url} alt={photo.libelle || 'Photo du chantier'} className="aspect-square w-full object-cover transition duration-500 hover:scale-105" /><figcaption className="p-2 text-[10px] uppercase tracking-[0.12em] text-texte-muted">{photo.libelle || photo.avantApres || 'Chantier'}</figcaption></figure>)}</div>
+            </motion.div>}
+
+            {data.documents && data.documents.length > 0 && <div className="bg-noir-surface border border-or/20 p-6 sm:p-10"><p className="text-xs tracking-[0.3em] uppercase text-or mb-2">Documents partagés</p><div className="space-y-2">{data.documents.map((document) => <a key={document.url} href={document.url} target="_blank" rel="noreferrer" className="block border border-white/10 p-3 text-sm text-texte hover:border-or hover:text-or">{document.libelle || 'Document du chantier'}</a>)}</div></div>}
+
             <motion.div
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
               className="bg-noir-surface border border-or/20 p-6 sm:p-10"
             >
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <p className="text-xs tracking-[0.3em] uppercase text-or mb-2">Transparence financière</p>
-                  <h2 className="font-display text-3xl font-light text-texte">Suivi des paiements</h2>
-                </div>
-                <ReceiptText size={24} className="text-or" />
+              <div className="mb-6">
+                <p className="text-xs tracking-[0.3em] uppercase text-or mb-2">Informations publiques</p>
+                <h2 className="font-display text-3xl font-light text-texte">Suivi de chantier</h2>
               </div>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center border-b border-or/20 pb-3">
-                  <span className="text-xs tracking-widest uppercase text-texte-muted">Montant du devis</span>
-                  <span className="font-display text-texte text-lg">{formatCurrency(data.montantDevis)}</span>
-                </div>
-                <div className="flex justify-between items-center border-b border-or/20 pb-3">
-                  <span className="text-xs tracking-widest uppercase text-texte-muted">Total encaissé</span>
-                  <span className="font-display text-or text-lg">{formatCurrency(data.totalEncaisse)}</span>
-                </div>
-                <div className="flex justify-between items-center pt-2">
-                  <span className="text-xs tracking-widest uppercase text-texte-muted">Reste à payer</span>
-                  <span className="font-display text-2xl text-or">{formatCurrency(data.resteAPayer)}</span>
-                </div>
+              <div className="rounded-none border border-or/20 bg-noir px-5 py-6">
+                <p className="text-sm leading-relaxed text-texte-muted font-light">
+                  Les montants, encaissements et dépenses restent strictement réservés à l’équipe interne. Votre espace client affiche uniquement le statut, la ville et l’avancement du chantier.
+                </p>
               </div>
             </motion.div>
           </div>

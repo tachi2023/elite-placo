@@ -71,4 +71,14 @@ public class ChantierController {
         Chantier chantier = chantierService.trouverParIdOuLever(id);
         return lienSuiviClientService.genererOuRecupererLien(chantier);
     }
+
+    @PostMapping("/{id}/suivi/regenerer")
+    public String regenererLienSuivi(@PathVariable Long id) {
+        return lienSuiviClientService.regenererLien(chantierService.trouverParIdOuLever(id));
+    }
+
+    @DeleteMapping("/{id}/suivi")
+    public void revoquerLienSuivi(@PathVariable Long id) {
+        lienSuiviClientService.revoquerLien(chantierService.trouverParIdOuLever(id));
+    }
 }

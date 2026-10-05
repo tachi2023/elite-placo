@@ -29,10 +29,18 @@ public class ContenuSite {
     private String imageUrl;
 
     private Integer ordre;
+
+    @Column(nullable = false)
+    private boolean visible = true;
+
+    @Column(name = "public_id", length = 255)
+    private String publicId;
     
     public enum TypeContenu {
         REALISATIONS,
         SERVICE,
+        PROJET,
+        A_PROPOS,
         PARAMETRE_GLOBAL
     }
 }

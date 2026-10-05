@@ -10,5 +10,7 @@ import java.util.Optional;
 @Repository
 public interface ContenuSiteRepository extends JpaRepository<ContenuSite, Integer> {
     List<ContenuSite> findByTypeOrderByOrdreAsc(ContenuSite.TypeContenu type);
+    List<ContenuSite> findByVisibleTrueOrderByOrdreAsc();
+    List<ContenuSite> findByTypeAndVisibleTrueOrderByOrdreAsc(ContenuSite.TypeContenu type);
     Optional<ContenuSite> findByCle(String cle);
 }
