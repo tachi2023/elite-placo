@@ -4,7 +4,7 @@
 
 param(
     [string] $buildMode = "release",
-    [string] $apiBaseUrl = "http://localhost:8081"
+    [string] $apiBaseUrl = "https://elite-placo-api-oregon-9q65.onrender.com"
 )
 
 Write-Host "Starting Flutter build (mode=$buildMode, api=$apiBaseUrl)"
