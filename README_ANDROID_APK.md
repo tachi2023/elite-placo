@@ -30,3 +30,11 @@ Si vous utilisez Android Studio : ouvrez SDK Manager → SDK Tools → cochez "S
 - Un workflow GitHub Actions a été ajouté : `.github/workflows/android-build.yml`.
 - Pour déclencher la construction : pousser sur `main` ou exécuter manuellement le workflow depuis l'onglet Actions.
 - L'artefact `app-release-apk` sera téléchargeable depuis la page d'exécution du workflow.
+
+Le workflow est aussi déclenché sur `jour-2` et `jour-3`, sans modifier `main`.
+
+### Signature release
+
+Pour une publication Play Store, ajoutez le fichier local `apps/mobile/android/key.properties`
+et un fichier `.jks` privé. Ces deux types de fichiers sont ignorés par Git. Sans ces
+secrets, le build CI reste installable pour les tests mais utilise la signature debug.

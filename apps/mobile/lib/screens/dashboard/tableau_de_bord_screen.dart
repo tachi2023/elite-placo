@@ -12,6 +12,8 @@ import '../chantiers/chantiers_list_screen.dart';
 import '../materiaux/calcul_materiaux_screen.dart';
 import '../finances/finances_screen.dart';
 import '../ouvriers/ouvriers_screen.dart';
+import '../devis/demandes_devis_screen.dart';
+import '../settings/changer_mot_de_passe_screen.dart';
 
 class TableauDeBordScreen extends StatefulWidget {
   const TableauDeBordScreen({super.key});
@@ -534,8 +536,12 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                     () => const FinancesScreen()),
                 _menuItem(sheetContext, Icons.engineering_rounded, 'Ouvriers',
                     () => const OuvriersScreen()),
+                _menuItem(sheetContext, Icons.request_quote_rounded,
+                    'Demandes de devis', () => const DemandesDevisScreen()),
                 _menuItem(sheetContext, Icons.settings_rounded,
                     'Paramètres du site', () => const GestionSiteScreen()),
+                _menuItem(sheetContext, Icons.lock_reset_rounded,
+                    'Changer le mot de passe', () => const ChangerMotDePasseScreen()),
                 const Divider(color: Colors.white12),
                 ListTile(
                   leading: const Icon(Icons.lock_outline_rounded,

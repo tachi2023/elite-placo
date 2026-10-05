@@ -24,7 +24,10 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         boolean devis = ("POST".equalsIgnoreCase(request.getMethod())
                 && ("/api/devis".equals(uri) || "/api/demandes-devis".equals(uri)));
         boolean suivi = uri.startsWith("/api/suivi/");
+        boolean changementMotDePasse = "POST".equalsIgnoreCase(request.getMethod())
+                && "/api/auth/change-password".equals(uri);
         return !("/api/auth/login".equals(uri) || "/api/auth/refresh".equals(uri)
+                || changementMotDePasse
                 || "/api/avis".equals(uri) || devis || suivi);
     }
 

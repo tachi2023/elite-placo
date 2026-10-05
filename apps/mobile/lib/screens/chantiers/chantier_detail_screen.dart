@@ -6,6 +6,7 @@ import '../../providers/chantier_provider.dart';
 import '../../repositories/chantier_repository.dart';
 import '../../theme/app_theme.dart';
 import 'changer_statut_dialog.dart';
+import 'chantier_suivi_admin_screen.dart';
 
 class ChantierDetailScreen extends StatefulWidget {
   final int chantierId;
@@ -288,6 +289,14 @@ class _ChantierDetailScreenState extends State<ChantierDetailScreen> {
                         'Accès Client',
                         Colors.purpleAccent,
                         _isLoading ? () {} : _genererAccesClient),
+                    _buildActionButton(
+                        Icons.timeline_rounded,
+                        'Suivi chantier',
+                        AppTheme.vert,
+                        () => Navigator.of(context).push(MaterialPageRoute(
+                              builder: (_) => ChantierSuiviAdminScreen(
+                                  chantierId: chantier.id!),
+                            ))),
                   ],
                 ),
               ],

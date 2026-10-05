@@ -3,8 +3,11 @@ package com.eliteplaco.api.controller;
 import com.eliteplaco.api.dto.LoginRequest;
 import com.eliteplaco.api.dto.LoginResponse;
 import com.eliteplaco.api.dto.RefreshTokenRequest;
+import com.eliteplaco.api.dto.ChangerMotDePasseRequest;
 import com.eliteplaco.api.service.AuthService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,5 +25,12 @@ public class AuthController {
     @PostMapping("/refresh")
     public LoginResponse rafraichir(@Valid @RequestBody RefreshTokenRequest requete) {
         return authService.rafraichir(requete.refreshToken());
+    }
+
+    @PostMapping("/change-password")
+    @PreAuthorize("isAuthenticated()")
+    public void changerMotDePasse(@Valid @RequestBody ChangerMotDePasseRequest requete,
+                                  Authentication authentication) {
+        authService.changerMotDePasse(authentication.getName(), requete);
     }
 }

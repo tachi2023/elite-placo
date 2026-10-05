@@ -65,7 +65,7 @@ public class SuiviClientController {
                 calculerAvancementPublic(chantier, etapes), etapesPubliques, photos, documents);
     }
 
-    private int calculerAvancementPublic(Chantier chantier, List<EtapeChantier> etapes) {
+    static int calculerAvancementPublic(Chantier chantier, List<EtapeChantier> etapes) {
         if (!etapes.isEmpty()) {
             long terminees = etapes.stream().filter(e -> e.getStatut() == EtapeChantier.StatutEtape.TERMINEE).count();
             return (int) Math.round(terminees * 100.0 / etapes.size());
