@@ -53,7 +53,7 @@ class ChantierRepository {
       }
     } catch (e) {
       // Offline : On ignore l'erreur API et on lira juste le cache local
-      if (kIsWeb) return const [];
+      if (kIsWeb) rethrow;
     }
 
     // Lecture depuis le cache

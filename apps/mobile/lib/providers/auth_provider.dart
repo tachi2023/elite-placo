@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,7 +60,9 @@ class AuthProvider extends ChangeNotifier {
       }
     }
     try {
-      _peutUtiliserBiometrie = await _localAuth.canCheckBiometrics && await _localAuth.isDeviceSupported();
+      _peutUtiliserBiometrie = !kIsWeb &&
+          await _localAuth.canCheckBiometrics &&
+          await _localAuth.isDeviceSupported();
     } catch (_) {
       _peutUtiliserBiometrie = false;
     }

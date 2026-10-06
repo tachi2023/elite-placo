@@ -103,6 +103,36 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                 return const Center(
                     child: CircularProgressIndicator(color: AppTheme.or));
               }
+              if (provider.erreur != null) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(28),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.cloud_off_rounded,
+                            size: 58, color: AppTheme.or),
+                        const SizedBox(height: 18),
+                        const Text('Connexion indisponible',
+                            style: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Le serveur est peut-être en réveil ou le réseau est coupé. Vos données n’ont pas été supprimées.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: AppTheme.grisClair),
+                        ),
+                        const SizedBox(height: 18),
+                        FilledButton.icon(
+                          onPressed: provider.charger,
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Réessayer'),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
               final vue = provider.vueGlobale;
               if (vue == null || vue.resumesChantiers.isEmpty) {
                 return Center(

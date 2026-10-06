@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,7 +26,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // ignore: unawaited_futures
   ApiService().reveiller();
-  SyncService().init();
+  if (!kIsWeb) {
+    SyncService().init();
+  }
   final prefs = await SharedPreferences.getInstance();
   final bool onboardingVu = prefs.getBool('onboarding_vu') ?? false;
 

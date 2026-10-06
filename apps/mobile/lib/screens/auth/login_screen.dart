@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
@@ -64,6 +65,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (error != null) ...[const SizedBox(height: 14), Text(error, style: const TextStyle(color: AppTheme.erreur))],
                 const SizedBox(height: 24),
                 FilledButton.icon(onPressed: _chargement ? null : _connexion, icon: _chargement ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.login), label: Text(_chargement ? 'Connexion...' : 'Se connecter')),
+                if (kIsWeb) ...[
+                  const SizedBox(height: 20),
+                  const Divider(color: Colors.white12),
+                  const SizedBox(height: 12),
+                  const Text('iPhone : ouvrez cette page dans Safari, appuyez sur Partager, puis « Sur l’écran d’accueil » pour installer l’application.', textAlign: TextAlign.center, style: TextStyle(color: AppTheme.grisClair, fontSize: 12, height: 1.45)),
+                ],
               ]),
             ),
           ),
