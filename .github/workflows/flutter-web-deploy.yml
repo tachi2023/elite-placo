@@ -2,7 +2,10 @@ name: Build and publish Flutter Web
 
 on:
   push:
-    branches: [jour-4]
+    branches: [main]
+    paths:
+      - 'apps/mobile/**'
+      - '.github/workflows/flutter-web-deploy.yml'
   workflow_dispatch:
 
 permissions:

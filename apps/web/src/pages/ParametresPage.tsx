@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, ShieldCheck, Settings2, Package2 } from 'lucide-react';
 import ManagementShell from '../components/ManagementShell';
 
+const applicationVersion = import.meta.env.VITE_APP_VERSION || '0.1.0-mvp';
+const buildDate = import.meta.env.VITE_BUILD_DATE || '2026-10-06';
+
 const cards = [
   {
     title: 'Prix des matériaux',
@@ -61,6 +64,12 @@ export default function ParametresPage() {
             Douala, Cameroun • FCFA
           </div>
         </div>
+      </div>
+
+      <div className="mt-4 rounded-[20px] border border-white/10 bg-[#121214] px-5 py-4 text-xs text-gray-400">
+        Version <span className="font-semibold text-[#C9A84C]">{applicationVersion}</span>
+        <span className="mx-2 text-white/20">•</span>
+        Build du <span className="font-semibold text-white">{buildDate}</span>
       </div>
     </ManagementShell>
   );

@@ -7,6 +7,9 @@ import '../../repositories/site_content_repository.dart';
 import '../../services/api_service.dart';
 import '../../theme/app_theme.dart';
 
+const _applicationVersion = String.fromEnvironment('APP_VERSION', defaultValue: '0.1.0-mvp');
+const _buildDate = String.fromEnvironment('APP_BUILD_DATE', defaultValue: '06/10/2026');
+
 class GestionSiteScreen extends StatefulWidget {
   const GestionSiteScreen({super.key});
 
@@ -172,7 +175,7 @@ class _GestionSiteScreenState extends State<GestionSiteScreen>
     final type = _types[_tabs.index];
     final items = _items[type] ?? const <SiteContent>[];
     return Scaffold(
-      appBar: AppBar(title: const Text('Gestion du site'), bottom: TabBar(controller: _tabs, isScrollable: true, indicatorColor: AppTheme.or, tabs: [for (final label in _labels) Tab(text: label)])),
+      appBar: AppBar(title: const Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [Text('Gestion du site'), Text('v$_applicationVersion · $_buildDate', style: TextStyle(fontSize: 10, color: AppTheme.grisFonce))]), bottom: TabBar(controller: _tabs, isScrollable: true, indicatorColor: AppTheme.or, tabs: [for (final label in _labels) Tab(text: label)])),
       floatingActionButton: FloatingActionButton.extended(backgroundColor: AppTheme.or, foregroundColor: AppTheme.anthracite, onPressed: () => _edit(), icon: const Icon(Icons.add), label: const Text('Ajouter')),
       body: RefreshIndicator(
         color: AppTheme.or, onRefresh: () => _load(type),
