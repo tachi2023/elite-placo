@@ -37,7 +37,7 @@ services:
       - key: ADMIN_PASSWORD
         sync: false
       - key: CORS_ORIGINS
-        value: https://eliteplacodeco.cm,https://elite-placo-site.onrender.com,https://elite-placo-app.onrender.com,https://elite-placo-site-9q65.onrender.com,https://elite-placo-app-9q65.onrender.com
+        value: https://eliteplacodeco.cm,https://elite-placo-site.onrender.com,https://elite-placo-app.onrender.com,https://elite-placo-site-9q65.onrender.com,https://elite-placo-app-9q65.onrender.com,https://elite-placo-site-static.onrender.com,https://elite-placo-app-static.onrender.com
       - key: APP_DEMO_ENABLED
         value: "true"
 
@@ -49,6 +49,33 @@ services:
     dockerfilePath: apps/web/Dockerfile
     dockerContext: apps/web
     healthCheckPath: /
+
+  # Frontend React servi par le CDN Render, sans mise en veille du conteneur.
+  - type: web
+    runtime: static
+    name: elite-placo-site-static
+    rootDir: apps/web
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://elite-placo-api-oregon-9q65.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  # Flutter Web est construit par GitHub Actions sur deploy-app.
+  - type: web
+    runtime: static
+    name: elite-placo-app-static
+    branch: deploy-app
+    buildCommand: echo "Flutter Web artifact already built by GitHub Actions"
+    staticPublishPath: .
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
 
   - type: web
     name: elite-placo-app
