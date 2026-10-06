@@ -1,5 +1,5 @@
 import { Link, Navigate, useLocation } from 'react-router-dom';
-import { Home, Building2, BarChart3, Settings } from 'lucide-react';
+import { Home, Building2, BarChart3, Settings, FileText } from 'lucide-react';
 import BrandLogo from './BrandLogo';
 
 interface ManagementShellProps {
@@ -20,6 +20,7 @@ export default function ManagementShell({ title, subtitle, children }: Managemen
     { to: '/chantiers', icon: Building2, label: 'CHANTIERS' },
     { to: '/dashboard', icon: BarChart3, label: 'BILAN' },
     { to: '/parametres', icon: Settings, label: 'RÉGLAGES' },
+    { to: '/admin/devis', icon: FileText, label: 'DEVIS' },
   ];
 
   return (
@@ -45,7 +46,7 @@ export default function ManagementShell({ title, subtitle, children }: Managemen
         </main>
 
         <nav className="mt-4 rounded-[28px] border border-white/10 bg-[#0E0E10]/90 px-2 py-3 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
             {navItems.map(({ to, icon: Icon, label }) => {
               const active = location.pathname === to || (to === '/chantiers' && location.pathname.startsWith('/chantiers'));
               return (

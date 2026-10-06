@@ -9,7 +9,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-/** Applique le rate-limit uniquement a login et refresh. */
+/** Limite les routes publiques qui peuvent etre abusees ou couteuses. */
 public class RateLimitingFilter extends OncePerRequestFilter {
 
     private final RateLimitService rateLimitService;
@@ -21,8 +21,14 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
         String uri = request.getRequestURI();
+        boolean devis = ("POST".equalsIgnoreCase(request.getMethod())
+                && ("/api/devis".equals(uri) || "/api/demandes-devis".equals(uri)));
+        boolean suivi = uri.startsWith("/api/suivi/");
+        boolean changementMotDePasse = "POST".equalsIgnoreCase(request.getMethod())
+                && "/api/auth/change-password".equals(uri);
         return !("/api/auth/login".equals(uri) || "/api/auth/refresh".equals(uri)
-                || "/api/avis".equals(uri));
+                || changementMotDePasse
+                || "/api/avis".equals(uri) || devis || suivi);
     }
 
     @Override

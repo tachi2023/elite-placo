@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
+import 'login_screen.dart';
 
 class PinLockScreen extends StatefulWidget {
   const PinLockScreen({super.key});
@@ -94,10 +95,10 @@ class _PinLockScreenState extends State<PinLockScreen>
       return;
     }
 
-    if (_pinSaisi.length >= 4) return;
+    if (_pinSaisi.length >= 6) return;
     setState(() => _pinSaisi += touche);
 
-    if (_pinSaisi.length == 4) {
+    if (_pinSaisi.length == 6) {
       setState(() => _isLoading = true);
 
       if (!auth.isPinConfigured) {
@@ -219,7 +220,7 @@ class _PinLockScreenState extends State<PinLockScreen>
           ? 'Créez votre code PIN'
           : 'Confirmez votre code PIN';
       sousTitre = _pinCree == null
-          ? 'Choisissez un code à 4 chiffres pour sécuriser vos données'
+          ? 'Choisissez un code à 6 chiffres pour sécuriser vos données'
           : 'Saisissez à nouveau votre code pour confirmer';
     } else if (auth.isLockedOut) {
       titre = 'Accès temporairement bloqué';
@@ -366,7 +367,7 @@ class _PinLockScreenState extends State<PinLockScreen>
                         const Spacer(flex: 1),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(4, (i) {
+                          children: List.generate(6, (i) {
                             final estRempli = i < _pinSaisi.length;
                             return AnimatedContainer(
                               duration: const Duration(milliseconds: 200),
@@ -487,6 +488,29 @@ class _PinLockScreenState extends State<PinLockScreen>
                           },
                         ),
                         const Spacer(flex: 1),
+                        if (auth.isPinConfigured && !auth.isLockedOut)
+                          TextButton.icon(
+                            onPressed: _isLoading
+                                ? null
+                                : () async {
+                                    await auth.deconnexionComplete();
+                                    if (!context.mounted) return;
+                                    Navigator.of(context).pushAndRemoveUntil(
+                                      MaterialPageRoute(
+                                        builder: (_) => const LoginScreen(),
+                                      ),
+                                      (_) => false,
+                                    );
+                                  },
+                            icon: const Icon(Icons.password_outlined),
+                            label: const Text(
+                              'Se reconnecter avec le mot de passe',
+                            ),
+                            style: TextButton.styleFrom(
+                              foregroundColor:
+                                  AppTheme.or.withValues(alpha: 0.9),
+                            ),
+                          ),
                       ],
                     ),
                   ),

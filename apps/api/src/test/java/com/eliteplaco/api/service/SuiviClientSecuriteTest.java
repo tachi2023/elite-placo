@@ -1,24 +1,34 @@
 package com.eliteplaco.api.service;
 
+import com.eliteplaco.api.dto.ChantierSuiviPublicDTO;
+import com.eliteplaco.api.entity.ContenuSite;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
- * Ce test n'est PAS un test de calcul mais un test de non-régression sur
- * la confidentialité : le point le plus critique du Module 7 est qu'AUCUNE
- * donnée financière ne doit jamais transiter par l'endpoint public
- * /api/suivi/{code} (elite.md §10.15).
- *
- * TODO Phase 6 : une fois ChantierSuiviPublicDTO et le mapping en place,
- * vérifier par réflexion (ou simplement à la lecture du code) que ce DTO
- * ne contient AUCUN champ montant/marge/dépense — voir la classe
- * ChantierSuiviPublicDTO elle-même, volontairement minimaliste.
+ * Non-régression pour le Module 7 : les données publiques ne doivent jamais
+ * exposer les montants financiers internes ni les autres détails sensibles.
  */
 class SuiviClientSecuriteTest {
 
     @Test
-    void aCompleterEnPhase6() {
-        // TODO : test d'intégration MockMvc sur GET /api/suivi/{code}
-        // qui vérifie que la réponse JSON ne contient QUE :
-        // nomClient, ville, statut, avancementPourcent.
+    void leDTOPublicNeContientQueLesChampsAutorises() {
+        List<String> champs = Arrays.stream(ChantierSuiviPublicDTO.class.getDeclaredFields())
+                .map(Field::getName)
+                .toList();
+
+        assertEquals(List.of("nomClient", "ville", "statut", "avancementPourcent", "etapes", "photos", "documents"), champs);
+        assertFalse(champs.stream().anyMatch(name -> name.contains("montant") || name.contains("encaisse") || name.contains("depense") || name.contains("marge")));
+    }
+
+    @Test
+    void leSitePublieAccepteLesTypesDeContenuRequis() {
+        assertDoesNotThrow(() -> ContenuSite.TypeContenu.valueOf("PROJET"));
+        assertDoesNotThrow(() -> ContenuSite.TypeContenu.valueOf("A_PROPOS"));
     }
 }

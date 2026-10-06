@@ -9,7 +9,9 @@ public record ContenuSiteDTO(
         String titre,
         String description,
         String imageUrl,
-        Integer ordre
+        Integer ordre,
+        Boolean visible,
+        String publicId
 ) {
     public static ContenuSiteDTO fromEntity(ContenuSite contenu) {
         return new ContenuSiteDTO(
@@ -19,7 +21,9 @@ public record ContenuSiteDTO(
                 contenu.getTitre(),
                 contenu.getDescription(),
                 contenu.getImageUrl(),
-                contenu.getOrdre()
+                contenu.getOrdre(),
+                contenu.isVisible(),
+                contenu.getPublicId()
         );
     }
 }

@@ -2,6 +2,7 @@ package com.eliteplaco.api.service;
 
 import com.eliteplaco.api.dto.LoginRequest;
 import com.eliteplaco.api.dto.LoginResponse;
+import com.eliteplaco.api.dto.ChangerMotDePasseRequest;
 import com.eliteplaco.api.entity.Utilisateur;
 import com.eliteplaco.api.exception.AppException;
 import com.eliteplaco.api.repository.UtilisateurRepository;
@@ -65,5 +66,15 @@ public class AuthService {
 
         String nouvelAccessToken = jwtService.genererAccessToken(identifiant);
         return new LoginResponse(nouvelAccessToken, refreshToken, jwtService.accessTokenExpirationSecondes());
+    }
+
+    public void changerMotDePasse(String identifiant, ChangerMotDePasseRequest requete) {
+        Utilisateur utilisateur = utilisateurRepository.findByIdentifiant(identifiant)
+                .orElseThrow(() -> new AppException("Utilisateur introuvable.", HttpStatus.UNAUTHORIZED));
+        if (!passwordEncoder.matches(requete.ancienMotDePasse(), utilisateur.getMotDePasseHache())) {
+            throw new AppException("Ancien mot de passe incorrect.", HttpStatus.UNAUTHORIZED);
+        }
+        utilisateur.setMotDePasseHache(passwordEncoder.encode(requete.nouveauMotDePasse()));
+        utilisateurRepository.save(utilisateur);
     }
 }

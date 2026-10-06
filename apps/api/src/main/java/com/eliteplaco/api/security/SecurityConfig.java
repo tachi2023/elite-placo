@@ -3,6 +3,7 @@ package com.eliteplaco.api.security;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtService jwtService;
@@ -46,7 +48,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> {
                 auth.requestMatchers("/", "/actuator/health", "/api/auth/**", "/api/suivi/**").permitAll()
                     .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/contenu-site/**", "/api/avis/public").permitAll()
-                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/avis").permitAll();
+                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/avis", "/api/devis", "/api/demandes-devis").permitAll();
                 if (localProfile) {
                     auth.requestMatchers("/h2-console/**").permitAll();
                 }

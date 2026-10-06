@@ -1,11 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
+
 import 'package:crypto/crypto.dart';
-import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../services/api_service.dart';
 import '../services/sync_service.dart';
 
@@ -13,27 +17,26 @@ class AuthProvider extends ChangeNotifier {
   bool _estDeverrouille = false;
   int _tentativesEchouees = 0;
   String? _erreurConnexion;
-  bool _isPinConfigured = true;
+  bool _isPinConfigured = false;
   DateTime? _lockoutUntil;
   bool _peutUtiliserBiometrie = false;
-
   bool _isInitializing = true;
-  bool get isInitializing => _isInitializing;
 
+  bool get isInitializing => _isInitializing;
   bool get estDeverrouille => _estDeverrouille;
   int get tentativesEchouees => _tentativesEchouees;
   String? get erreurConnexion => _erreurConnexion;
   bool get isPinConfigured => _isPinConfigured;
   DateTime? get lockoutUntil => _lockoutUntil;
   bool get peutUtiliserBiometrie => _peutUtiliserBiometrie;
-
-  bool get isLockedOut =>
-      _lockoutUntil != null && _lockoutUntil!.isAfter(DateTime.now());
+  bool get isLockedOut => _lockoutUntil != null && _lockoutUntil!.isAfter(DateTime.now());
 
   final ApiService _api = ApiService();
   final _secureStorage = const FlutterSecureStorage();
   final LocalAuthentication _localAuth = LocalAuthentication();
   static const _pinKey = 'user_pin_hash';
+  static const _pinSaltKey = 'user_pin_salt';
+  static const _refreshTokenKey = 'refresh_token';
   static const _attemptsKey = 'failed_attempts';
   static const _lockoutKey = 'lockout_until';
 
@@ -43,12 +46,8 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> _init() async {
     final prefs = await SharedPreferences.getInstance();
-
-    // Charger le statut du PIN
     final savedHash = await _secureStorage.read(key: _pinKey);
     _isPinConfigured = savedHash != null && savedHash.isNotEmpty;
-
-    // Charger les infos de blocage
     _tentativesEchouees = prefs.getInt(_attemptsKey) ?? 0;
     final lockoutMs = prefs.getInt(_lockoutKey);
     if (lockoutMs != null) {
@@ -60,32 +59,55 @@ class AuthProvider extends ChangeNotifier {
         await prefs.remove(_lockoutKey);
       }
     }
-
-    // Charger la disponibilité biométrique
     try {
-      final canCheck = await _localAuth.canCheckBiometrics;
-      final isSupported = await _localAuth.isDeviceSupported();
-      _peutUtiliserBiometrie = canCheck && isSupported;
+      _peutUtiliserBiometrie = !kIsWeb &&
+          await _localAuth.canCheckBiometrics &&
+          await _localAuth.isDeviceSupported();
     } catch (_) {
       _peutUtiliserBiometrie = false;
     }
-
     _isInitializing = false;
     notifyListeners();
   }
 
-  String _hashPin(String pin) {
-    final bytes = utf8.encode(pin);
-    final digest = sha256.convert(bytes);
-    return digest.toString();
+  String _hashPin(String pin, String salt) => sha256.convert(utf8.encode('$salt:$pin')).toString();
+
+  Future<bool> seConnecter(String identifiant, String motDePasse) async {
+    _erreurConnexion = null;
+    try {
+      final response = await _api.client.post('/api/auth/login', data: {
+        'identifiant': identifiant.trim(),
+        'motDePasse': motDePasse,
+      });
+      final data = response.data as Map<String, dynamic>;
+      final access = data['jetonAcces'] as String;
+      final refresh = data['jetonRafraichissement'] as String;
+      _api.definirJetons(jetonAcces: access, jetonRafraichissement: refresh);
+      await _secureStorage.write(key: _refreshTokenKey, value: refresh);
+      notifyListeners();
+      return true;
+    } on DioException catch (e) {
+      _erreurConnexion = e.response?.statusCode == 429
+          ? 'Trop de tentatives. Réessayez plus tard.'
+          : 'Identifiant ou mot de passe incorrect.';
+      notifyListeners();
+      return false;
+    } catch (_) {
+      _erreurConnexion = 'Impossible de joindre le serveur.';
+      notifyListeners();
+      return false;
+    }
   }
 
   Future<bool> creerPin(String pin) async {
-    final hashed = _hashPin(pin);
-    await _secureStorage.write(key: _pinKey, value: hashed);
+    if (pin.length != 6) return false;
+    final salt = base64UrlEncode(List<int>.generate(16, (_) => Random.secure().nextInt(256)));
+    await _secureStorage.write(key: _pinSaltKey, value: salt);
+    await _secureStorage.write(key: _pinKey, value: _hashPin(pin, salt));
     _isPinConfigured = true;
-    _estDeverrouille = true; // Auto-login après création
+    _estDeverrouille = true;
     notifyListeners();
+    unawaited(SyncService().synchroniser());
     return true;
   }
 
@@ -95,26 +117,18 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
-
     final savedHash = await _secureStorage.read(key: _pinKey);
-    final hashedSaisi = _hashPin(pinSaisi);
-
-    if (savedHash != hashedSaisi) {
+    final salt = await _secureStorage.read(key: _pinSaltKey);
+    final hash = salt == null ? sha256.convert(utf8.encode(pinSaisi)).toString() : _hashPin(pinSaisi, salt);
+    if (savedHash != hash) {
       await _incrementerEchec();
       notifyListeners();
       return false;
     }
-
-    // Succès
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_attemptsKey);
-    await prefs.remove(_lockoutKey);
-    _tentativesEchouees = 0;
-    _lockoutUntil = null;
-
+    await _effacerTentatives();
     _estDeverrouille = true;
     notifyListeners();
-    unawaited(_tenterConnexionApi());
+    unawaited(_restaurerSessionApi());
     return true;
   }
 
@@ -122,95 +136,70 @@ class AuthProvider extends ChangeNotifier {
     _tentativesEchouees++;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_attemptsKey, _tentativesEchouees);
-
-    if (_tentativesEchouees >= 3) {
-      int minutes = 0;
-      if (_tentativesEchouees == 3) {
-        minutes = 1; // 3 essais = 1 min (simplifié, ou 30s)
-      } else if (_tentativesEchouees == 4) {
-        minutes = 2; // 4 essais = 2 min
-      } else {
-        minutes = 5; // > 4 = 5 min
-      }
-
+    if (_tentativesEchouees >= 5) {
+      final minutes = _tentativesEchouees == 5 ? 5 : 15;
       _lockoutUntil = DateTime.now().add(Duration(minutes: minutes));
       await prefs.setInt(_lockoutKey, _lockoutUntil!.millisecondsSinceEpoch);
-      _erreurConnexion = 'Code incorrect. Bloqué pour $minutes minute(s).';
+      _erreurConnexion = 'Trop d\'échecs. Réessayez dans $minutes minutes ou reconnectez-vous avec votre mot de passe.';
     } else {
-      final restants = 3 - _tentativesEchouees;
-      _erreurConnexion = 'Code PIN incorrect. $restants essai(s) restant(s).';
+      _erreurConnexion = 'Code PIN incorrect. ${5 - _tentativesEchouees} essai(s) restant(s).';
     }
   }
 
-  Future<void> _tenterConnexionApi() async {
+  Future<void> _effacerTentatives() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_attemptsKey);
+    await prefs.remove(_lockoutKey);
+    _tentativesEchouees = 0;
+    _lockoutUntil = null;
+  }
+
+  Future<void> _restaurerSessionApi() async {
+    final refresh = await _secureStorage.read(key: _refreshTokenKey);
+    if (refresh == null || refresh.isEmpty) {
+      _erreurConnexion = 'Reconnectez-vous avec votre mot de passe.';
+      return;
+    }
     try {
-      final response = await _api.client.post('/api/auth/login', data: {
-        'identifiant': 'raoul.michel',
-        'motDePasse': 'changeme',
-      });
-      final String jetonAcces = response.data['jetonAcces'] as String;
-      final String jetonRafraichissement = response.data['jetonRafraichissement'] as String;
-      _api.definirJetons(
-        jetonAcces: jetonAcces,
-        jetonRafraichissement: jetonRafraichissement,
-      );
-      _erreurConnexion = null;
+      final response = await _api.client.post('/api/auth/refresh', data: {'refreshToken': refresh});
+      final data = response.data as Map<String, dynamic>;
+      _api.definirJetons(jetonAcces: data['jetonAcces'] as String, jetonRafraichissement: data['jetonRafraichissement'] as String? ?? refresh);
       await SyncService().synchroniser();
-    } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout ||
-          e.type == DioExceptionType.connectionError) {
-        _erreurConnexion = 'Mode hors-ligne — données locales uniquement.';
-      } else {
-        _erreurConnexion =
-            'Connexion serveur échouée (${e.response?.statusCode}).';
-      }
-    } catch (_) {
-      _erreurConnexion = 'Erreur inattendue lors de la connexion.';
+    } on DioException catch (_) {
+      _erreurConnexion = 'Serveur indisponible : mode hors-ligne activé.';
     }
   }
 
   Future<bool> verifierBiometrie() async {
-    if (isLockedOut) {
-      _erreurConnexion = 'Application bloquée temporairement.';
+    if (isLockedOut) return false;
+    try {
+      final ok = await _localAuth.authenticate(
+        localizedReason: 'Déverrouillez votre application Élite Placo',
+        options: const AuthenticationOptions(biometricOnly: true, stickyAuth: true),
+      );
+      if (ok) {
+        await _effacerTentatives();
+        _estDeverrouille = true;
+        notifyListeners();
+        unawaited(_restaurerSessionApi());
+      }
+      return ok;
+    } catch (_) {
+      _erreurConnexion = 'Biométrie non disponible.';
       notifyListeners();
       return false;
     }
+  }
 
-    try {
-      final canCheck = await _localAuth.canCheckBiometrics;
-      final isSupported = await _localAuth.isDeviceSupported();
-      if (!canCheck || !isSupported) {
-        _erreurConnexion = 'Biométrie non disponible.';
-        notifyListeners();
-        return false;
-      }
-
-      final didAuthenticate = await _localAuth.authenticate(
-        localizedReason: 'Déverrouillez votre application Élite Placo',
-        options: const AuthenticationOptions(
-          biometricOnly: true,
-          stickyAuth: true,
-        ),
-      );
-
-      if (didAuthenticate) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.remove(_attemptsKey);
-        await prefs.remove(_lockoutKey);
-        _tentativesEchouees = 0;
-        _lockoutUntil = null;
-
-        _estDeverrouille = true;
-        notifyListeners();
-        unawaited(_tenterConnexionApi());
-        return true;
-      }
-    } catch (_) {
-      _erreurConnexion = 'Erreur lors de l\'authentification biométrique.';
-      notifyListeners();
-    }
-    return false;
+  Future<void> deconnexionComplete() async {
+    await _secureStorage.delete(key: _pinKey);
+    await _secureStorage.delete(key: _pinSaltKey);
+    await _secureStorage.delete(key: _refreshTokenKey);
+    await _effacerTentatives();
+    _api.supprimerJetons();
+    _isPinConfigured = false;
+    _estDeverrouille = false;
+    notifyListeners();
   }
 
   void verrouiller() {

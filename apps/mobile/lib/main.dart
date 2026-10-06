@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'theme/app_theme.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/auth/pin_lock_screen.dart';
+import 'screens/auth/login_screen.dart';
 import 'screens/dashboard/tableau_de_bord_screen.dart';
 
 import 'repositories/chantier_repository.dart';
@@ -24,7 +26,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // ignore: unawaited_futures
   ApiService().reveiller();
-  SyncService().init();
+  if (!kIsWeb) {
+    SyncService().init();
+  }
   final prefs = await SharedPreferences.getInstance();
   final bool onboardingVu = prefs.getBool('onboarding_vu') ?? false;
 
@@ -65,8 +69,7 @@ class ElitePlacoApp extends StatelessWidget {
         title: 'Élite Placo & Déco',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme, // Thème Premium Anthracite/Or
-        home:
-            onboardingVu ? const _RouteurPrincipal() : const OnboardingScreen(),
+      home: onboardingVu ? const _RouteurPrincipal() : const OnboardingScreen(),
       ),
     );
   }
@@ -115,7 +118,9 @@ class _RouteurPrincipalState extends State<_RouteurPrincipal>
             Expanded(
               child: auth.estDeverrouille
                   ? const TableauDeBordScreen()
-                  : const PinLockScreen(),
+                  : auth.isPinConfigured
+                      ? const PinLockScreen()
+                      : const LoginScreen(),
             ),
           ],
         );

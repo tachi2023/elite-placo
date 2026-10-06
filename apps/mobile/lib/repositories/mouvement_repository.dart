@@ -51,7 +51,7 @@ class MouvementRepository {
       }
     } catch (e) {
       // Offline : on conserve le cache local.
-      if (kIsWeb) return const [];
+      if (kIsWeb) rethrow;
     }
 
     final db = await _localDb.database;

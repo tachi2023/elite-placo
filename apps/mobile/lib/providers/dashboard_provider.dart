@@ -37,9 +37,8 @@ class DashboardProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('DashboardProvider.charger() erreur: $e');
       _erreur = e.toString();
-      // En cas d'erreur (ex: sqflite non dispo sur web), fournir une vue vide
-      // pour que l'UI ne reste pas bloquée en chargement infini.
-      _vueGlobale ??= VueGlobale.vide();
+      // L'interface affiche l'erreur et propose de réessayer. Une réponse
+      // vide ne doit pas masquer une API indisponible sur le web.
     }
     _enChargement = false;
     notifyListeners();

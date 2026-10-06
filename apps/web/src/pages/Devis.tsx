@@ -1,25 +1,48 @@
 ﻿import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, CheckCircle } from 'lucide-react';
+import { Send, CheckCircle, AlertCircle } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { submitDemandeDevis } from '../lib/siteApi';
 
 const typesTravaux = ['Plâtrerie', 'Faux Plafonds', 'Décoration Intérieure', 'Revêtements Muraux', 'Peinture Décorative', 'Isolation', 'Autre'];
 
 export default function Devis() {
   const [form, setForm] = useState({
     nom: '', email: '', telephone: '', ville: '',
-    typeTravaux: '', superficie: '', message: '', budget: ''
+    typeTravaux: '', superficie: '', message: '', budget: '', honeypot: ''
   });
   const [sent, setSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    setError('');
+
+    try {
+      setIsSubmitting(true);
+      await submitDemandeDevis({
+        nom: form.nom.trim(),
+        email: form.email.trim(),
+        telephone: form.telephone.trim(),
+        ville: form.ville.trim(),
+        typeTravaux: form.typeTravaux,
+        superficie: form.superficie.trim(),
+        budgetEstime: form.budget.trim(),
+        message: form.message.trim(),
+        honeypot: form.honeypot,
+      });
+      setSent(true);
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Une erreur est survenue.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -67,8 +90,8 @@ export default function Devis() {
             <div className="grid md:grid-cols-2 gap-6">
               {[
                 { name: 'nom', label: 'Nom complet', type: 'text', required: true },
-                { name: 'email', label: 'Adresse email', type: 'email', required: true },
-                { name: 'telephone', label: 'Téléphone', type: 'tel', required: false },
+                { name: 'email', label: 'Adresse email', type: 'email', required: false },
+                { name: 'telephone', label: 'Téléphone', type: 'tel', required: true },
                 { name: 'ville', label: 'Ville', type: 'text', required: false },
               ].map(field => (
                 <div key={field.name}>
@@ -85,6 +108,8 @@ export default function Devis() {
                 </div>
               ))}
             </div>
+
+            <input name="honeypot" value={form.honeypot} onChange={handleChange} tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
 
             <div className="grid md:grid-cols-2 gap-6">
               <div>
@@ -136,11 +161,20 @@ export default function Devis() {
               />
             </div>
 
+            {error && (
+              <div className="flex items-center gap-3 rounded border border-red-500/40 bg-red-500/5 px-4 py-3 text-sm text-red-200">
+                <AlertCircle size={18} className="shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-2 bg-or text-noir font-semibold tracking-widest uppercase text-sm px-8 py-4 hover:bg-or-clair transition-all duration-300"
+              disabled={isSubmitting}
+              className="w-full flex items-center justify-center gap-2 bg-or text-noir font-semibold tracking-widest uppercase text-sm px-8 py-4 hover:bg-or-clair transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Send size={18} /> Envoyer ma demande
+              <Send size={18} />
+              {isSubmitting ? 'Envoi en cours...' : 'Envoyer ma demande'}
             </button>
           </motion.form>
         )}

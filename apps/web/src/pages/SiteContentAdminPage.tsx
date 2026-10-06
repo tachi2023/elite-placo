@@ -18,7 +18,7 @@ export default function SiteContentAdminPage() {
   async function load() {
     try {
       const [contentData, reviewData] = await Promise.all([
-        adminRequest('/api/contenu-site/type/REALISATIONS'),
+        adminRequest('/api/contenu-site/admin/type/REALISATIONS'),
         adminRequest('/api/avis'),
       ]);
       setContents(contentData);

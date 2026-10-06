@@ -12,6 +12,8 @@ import '../chantiers/chantiers_list_screen.dart';
 import '../materiaux/calcul_materiaux_screen.dart';
 import '../finances/finances_screen.dart';
 import '../ouvriers/ouvriers_screen.dart';
+import '../devis/demandes_devis_screen.dart';
+import '../settings/changer_mot_de_passe_screen.dart';
 
 class TableauDeBordScreen extends StatefulWidget {
   const TableauDeBordScreen({super.key});
@@ -100,6 +102,36 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
               if (provider.enChargement) {
                 return const Center(
                     child: CircularProgressIndicator(color: AppTheme.or));
+              }
+              if (provider.erreur != null) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(28),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.cloud_off_rounded,
+                            size: 58, color: AppTheme.or),
+                        const SizedBox(height: 18),
+                        const Text('Connexion indisponible',
+                            style: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Le serveur est peut-être en réveil ou le réseau est coupé. Vos données n’ont pas été supprimées.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: AppTheme.grisClair),
+                        ),
+                        const SizedBox(height: 18),
+                        FilledButton.icon(
+                          onPressed: provider.charger,
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Réessayer'),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               }
               final vue = provider.vueGlobale;
               if (vue == null || vue.resumesChantiers.isEmpty) {
@@ -534,8 +566,12 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                     () => const FinancesScreen()),
                 _menuItem(sheetContext, Icons.engineering_rounded, 'Ouvriers',
                     () => const OuvriersScreen()),
+                _menuItem(sheetContext, Icons.request_quote_rounded,
+                    'Demandes de devis', () => const DemandesDevisScreen()),
                 _menuItem(sheetContext, Icons.settings_rounded,
                     'Paramètres du site', () => const GestionSiteScreen()),
+                _menuItem(sheetContext, Icons.lock_reset_rounded,
+                    'Changer le mot de passe', () => const ChangerMotDePasseScreen()),
                 const Divider(color: Colors.white12),
                 ListTile(
                   leading: const Icon(Icons.lock_outline_rounded,

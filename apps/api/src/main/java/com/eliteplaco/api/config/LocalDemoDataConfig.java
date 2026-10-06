@@ -7,11 +7,19 @@ import com.eliteplaco.api.entity.Encaissement;
 import com.eliteplaco.api.entity.LienSuiviClient;
 import com.eliteplaco.api.entity.CategorieDepense;
 import com.eliteplaco.api.entity.Utilisateur;
+import com.eliteplaco.api.entity.EtapeChantier;
+import com.eliteplaco.api.entity.PhotoChantier;
+import com.eliteplaco.api.entity.DocumentChantier;
+import com.eliteplaco.api.entity.DemandeDevis;
 import com.eliteplaco.api.repository.ChantierRepository;
 import com.eliteplaco.api.repository.ContenuSiteRepository;
 import com.eliteplaco.api.repository.LienSuiviClientRepository;
 import com.eliteplaco.api.repository.MouvementFinancierRepository;
 import com.eliteplaco.api.repository.UtilisateurRepository;
+import com.eliteplaco.api.repository.EtapeChantierRepository;
+import com.eliteplaco.api.repository.PhotoChantierRepository;
+import com.eliteplaco.api.repository.DocumentChantierRepository;
+import com.eliteplaco.api.repository.DemandeDevisRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +43,10 @@ public class LocalDemoDataConfig {
             MouvementFinancierRepository mouvementRepository,
             LienSuiviClientRepository lienRepository,
             ContenuSiteRepository contenuRepository,
+            EtapeChantierRepository etapeRepository,
+            PhotoChantierRepository photoRepository,
+            DocumentChantierRepository documentRepository,
+            DemandeDevisRepository demandeRepository,
             PasswordEncoder passwordEncoder) {
         return args -> {
             if (utilisateurRepository.count() == 0) {
@@ -75,21 +87,77 @@ public class LocalDemoDataConfig {
                         contenu(ContenuSite.TypeContenu.PARAMETRE_GLOBAL, "hero_title",
                                 "Des espaces qui imposent leur presence.",
                                 "Platrerie, plafonds et decoration interieure premium a Douala.", null, 1),
+                        contenu(ContenuSite.TypeContenu.PROJET, "projet_expertise",
+                                "Une expertise maîtrisée",
+                                "De la conception à la livraison, chaque chantier est suivi avec exigence et rigueur.", null, 2),
+                        contenu(ContenuSite.TypeContenu.A_PROPOS, "apropos_intro",
+                                "Élite Placo & Déco",
+                                "Une équipe spécialisée dans les faux plafonds, les finitions, les cloisons et la décoration intérieure sur mesure.", null, 3),
                         contenu(ContenuSite.TypeContenu.SERVICE, "service_platrerie",
                                 "Platrerie sur mesure",
-                                "Des lignes nettes, des volumes precis, des finitions qui durent.", null, 2),
+                                "Des lignes nettes, des volumes precis, des finitions qui durent.", null, 4),
                         contenu(ContenuSite.TypeContenu.SERVICE, "service_plafonds",
                                 "Faux plafonds signatures",
-                                "Un plafond pense comme une piece d architecture.", null, 3),
+                                "Un plafond pense comme une piece d architecture.", null, 5),
                         contenu(ContenuSite.TypeContenu.REALISATIONS, "realisation_villa",
                                 "Villa Bonanjo",
-                                "Eclairage indirect et volumes contemporains.", "/assets/realisations/villa.jpg", 4),
+                                "Eclairage indirect et volumes contemporains.", "/assets/realisations/villa.jpg", 6),
                         contenu(ContenuSite.TypeContenu.REALISATIONS, "realisation_hotel",
                                 "Hotel Le Meridien",
-                                "Un geste precis pour un lieu d exception.", "/assets/realisations/hotel.jpg", 5)
+                                "Un geste precis pour un lieu d exception.", "/assets/realisations/hotel.jpg", 7)
                 ));
             }
+
+            if (etapeRepository.count() == 0) {
+                for (Chantier chantier : chantierRepository.findAll()) {
+                    creerEtapesDemo(etapeRepository, chantier);
+                }
+            }
+            if (photoRepository.count() == 0) {
+                Chantier chantier = chantierRepository.findByCodeAccesClient("VB-2026-014").orElse(null);
+                if (chantier != null) {
+                    PhotoChantier photo = new PhotoChantier();
+                    photo.setChantier(chantier);
+                    photo.setUrl("https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=1200");
+                    photo.setLibelle("Salon avant travaux");
+                    photo.setAvantApres("AVANT");
+                    photoRepository.save(photo);
+
+                    DocumentChantier document = new DocumentChantier();
+                    document.setChantier(chantier);
+                    document.setUrl("https://example.com/documents/villa-bonanjo-devis.pdf");
+                    document.setLibelle("Devis signe");
+                    documentRepository.save(document);
+                }
+            }
+            if (demandeRepository.count() == 0) {
+                DemandeDevis demande = new DemandeDevis();
+                demande.setNom("Amina Njoya");
+                demande.setEmail("amina.demo@example.com");
+                demande.setTelephone("+237 690 00 00 01");
+                demande.setVille("Douala");
+                demande.setTypeTravaux("Faux plafonds");
+                demande.setSuperficie("120 m2");
+                demande.setBudgetEstime("4500000 FCFA");
+                demande.setMessage("Projet de renovation d'un appartement.");
+                demandeRepository.save(demande);
+            }
         };
+    }
+
+    private void creerEtapesDemo(EtapeChantierRepository repository, Chantier chantier) {
+        String[] libelles = {"Métrage", "Ossature", "Pose BA13", "Finitions", "Réception"};
+        int terminees = chantier.getStatut() == Chantier.StatutChantier.TERMINE ? libelles.length
+                : chantier.getStatut() == Chantier.StatutChantier.EN_COURS ? 2 : 0;
+        for (int i = 0; i < libelles.length; i++) {
+            EtapeChantier etape = new EtapeChantier();
+            etape.setChantier(chantier);
+            etape.setLibelle(libelles[i]);
+            etape.setOrdre(i + 1);
+            etape.setStatut(i < terminees ? EtapeChantier.StatutEtape.TERMINEE
+                    : i == terminees ? EtapeChantier.StatutEtape.EN_COURS : EtapeChantier.StatutEtape.A_FAIRE);
+            repository.save(etape);
+        }
     }
 
     private void creerChantierSiAbsent(ChantierRepository chantierRepository,
