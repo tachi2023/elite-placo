@@ -42,11 +42,10 @@ jobs:
           cp -R apps/mobile/build/web/. "$RUNNER_TEMP/flutter-web/"
           if git show-ref --verify --quiet refs/remotes/origin/deploy-app; then
             git switch --track origin/deploy-app
-            git rm -rf .
           else
             git switch --orphan deploy-app
-            git rm -rf .
           fi
+          git rm -rf . --ignore-unmatch
           cp -R "$RUNNER_TEMP/flutter-web/." .
           touch .nojekyll
           git config user.name github-actions[bot]
