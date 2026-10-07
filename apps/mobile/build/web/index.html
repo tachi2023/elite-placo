@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="/">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Application de gestion des chantiers Élite Placo & Déco.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Élite Placo">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/Icon-180.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>Élite Placo & Déco</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    html, body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100%;
+      background: #050505;
+    }
+
+    #app-loading {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 50% 35%, rgba(212, 175, 55, .12), #050505 62%);
+      transition: opacity .35s ease;
+    }
+
+    #app-loading .brand-name {
+      color: #e3c774;
+      font-family: Georgia, serif;
+      font-size: clamp(22px, 7vw, 38px);
+      letter-spacing: .01em;
+    }
+
+    #app-loading .brand-name span {
+      color: #d4af37;
+    }
+
+    #app-loading .brand-subtitle {
+      margin-top: 6px;
+      color: rgba(255, 255, 255, .48);
+      font: 9px/1.2 Arial, sans-serif;
+      letter-spacing: .28em;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-loading" aria-label="Chargement de l'application">
+    <div>
+      <div class="brand-name">Élite Placo <span>&amp;</span> Déco</div>
+      <div class="brand-subtitle">PAR PRIMA BTP</div>
+    </div>
+  </div>
+  <script src="flutter_bootstrap.js" async></script>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      const splash = document.getElementById('app-loading');
+      if (!splash) return;
+      splash.style.opacity = '0';
+      window.setTimeout(() => splash.remove(), 400);
+    });
+  </script>
+</body>
+</html>
