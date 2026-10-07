@@ -38,7 +38,7 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest requete) {
-        String identifiant = requete.identifiant();
+        String identifiant = normaliserIdentifiant(requete.identifiant());
         loginAttemptService.verifierNonBloque(identifiant);
         Utilisateur utilisateur = utilisateurRepository.findByIdentifiant(identifiant).orElse(null);
 
@@ -53,6 +53,16 @@ public class AuthService {
         String refreshToken = jwtService.genererRefreshToken(utilisateur.getIdentifiant());
 
         return new LoginResponse(accessToken, refreshToken, jwtService.accessTokenExpirationSecondes());
+    }
+
+    /**
+     * Le compte historique est conserve avec son identifiant canonique. Une
+     * faute de frappe frequente dans le nom commun ne doit pas bloquer le
+     * dirigeant, sans creer un second compte ni dupliquer ses donnees.
+     */
+    private String normaliserIdentifiant(String valeur) {
+        String identifiant = valeur == null ? "" : valeur.trim().toLowerCase();
+        return "raoul.michet".equals(identifiant) ? "raoul.michel" : identifiant;
     }
 
     public LoginResponse rafraichir(String refreshToken) {
