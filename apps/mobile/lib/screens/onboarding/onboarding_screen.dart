@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../auth/pin_lock_screen.dart';
 import '../auth/login_screen.dart';
+import '../../widgets/brand_logo.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -125,33 +125,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   padding: EdgeInsets.symmetric(horizontal: horizontal),
                   child: Column(
                     children: [
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 18),
                       Row(
                         children: [
                           Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'ELITE PLACO',
-                                  style: GoogleFonts.dmSans(
-                                    color: _gold,
-                                    fontSize: 11,
-                                    letterSpacing: 3.2,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'PAR PRIMA BTP',
-                                  style: GoogleFonts.dmSans(
-                                    color: const Color(0xFFB7B7B7),
-                                    fontSize: 10,
-                                    letterSpacing: 1.8,
-                                  ),
-                                ),
-                              ],
-                            ),
+                            child: const BrandLogo(titleSize: 18),
                           ),
                           TextButton(
                             onPressed: _terminerOnboarding,
@@ -275,7 +253,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 450),
+              curve: Curves.easeOutCubic,
               width: compact ? 136 : 160,
               height: compact ? 136 : 160,
               decoration: BoxDecoration(
@@ -290,7 +270,22 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   ),
                 ],
               ),
-              child: Icon(slide.icon, color: _gold, size: compact ? 58 : 68),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(slide.icon, color: _gold, size: compact ? 54 : 64),
+                  const SizedBox(height: 8),
+                  Text(
+                    'ÉLITE',
+                    style: GoogleFonts.dmSans(
+                      color: _gold.withValues(alpha: .82),
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 2.6,
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 32),
             Text.rich(

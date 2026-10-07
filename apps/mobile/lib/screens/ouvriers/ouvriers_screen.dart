@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/ouvrier_provider.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/app_ui.dart';
 
 /// §10.8 — liste des ouvriers connus + création + paiement rapide sur un
 /// chantier donné (le chantier est présélectionné, comme prévu au scénario).
@@ -91,19 +93,45 @@ class _OuvriersScreenState extends State<OuvriersScreen> {
           if (provider.ouvriers.isEmpty) {
             return const Center(child: Text('Aucun ouvrier enregistré pour le moment.'));
           }
-          return ListView.builder(
-            itemCount: provider.ouvriers.length,
-            itemBuilder: (context, i) {
-              final o = provider.ouvriers[i];
-              return ListTile(
-                title: Text(o.nomComplet),
-                subtitle: Text(o.telephone ?? ''),
-                trailing: TextButton(
-                  onPressed: widget.chantierId == null ? null : () => _enregistrerPaiement(o.id!),
-                  child: const Text('Payer'),
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: ResponsiveContent(
+              child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AppSectionTitle(
+                  title: 'Équipe terrain',
+                  subtitle: 'Retrouvez vos ouvriers et enregistrez rapidement leurs paiements.',
                 ),
-              );
-            },
+                const SizedBox(height: 16),
+                ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: provider.ouvriers.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    itemBuilder: (context, i) {
+                      final o = provider.ouvriers[i];
+                      return AppCard(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: CircleAvatar(
+                            backgroundColor: AppTheme.or.withValues(alpha: .14),
+                            child: Text(o.nomComplet.isEmpty ? '?' : o.nomComplet[0].toUpperCase(), style: const TextStyle(color: AppTheme.or, fontWeight: FontWeight.w700)),
+                          ),
+                          title: Text(o.nomComplet, style: const TextStyle(fontWeight: FontWeight.w700)),
+                          subtitle: Text(o.telephone?.isNotEmpty == true ? o.telephone! : 'Téléphone non renseigné'),
+                          trailing: OutlinedButton(
+                            onPressed: widget.chantierId == null ? null : () => _enregistrerPaiement(o.id!),
+                            child: const Text('Payer'),
+                          ),
+                        ),
+                      );
+                    },
+                ),
+              ],
+            ),
+            ),
           );
         },
       ),

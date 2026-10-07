@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/chantier_provider.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_ui.dart';
 
 class NouveauChantierScreen extends StatefulWidget {
   const NouveauChantierScreen({super.key});
@@ -39,8 +40,8 @@ class _NouveauChantierScreenState extends State<NouveauChantierScreen> {
       montantDevis: montant,
     );
 
-    setState(() => _enCours = false);
     if (!mounted) return;
+    setState(() => _enCours = false);
 
     if (ok) {
       Navigator.of(context).pop();
@@ -55,23 +56,29 @@ class _NouveauChantierScreenState extends State<NouveauChantierScreen> {
   }
 
   @override
+  void dispose() {
+    _nomController.dispose();
+    _villeController.dispose();
+    _montantController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Nouveau Chantier')),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
+      body: AppBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: ResponsiveContent(
+              maxWidth: 720,
+              child: AppCard(
+                padding: const EdgeInsets.all(24),
+                child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Informations du Client',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Outfit',
-                    color: AppTheme.or),
-              ),
+              const AppSectionTitle(title: 'Informations du client', icon: Icons.person_outline),
               const SizedBox(height: 16),
               _buildTextField(
                 controller: _nomController,
@@ -85,14 +92,7 @@ class _NouveauChantierScreenState extends State<NouveauChantierScreen> {
                 icon: Icons.location_on_outlined,
               ),
               const SizedBox(height: 32),
-              const Text(
-                'Détails des Travaux',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Outfit',
-                    color: AppTheme.or),
-              ),
+              const AppSectionTitle(title: 'Détails des travaux', icon: Icons.handyman_outlined),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: _typeTravaux,
@@ -151,7 +151,9 @@ class _NouveauChantierScreenState extends State<NouveauChantierScreen> {
                             fontFamily: 'Outfit'),
                       ),
               ),
-            ],
+                ],
+              ),
+            ),
           ),
         ),
       ),

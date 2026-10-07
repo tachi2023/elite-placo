@@ -11,6 +11,7 @@ export default function AdminLoginPage() {
   const [motDePasse, setMotDePasse] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState('');
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -20,9 +21,15 @@ export default function AdminLoginPage() {
     }
     setLoading(true);
     setError('');
+    setStatus('Réveil du serveur sécurisé...');
     const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 12000);
+    const timeout = window.setTimeout(() => controller.abort(), 75000);
     try {
+      await fetch(`${API_BASE_URL}/actuator/health`, {
+        signal: controller.signal,
+        cache: 'no-store',
+      });
+      setStatus('Serveur disponible, vérification de vos accès...');
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -36,11 +43,12 @@ export default function AdminLoginPage() {
       navigate('/admin');
     } catch (err) {
       setError(err instanceof DOMException && err.name === 'AbortError'
-        ? 'Le serveur met trop de temps à répondre. Réessayez dans quelques secondes.'
+        ? 'Le serveur Render met trop de temps à se réveiller. Attendez une minute puis réessayez.'
         : err instanceof Error ? err.message : 'Connexion impossible.');
     } finally {
       window.clearTimeout(timeout);
       setLoading(false);
+      setStatus('');
     }
   }
 
@@ -54,6 +62,7 @@ export default function AdminLoginPage() {
           <form onSubmit={submit} className="space-y-4">
             <input value={identifiant} onChange={(event) => setIdentifiant(event.target.value)} required placeholder="Identifiant" className="w-full border border-or/20 bg-noir px-4 py-3 text-sm outline-none focus:border-or" />
             <input value={motDePasse} onChange={(event) => setMotDePasse(event.target.value)} required type="password" placeholder="Mot de passe" className="w-full border border-or/20 bg-noir px-4 py-3 text-sm outline-none focus:border-or" />
+            {status && <p className="text-xs leading-relaxed text-texte-muted">{status}</p>}
             {error && <p className="text-sm text-erreur">{error}</p>}
             <button disabled={loading} className="w-full bg-or px-5 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-noir disabled:opacity-50">{loading ? 'Connexion...' : 'Ouvrir l’administration'}</button>
           </form>

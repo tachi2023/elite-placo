@@ -6,6 +6,7 @@ import '../../widgets/indicateur_pastille.dart';
 import '../chantiers/nouveau_chantier_screen.dart';
 import '../settings/gestion_site_screen.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_ui.dart';
 import '../../models/chantier.dart';
 import '../../providers/auth_provider.dart';
 import '../chantiers/chantiers_list_screen.dart';
@@ -14,6 +15,8 @@ import '../finances/finances_screen.dart';
 import '../ouvriers/ouvriers_screen.dart';
 import '../devis/demandes_devis_screen.dart';
 import '../settings/changer_mot_de_passe_screen.dart';
+import '../metrage/selection_metrage_screen.dart';
+import '../../widgets/brand_logo.dart';
 
 class TableauDeBordScreen extends StatefulWidget {
   const TableauDeBordScreen({super.key});
@@ -23,6 +26,8 @@ class TableauDeBordScreen extends StatefulWidget {
 }
 
 class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     super.initState();
@@ -42,28 +47,40 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      key: _scaffoldKey,
+      drawer: _buildDrawer(),
       appBar: AppBar(
         leading: IconButton(
           tooltip: 'Ouvrir le menu',
           icon: const Icon(Icons.menu_rounded, color: AppTheme.or),
-          onPressed: _ouvrirMenu,
+          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
-        title: const Text('Tableau de bord',
-            style: TextStyle(fontWeight: FontWeight.w600)),
-        backgroundColor: Colors.transparent,
+        title: const BrandLogo(centered: true, titleSize: 15),
+        backgroundColor: AppTheme.anthracite,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings, color: AppTheme.or),
-            onPressed: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const GestionSiteScreen()));
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh, color: AppTheme.or),
-            onPressed: () => context.read<DashboardProvider>().charger(),
+          Stack(
+            children: [
+              IconButton(
+                tooltip: 'Notifications',
+                icon: const Icon(Icons.notifications_none_rounded,
+                    color: AppTheme.grisClair),
+                onPressed: () {},
+              ),
+              Positioned(
+                top: 11,
+                right: 11,
+                child: Container(
+                  width: 6,
+                  height: 6,
+                  decoration: const BoxDecoration(
+                    color: AppTheme.or,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -437,13 +454,14 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
           Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const ChantiersListScreen()));
         } else if (index == 2) {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (_) => const FinancesScreen()));
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => const CalculMateriauxScreen()));
         } else if (index == 3) {
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const CalculMateriauxScreen()));
+              MaterialPageRoute(builder: (_) => const SelectionMetrageScreen()));
         } else {
-          _ouvrirMenu();
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const OuvriersScreen()));
         }
       },
       destinations: const [
@@ -456,44 +474,28 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
             selectedIcon: Icon(Icons.folder_copy),
             label: 'Projets'),
         NavigationDestination(
-            icon: Icon(Icons.account_balance_wallet_outlined),
-            selectedIcon: Icon(Icons.account_balance_wallet),
-            label: 'Finances'),
+            icon: Icon(Icons.calculate_outlined),
+            selectedIcon: Icon(Icons.calculate),
+            label: 'Calcul.'),
         NavigationDestination(
             icon: Icon(Icons.straighten_outlined),
             selectedIcon: Icon(Icons.straighten),
             label: 'Métrés'),
         NavigationDestination(
-            icon: Icon(Icons.more_horiz),
-            selectedIcon: Icon(Icons.menu),
-            label: 'Plus'),
+            icon: Icon(Icons.engineering_outlined),
+            selectedIcon: Icon(Icons.engineering),
+            label: 'Ouvriers'),
       ],
     );
   }
 
   Widget _buildKpiCard(String label, String valeur, IconData icon,
       {bool fullWidth = false, bool isHighlight = false, Color? color}) {
-    return Container(
+    return SizedBox(
       width: fullWidth ? double.infinity : null,
+      child: AppCard(
+      accent: isHighlight ? AppTheme.or : color,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: isHighlight
-            ? AppTheme.or.withValues(alpha: 0.08)
-            : Colors.white.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isHighlight
-              ? AppTheme.or.withValues(alpha: 0.3)
-              : Colors.white.withValues(alpha: 0.05),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          )
-        ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -519,7 +521,7 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
               ),
             ],
           ),
-          const Spacer(),
+          const SizedBox(height: 18),
           Text(
             valeur,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -532,79 +534,100 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
           ),
         ],
       ),
+      ),
     );
   }
 
-  void _ouvrirMenu() {
-    showModalBottomSheet<void>(
-      context: context,
+  Widget _buildDrawer() {
+    return Drawer(
       backgroundColor: AppTheme.anthraciteClair,
-      showDragHandle: true,
-      builder: (sheetContext) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Élite Placo & Déco',
-                      style: TextStyle(
-                          color: AppTheme.or,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600)),
-                ),
-                const SizedBox(height: 12),
-                _menuItem(sheetContext, Icons.dashboard_rounded,
-                    'Tableau de bord', null),
-                _menuItem(sheetContext, Icons.business_rounded, 'Mes chantiers',
-                    () => const ChantiersListScreen()),
-                _menuItem(sheetContext, Icons.calculate_rounded,
-                    'Calcul matériaux', () => const CalculMateriauxScreen()),
-                _menuItem(sheetContext, Icons.payments_rounded, 'Finances',
-                    () => const FinancesScreen()),
-                _menuItem(sheetContext, Icons.engineering_rounded, 'Ouvriers',
-                    () => const OuvriersScreen()),
-                _menuItem(sheetContext, Icons.request_quote_rounded,
-                    'Demandes de devis', () => const DemandesDevisScreen()),
-                _menuItem(sheetContext, Icons.settings_rounded,
-                    'Paramètres du site', () => const GestionSiteScreen()),
-                _menuItem(sheetContext, Icons.lock_reset_rounded,
-                    'Changer le mot de passe', () => const ChangerMotDePasseScreen()),
-                const Divider(color: Colors.white12),
-                ListTile(
-                  leading: const Icon(Icons.lock_outline_rounded,
-                      color: AppTheme.grisClair),
-                  title: const Text('Verrouiller l’application'),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    context.read<AuthProvider>().verrouiller();
-                  },
-                ),
-              ],
+      width: 292,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 22, 20, 20),
+              child: Row(
+                children: [
+                  const Expanded(child: BrandLogo(titleSize: 18)),
+                  IconButton(
+                    tooltip: 'Fermer le menu',
+                    icon: const Icon(Icons.close, color: AppTheme.grisClair),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+            const Divider(color: Colors.white12, height: 1),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 22, 20, 8),
+              child: Text('PILOTAGE', style: TextStyle(
+                color: AppTheme.grisFonce,
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 2,
+              )),
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                children: [
+                  _drawerItem(Icons.dashboard_rounded, 'Tableau de bord'),
+                  _drawerItem(Icons.business_rounded, 'Mes chantiers',
+                      () => const ChantiersListScreen()),
+                  _drawerItem(Icons.payments_rounded, 'Finances',
+                      () => const FinancesScreen()),
+                  _drawerItem(Icons.calculate_rounded, 'Calcul matériaux',
+                      () => const CalculMateriauxScreen()),
+                  _drawerItem(Icons.straighten_rounded, 'Métrés',
+                      () => const SelectionMetrageScreen()),
+                  _drawerItem(Icons.engineering_rounded, 'Ouvriers',
+                      () => const OuvriersScreen()),
+                  _drawerItem(Icons.request_quote_rounded, 'Demandes de devis',
+                      () => const DemandesDevisScreen()),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Divider(color: Colors.white12),
+                  ),
+                  _drawerItem(Icons.settings_rounded, 'Paramètres du site',
+                      () => const GestionSiteScreen()),
+                  _drawerItem(Icons.lock_reset_rounded, 'Changer le mot de passe',
+                      () => const ChangerMotDePasseScreen()),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 16),
+              child: ListTile(
+                leading: const Icon(Icons.lock_outline_rounded,
+                    color: AppTheme.grisClair),
+                title: const Text('Verrouiller l’application'),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.read<AuthProvider>().verrouiller();
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _menuItem(BuildContext sheetContext, IconData icon, String label,
-      Widget Function()? page) {
-    final destination = page;
+  Widget _drawerItem(IconData icon, String label, [Widget Function()? page]) {
     return ListTile(
       leading: Icon(icon, color: AppTheme.or),
       title: Text(label),
-      trailing: destination == null
+      trailing: page == null
           ? const Icon(Icons.check, color: AppTheme.or, size: 18)
           : const Icon(Icons.chevron_right),
-      onTap: destination == null
-          ? () => Navigator.pop(sheetContext)
+      onTap: page == null
+          ? () => Navigator.pop(context)
           : () {
-              Navigator.pop(sheetContext);
+              Navigator.pop(context);
               Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => destination()));
+                  context, MaterialPageRoute(builder: (_) => page()));
             },
     );
   }

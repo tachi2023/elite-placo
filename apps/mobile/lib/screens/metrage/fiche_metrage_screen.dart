@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/fiche_metrage.dart';
 import '../../services/pdf_service.dart';
 import '../../services/whatsapp_share_service.dart';
+import '../../widgets/app_ui.dart';
 
 /// Module 5 — fiche de métrage numérique (jusqu'à 30 pièces), export PDF
 /// et partage WhatsApp.
@@ -103,6 +104,11 @@ class _FicheMetrageScreenState extends State<FicheMetrageScreen> {
       },
     );
 
+    nomController.dispose();
+    longueurController.dispose();
+    largeurController.dispose();
+    deductionController.dispose();
+
     if (!mounted || piece == null) return;
     setState(() => _pieces.add(piece));
   }
@@ -179,19 +185,21 @@ class _FicheMetrageScreenState extends State<FicheMetrageScreen> {
       appBar: AppBar(
         title: const Text('Fiche de métrage'),
         actions: [
-          TextButton(
+          IconButton(
             onPressed: _ajouterPiece,
-            child: const Text('+ Ajouter une pièce'),
+            tooltip: 'Ajouter une pièce',
+            icon: const Icon(Icons.add_box_outlined),
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Row(
+      body: AppBackground(
+        child: SafeArea(
+          child: ResponsiveContent(
+            maxWidth: 900,
+            child: Column(
               children: [
-                Expanded(
+                AppCard(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                   child: DropdownButtonFormField<String>(
                     value: _systeme,
                     decoration: const InputDecoration(labelText: 'Système'),
@@ -206,81 +214,97 @@ class _FicheMetrageScreenState extends State<FicheMetrageScreen> {
                       ),
                     ],
                     onChanged: (value) {
-                      if (value != null) {
-                        setState(() => _systeme = value);
-                      }
+                      if (value != null) setState(() => _systeme = value);
                     },
                   ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: _pieces.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.layers_outlined, size: 56),
-                        const SizedBox(height: 12),
-                        const Text('Aucune pièce encore ajoutée.'),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: _ajouterPiece,
-                          child: const Text('Ajouter la première pièce'),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.separated(
-                    itemCount: _pieces.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1),
-                    itemBuilder: (context, i) {
-                      final piece = _pieces[i];
-                      return ListTile(
-                        title: Text(piece.nomPiece),
-                        subtitle: Text(
-                          'Brute ${piece.surfaceBrute.toStringAsFixed(1)} m² • '
-                          'Déduction ${piece.surfaceDeduction.toStringAsFixed(1)} m²',
-                        ),
-                        trailing: Text('${piece.surfaceNette.toStringAsFixed(1)} m²'),
-                      );
-                    },
-                  ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Surface nette totale : ${_surfaceNetteTotale.toStringAsFixed(1)} m²',
-                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: _isProcessing ? null : _exporterPdf,
-                        icon: const Icon(Icons.picture_as_pdf),
-                        label: const Text('Exporter en PDF'),
+                Expanded(
+                  child: AppCard(
+                    padding: EdgeInsets.zero,
+                    child: _pieces.isEmpty
+                        ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.layers_outlined, size: 56),
+                                  const SizedBox(height: 12),
+                                  const Text('Aucune pièce encore ajoutée.'),
+                                  const SizedBox(height: 8),
+                                  ElevatedButton(
+                                    onPressed: _ajouterPiece,
+                                    child: const Text('Ajouter la première pièce'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : ListView.separated(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            itemCount: _pieces.length,
+                            separatorBuilder: (_, __) => const Divider(height: 1),
+                            itemBuilder: (context, i) {
+                              final piece = _pieces[i];
+                              return ListTile(
+                                title: Text(piece.nomPiece),
+                                subtitle: Text(
+                                  'Brute ${piece.surfaceBrute.toStringAsFixed(1)} m² • '
+                                  'Déduction ${piece.surfaceDeduction.toStringAsFixed(1)} m²',
+                                ),
+                                trailing: Text('${piece.surfaceNette.toStringAsFixed(1)} m²'),
+                              );
+                            },
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                AppCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Surface nette totale : ${_surfaceNetteTotale.toStringAsFixed(1)} m²',
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: _isProcessing ? null : _partagerWhatsApp,
-                        icon: const Icon(Icons.send),
-                        label: const Text('Partager WhatsApp'),
+                      const SizedBox(height: 12),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final buttons = [
+                            OutlinedButton.icon(
+                              onPressed: _isProcessing ? null : _exporterPdf,
+                              icon: const Icon(Icons.picture_as_pdf),
+                              label: const Text('Exporter en PDF'),
+                            ),
+                            ElevatedButton.icon(
+                              onPressed: _isProcessing ? null : _partagerWhatsApp,
+                              icon: const Icon(Icons.send),
+                              label: const Text('Partager WhatsApp'),
+                            ),
+                          ];
+                          if (constraints.maxWidth < 520) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [buttons[0], buttons[1]],
+                            );
+                          }
+                          return Row(
+                            children: [
+                              Expanded(child: buttons[0]),
+                              const SizedBox(width: 12),
+                              Expanded(child: buttons[1]),
+                            ],
+                          );
+                        },
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-        ],
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _isProcessing ? null : _ajouterPiece,

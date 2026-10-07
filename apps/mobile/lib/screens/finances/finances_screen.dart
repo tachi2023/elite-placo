@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/dashboard_provider.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_ui.dart';
 
 /// Vue mobile des finances inspirée de l'écran Finances du prototype.
 /// Les montants viennent de la même vue locale que le tableau de bord afin de
@@ -63,35 +64,35 @@ class _FinancesScreenState extends State<FinancesScreen> {
             backgroundColor: AppTheme.anthraciteClair,
             onRefresh: provider.charger,
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 110),
               physics: const BouncingScrollPhysics(),
               children: [
-                if (vue.donneesPartiellementNonSynchronisees) _offlineNotice(),
-                _sectionTitle('Vue financière', 'Une synthèse claire de vos encaissements et dépenses.'),
-                const SizedBox(height: 16),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final columns = constraints.maxWidth >= 600 ? 4 : 2;
-                    return GridView.count(
-                      crossAxisCount: columns,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: columns == 4 ? 1.3 : 1.35,
-                      children: [
+                ResponsiveContent(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 110),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (vue.donneesPartiellementNonSynchronisees) _offlineNotice(),
+                      const AppSectionTitle(
+                        title: 'Vue financière',
+                        subtitle: 'Une synthèse claire de vos encaissements et dépenses.',
+                      ),
+                      const SizedBox(height: 16),
+                      ResponsiveGrid(children: [
                         _metric('Revenus', _money(vue.totalEncaisseGlobal), Icons.arrow_upward_rounded, AppTheme.succes),
                         _metric('Dépenses', _money(vue.totalDepensesGlobal), Icons.arrow_downward_rounded, AppTheme.erreur),
                         _metric('Résultat net', _money(vue.resultatNetGlobal), Icons.insights_rounded, AppTheme.or),
                         _metric('Marge', '${vue.margeGlobalePourcent.toStringAsFixed(1)} %', Icons.donut_large_rounded, AppTheme.or),
-                      ],
-                    );
-                  },
+                      ]),
+                      const SizedBox(height: 28),
+                      AppSectionTitle(
+                        title: 'Situation par chantier',
+                        subtitle: '${vue.resumesChantiers.length} projet(s) suivi(s).',
+                      ),
+                      const SizedBox(height: 12),
+                      ...vue.resumesChantiers.map(_projectCard),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 28),
-                _sectionTitle('Situation par chantier', '${vue.resumesChantiers.length} projet(s) suivi(s).'),
-                const SizedBox(height: 12),
-                ...vue.resumesChantiers.map(_projectCard),
               ],
             ),
           );
@@ -115,40 +116,23 @@ class _FinancesScreenState extends State<FinancesScreen> {
         ]),
       );
 
-  Widget _sectionTitle(String title, String subtitle) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: AppTheme.blanc)),
-          const SizedBox(height: 4),
-          Text(subtitle, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppTheme.grisFonce)),
-        ],
-      );
-
-  Widget _metric(String label, String value, IconData icon, Color color) => Container(
+  Widget _metric(String label, String value, IconData icon, Color color) => AppCard(
+        accent: color,
         padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppTheme.anthraciteClair,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: color.withValues(alpha: 0.25)),
-        ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Icon(icon, size: 18, color: color),
-          const Spacer(),
+          const SizedBox(height: 16),
           Text(label.toUpperCase(), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 10, color: AppTheme.grisFonce, letterSpacing: 0.7)),
           const SizedBox(height: 5),
           Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: color)),
         ]),
       );
 
-  Widget _projectCard(dynamic resume) => Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          color: AppTheme.anthraciteClair,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
-        ),
-        child: Row(children: [
+  Widget _projectCard(dynamic resume) => Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: AppCard(
+          padding: const EdgeInsets.all(15),
+          child: Row(children: [
           Container(width: 10, height: 10, decoration: BoxDecoration(shape: BoxShape.circle, color: resume.situation.indicateur == 'VERT' ? AppTheme.vert : AppTheme.orange)),
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -158,5 +142,6 @@ class _FinancesScreenState extends State<FinancesScreen> {
           ])),
           Text('${resume.situation.margeBrutePourcent.toStringAsFixed(1)} %', style: TextStyle(fontWeight: FontWeight.w700, color: resume.situation.margeBrutePourcent >= 0 ? AppTheme.succes : AppTheme.erreur)),
         ]),
+        ),
       );
 }

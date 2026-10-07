@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/chantier_provider.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_ui.dart';
 import 'chantier_detail_screen.dart';
+import 'nouveau_chantier_screen.dart';
 
 class ChantiersListScreen extends StatefulWidget {
   const ChantiersListScreen({super.key});
@@ -76,22 +78,21 @@ class _ChantiersListScreenState extends State<ChantiersListScreen> {
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
+          return ResponsiveContent(
+            child: ListView.builder(
             itemCount: provider.chantiers.length,
             itemBuilder: (context, index) {
               final c = provider.chantiers[index];
               final situation = provider.situationDe(c.id ?? 0);
               final String indicateur = situation?.indicateur ?? 'GRIS';
 
-              return Card(
-                margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
-                ),
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: AppCard(
+                padding: const EdgeInsets.all(14),
+                accent: _getCouleurIndicateur(indicateur),
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(20),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -100,9 +101,7 @@ class _ChantiersListScreenState extends State<ChantiersListScreen> {
                               ChantierDetailScreen(chantierId: c.id!)),
                     );
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
+                  child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
@@ -167,15 +166,16 @@ class _ChantiersListScreenState extends State<ChantiersListScreen> {
                         ),
                       ],
                     ),
-                  ),
+                ),
                 ),
               );
             },
+            ),
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, '/nouveau_chantier'),
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NouveauChantierScreen())),
         backgroundColor: AppTheme.or,
         child: const Icon(Icons.add, color: AppTheme.anthracite),
       ),

@@ -5,8 +5,12 @@ import 'package:intl/intl.dart';
 import '../../providers/chantier_provider.dart';
 import '../../repositories/chantier_repository.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_ui.dart';
+import 'ajouter_depense_screen.dart';
+import 'ajouter_encaissement_screen.dart';
 import 'changer_statut_dialog.dart';
 import 'chantier_suivi_admin_screen.dart';
+import '../metrage/fiche_metrage_screen.dart';
 
 class ChantierDetailScreen extends StatefulWidget {
   final int chantierId;
@@ -128,13 +132,19 @@ class _ChantierDetailScreenState extends State<ChantierDetailScreen> {
               )
             ],
           ),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
+          body: AppBackground(
+            safeArea: false,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: ResponsiveContent(
+                child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // En-tête
-                Row(
+                AppCard(
+                  accent: indicateurColor,
+                  padding: const EdgeInsets.all(18),
+                  child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
@@ -166,6 +176,7 @@ class _ChantierDetailScreenState extends State<ChantierDetailScreen> {
                     )
                   ],
                 ),
+                ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -184,17 +195,10 @@ class _ChantierDetailScreenState extends State<ChantierDetailScreen> {
                 const SizedBox(height: 24),
 
                 // Carte Financière Résumé
-                Card(
-                  color: AppTheme.anthraciteClair,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    side: BorderSide(
-                        color: indicateurColor.withValues(alpha: 0.5),
-                        width: 2),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
+                AppCard(
+                  accent: indicateurColor,
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -259,30 +263,22 @@ class _ChantierDetailScreenState extends State<ChantierDetailScreen> {
                 const SizedBox(height: 16),
 
                 // Grille d'actions
-                GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 2.5,
+                ResponsiveGrid(
+                  minTileWidth: 175,
                   children: [
                     _buildActionButton(
                         Icons.add_circle_outline, 'Encaissement', AppTheme.or,
                         () {
-                      Navigator.pushNamed(context, '/ajouter_encaissement',
-                          arguments: chantier.id);
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => AjouterEncaissementScreen(chantier: chantier)));
                     }),
                     _buildActionButton(
                         Icons.remove_circle_outline, 'Dépense', AppTheme.rouge,
                         () {
-                      Navigator.pushNamed(context, '/ajouter_depense',
-                          arguments: chantier.id);
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => AjouterDepenseScreen(chantierId: chantier.id!)));
                     }),
                     _buildActionButton(
                         Icons.architecture, 'Métrage', Colors.blueAccent, () {
-                      Navigator.pushNamed(context, '/metrage',
-                          arguments: chantier.id);
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => FicheMetrageScreen(chantierId: chantier.id!)));
                     }),
                     _buildActionButton(
                         Icons.share,
@@ -300,6 +296,8 @@ class _ChantierDetailScreenState extends State<ChantierDetailScreen> {
                   ],
                 ),
               ],
+                ),
+              ),
             ),
           ),
         );

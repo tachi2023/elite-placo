@@ -4,7 +4,10 @@ import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_ui.dart';
+import '../../widgets/brand_logo.dart';
 import '../dashboard/tableau_de_bord_screen.dart';
+import '../client/client_space_screen.dart';
 import 'pin_lock_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -44,16 +47,17 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final error = context.watch<AuthProvider>().erreurConnexion;
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF29261F), AppTheme.anthracite, Color(0xFF080808)])),
-        child: SafeArea(child: Center(child: SingleChildScrollView(padding: const EdgeInsets.all(24), child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 430),
-          child: Card(
-            margin: EdgeInsets.zero,
-            child: Padding(
-              padding: const EdgeInsets.all(28),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                const Icon(Icons.architecture_rounded, color: AppTheme.or, size: 52),
+      body: AppBackground(
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: ResponsiveContent(
+                maxWidth: 460,
+                child: AppCard(
+                  padding: const EdgeInsets.all(28),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                const BrandLogo(centered: true, titleSize: 20),
                 const SizedBox(height: 18),
                 Text('Espace administrateur', textAlign: TextAlign.center, style: Theme.of(context).textTheme.displayMedium),
                 const SizedBox(height: 8),
@@ -65,16 +69,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (error != null) ...[const SizedBox(height: 14), Text(error, style: const TextStyle(color: AppTheme.erreur))],
                 const SizedBox(height: 24),
                 FilledButton.icon(onPressed: _chargement ? null : _connexion, icon: _chargement ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.login), label: Text(_chargement ? 'Connexion...' : 'Se connecter')),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ClientSpaceScreen())),
+                  icon: const Icon(Icons.visibility_outlined),
+                  label: const Text('Accéder à mon suivi client'),
+                ),
                 if (kIsWeb) ...[
                   const SizedBox(height: 20),
                   const Divider(color: Colors.white12),
                   const SizedBox(height: 12),
                   const Text('iPhone : ouvrez cette page dans Safari, appuyez sur Partager, puis « Sur l’écran d’accueil » pour installer l’application.', textAlign: TextAlign.center, style: TextStyle(color: AppTheme.grisClair, fontSize: 12, height: 1.45)),
                 ],
-              ]),
+                  ]),
+                ),
+              ),
             ),
           ),
-        )))),
+        ),
       ),
     );
   }

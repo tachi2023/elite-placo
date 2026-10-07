@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/mouvement_financier.dart';
 import '../../providers/chantier_provider.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/app_ui.dart';
 
 /// Formulaire d'ajout de dépense (scénario type §10.12). Écrit toujours
 /// en local d'abord — aucune perte de donnée tolérée même sans réseau.
@@ -16,6 +18,12 @@ class AjouterDepenseScreen extends StatefulWidget {
 class _AjouterDepenseScreenState extends State<AjouterDepenseScreen> {
   String? _categorieChoisie;
   final _montantController = TextEditingController();
+
+  @override
+  void dispose() {
+    _montantController.dispose();
+    super.dispose();
+  }
 
   void _enregistrer() {
     // A1 (§10.13) — montant invalide : refuser et signaler le champ,
@@ -58,29 +66,41 @@ class _AjouterDepenseScreenState extends State<AjouterDepenseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Ajouter une dépense')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Catégorie'),
-            Wrap(
-              spacing: 8,
-              children: CategorieDepense.toutes.map((cat) => ChoiceChip(
-                label: Text(cat),
-                selected: _categorieChoisie == cat,
-                onSelected: (_) => setState(() => _categorieChoisie = cat),
-              )).toList(),
+      body: AppBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: ResponsiveContent(
+              maxWidth: 680,
+              child: AppCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const AppSectionTitle(title: 'Catégorie', icon: Icons.category_outlined),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: CategorieDepense.toutes.map((cat) => ChoiceChip(
+                        label: Text(cat),
+                        selected: _categorieChoisie == cat,
+                        selectedColor: AppTheme.or.withValues(alpha: 0.25),
+                        onSelected: (_) => setState(() => _categorieChoisie = cat),
+                      )).toList(),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: _montantController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: 'Montant (FCFA)', prefixIcon: Icon(Icons.payments_outlined)),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(onPressed: _enregistrer, icon: const Icon(Icons.save_outlined), label: const Text('Enregistrer')),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _montantController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Montant (FCFA)'),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(onPressed: _enregistrer, child: const Text('Enregistrer')),
-          ],
+          ),
         ),
       ),
     );

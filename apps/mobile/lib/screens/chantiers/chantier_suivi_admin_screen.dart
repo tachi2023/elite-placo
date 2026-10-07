@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../repositories/chantier_admin_repository.dart';
 import '../../services/api_service.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_ui.dart';
 
 class ChantierSuiviAdminScreen extends StatefulWidget {
   final int chantierId;
@@ -123,22 +124,24 @@ class _ChantierSuiviAdminScreenState extends State<ChantierSuiviAdminScreen>
       onPressed: () => _tabs.index == 0 ? _ajouterEtape() : _ajouterMedia(_tabs.index == 1 ? 'photos' : 'documents'),
       icon: const Icon(Icons.add), label: Text(_tabs.index == 0 ? 'Étape' : 'Fichier'),
     ),
-    body: _loading
-        ? const Center(child: CircularProgressIndicator(color: AppTheme.or))
-        : _error != null
-            ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [Text(_error!), TextButton(onPressed: _charger, child: const Text('Réessayer'))]))
-            : TabBarView(controller: _tabs, children: [_etapesView(), _mediaView(_photos, 'photos'), _mediaView(_documents, 'documents')]),
+    body: AppBackground(
+      safeArea: false,
+      child: _loading
+          ? const AppLoading(label: 'Chargement du suivi...')
+          : _error != null
+              ? Center(child: Padding(padding: const EdgeInsets.all(24), child: AppCard(child: Column(mainAxisSize: MainAxisSize.min, children: [Text(_error!, textAlign: TextAlign.center), const SizedBox(height: 12), TextButton(onPressed: _charger, child: const Text('Réessayer'))]))))
+              : TabBarView(controller: _tabs, children: [_etapesView(), _mediaView(_photos, 'photos'), _mediaView(_documents, 'documents')]),
   );
 
   Widget _etapesView() => RefreshIndicator(color: AppTheme.or, onRefresh: _charger, child: ListView.builder(
     padding: const EdgeInsets.fromLTRB(16, 18, 16, 100), itemCount: _etapes.length,
     itemBuilder: (context, index) { final step = _etapes[index]; final status = step['statut']?.toString() ?? 'A_FAIRE';
-      return Card(child: ListTile(leading: CircleAvatar(backgroundColor: _statusColor(status), child: Text('${index + 1}')), title: Text(step['libelle']?.toString() ?? ''), subtitle: Text(status.replaceAll('_', ' ')), trailing: PopupMenuButton<String>(onSelected: (value) => _changerStatut(step, value), itemBuilder: (_) => const [PopupMenuItem(value: 'A_FAIRE', child: Text('À faire')), PopupMenuItem(value: 'EN_COURS', child: Text('En cours')), PopupMenuItem(value: 'TERMINEE', child: Text('Terminée'))]))); },
+      return Padding(padding: const EdgeInsets.only(bottom: 10), child: AppCard(child: ListTile(contentPadding: EdgeInsets.zero, leading: CircleAvatar(backgroundColor: _statusColor(status), child: Text('${index + 1}')), title: Text(step['libelle']?.toString() ?? ''), subtitle: Text(status.replaceAll('_', ' ')), trailing: PopupMenuButton<String>(onSelected: (value) => _changerStatut(step, value), itemBuilder: (_) => const [PopupMenuItem(value: 'A_FAIRE', child: Text('À faire')), PopupMenuItem(value: 'EN_COURS', child: Text('En cours')), PopupMenuItem(value: 'TERMINEE', child: Text('Terminée'))])))); },
   ));
 
   Widget _mediaView(List<Map<String, dynamic>> media, String kind) => RefreshIndicator(color: AppTheme.or, onRefresh: _charger, child: media.isEmpty
       ? ListView(children: [const SizedBox(height: 160), Center(child: Text('Aucun élément pour le moment.'))])
-      : ListView.builder(padding: const EdgeInsets.fromLTRB(16, 18, 16, 100), itemCount: media.length, itemBuilder: (context, index) { final item = media[index]; final id = (item['id'] as num).toInt(); final visible = item['visibleClient'] as bool? ?? true; return Card(child: ListTile(leading: kind == 'photos' && item['url'] != null ? Image.network(item['url'], width: 54, height: 54, fit: BoxFit.cover) : const Icon(Icons.description_outlined, color: AppTheme.or), title: Text(item['libelle']?.toString().isNotEmpty == true ? item['libelle'] : 'Sans titre'), subtitle: Text(visible ? 'Visible côté client' : 'Masqué côté client'), trailing: Switch(value: visible, activeColor: AppTheme.or, onChanged: (value) async { await _repository.modifierVisibilite(widget.chantierId, kind, id, value); await _charger(); }))); }),
+      : ListView.builder(padding: const EdgeInsets.fromLTRB(16, 18, 16, 100), itemCount: media.length, itemBuilder: (context, index) { final item = media[index]; final id = (item['id'] as num).toInt(); final visible = item['visibleClient'] as bool? ?? true; return Padding(padding: const EdgeInsets.only(bottom: 10), child: AppCard(child: ListTile(contentPadding: EdgeInsets.zero, leading: kind == 'photos' && item['url'] != null ? ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.network(item['url'], width: 54, height: 54, fit: BoxFit.cover)) : const Icon(Icons.description_outlined, color: AppTheme.or), title: Text(item['libelle']?.toString().isNotEmpty == true ? item['libelle'] : 'Sans titre'), subtitle: Text(visible ? 'Visible côté client' : 'Masqué côté client'), trailing: Switch(value: visible, activeColor: AppTheme.or, onChanged: (value) async { await _repository.modifierVisibilite(widget.chantierId, kind, id, value); await _charger(); })))); }),
     );
 
   Color _statusColor(String value) { if (value == 'TERMINEE') return AppTheme.succes; if (value == 'EN_COURS') return AppTheme.or; return AppTheme.grisFonce; }
