@@ -45,7 +45,26 @@ class _DemandesDevisScreenState extends State<DemandesDevisScreen> {
     body: _loading
         ? const Center(child: CircularProgressIndicator(color: AppTheme.or))
         : Column(children: [
-            SizedBox(height: 56, child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: 12), children: ['TOUS', 'NOUVELLE', 'CONTACTEE', 'DEVIS_ENVOYE', 'GAGNEE', 'PERDUE'].map((value) => Padding(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8), child: ChoiceChip(label: Text(value.replaceAll('_', ' ')), selected: _filter == value, selectedColor: AppTheme.or, onSelected: (_) => setState(() => _filter = value))).toList())),
+            SizedBox(
+              height: 56,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                children: ['TOUS', 'NOUVELLE', 'CONTACTEE', 'DEVIS_ENVOYE', 'GAGNEE', 'PERDUE']
+                    .map(
+                      (value) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                        child: ChoiceChip(
+                          label: Text(value.replaceAll('_', ' ')),
+                          selected: _filter == value,
+                          selectedColor: AppTheme.or,
+                          onSelected: (_) => setState(() => _filter = value),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
             Expanded(child: _filtered.isEmpty ? const Center(child: Text('Aucune demande dans ce filtre.')) : RefreshIndicator(color: AppTheme.or, onRefresh: _load, child: ListView.builder(padding: const EdgeInsets.all(16), itemCount: _filtered.length, itemBuilder: (context, index) => _card(_filtered[index])))),
           ]),
   );
