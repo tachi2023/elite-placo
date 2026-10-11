@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import BrandLogo from '../components/BrandLogo';
 
 export default function EspaceClient() {
   const [code, setCode] = useState('');
@@ -10,7 +11,7 @@ export default function EspaceClient() {
   const navigate = useNavigate();
 
   const goBackToSite = () => {
-    if (window.history.length > 1) navigate(-1);
+    if (document.referrer.startsWith(window.location.origin)) navigate(-1);
     else navigate('/');
   };
 
@@ -22,6 +23,8 @@ export default function EspaceClient() {
     }
     navigate(`/suivi/${code.trim().toUpperCase()}`);
   };
+
+  const openDemo = () => navigate('/suivi/VB-2026-014');
 
   return (
     <div className="min-h-screen bg-noir text-texte">
@@ -42,14 +45,10 @@ export default function EspaceClient() {
             className="w-full max-w-xl rounded-[32px] border border-or/20 bg-noir-surface/80 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:p-10"
           >
             <div className="mb-8 flex items-center justify-between gap-3 border-b border-or/15 pb-5">
-              <div className="flex items-center gap-3">
-                <div className="grid h-14 w-14 place-items-center rounded-full border border-or/40 bg-or/10 text-or shadow-[0_0_30px_rgba(201,168,76,0.2)]">
-                  <span className="font-display text-2xl leading-none">EP</span>
-                </div>
-                <div>
-                  <p className="text-[10px] tracking-[0.28em] uppercase text-or">Elite Placo</p>
-                  <p className="font-display text-2xl font-light text-texte">Espace Client</p>
-                </div>
+              <div className="flex min-w-0 items-center gap-4">
+                <BrandLogo titleClassName="text-xl" />
+                <span className="hidden h-8 w-px bg-or/20 sm:block" />
+                <p className="font-display text-xl font-light text-texte sm:text-2xl">Espace Client</p>
               </div>
               <div className="inline-flex items-center gap-2 rounded-full border border-or/20 bg-or/5 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.2em] text-or">
                 <ShieldCheck size={12} /> Sécurisé
@@ -66,11 +65,12 @@ export default function EspaceClient() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="mb-3 block text-[10px] tracking-[0.34em] uppercase text-texte-muted">
+                <label htmlFor="client-access-code" className="mb-3 block text-[10px] tracking-[0.34em] uppercase text-texte-muted">
                   Code d'accès chantier
                 </label>
                 <div className="relative">
                   <input
+                    id="client-access-code"
                     type={showCode ? 'text' : 'password'}
                     value={code}
                     onChange={(e) => { setCode(e.target.value); setError(''); }}
@@ -102,10 +102,10 @@ export default function EspaceClient() {
               <p className="mb-2 text-[9px] tracking-[0.28em] uppercase text-or">Accès démonstration</p>
               <button
                 type="button"
-                onClick={() => { setCode('VB-2026-014'); setError(''); }}
+                onClick={openDemo}
                 className="text-sm text-texte transition-colors hover:text-or"
               >
-                Utiliser le chantier Villa Bonanjo · VB-2026-014
+                Ouvrir le chantier de démonstration · VB-2026-014
               </button>
             </div>
 

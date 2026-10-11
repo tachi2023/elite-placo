@@ -41,14 +41,15 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-noir text-texte">
       <Navbar />
-      <div className="pt-40 pb-20 w-full px-6 xl:px-[200px] border-b border-or/20">
+      <div className="relative overflow-hidden border-b border-or/20 bg-gradient-to-br from-[#1b160f] via-noir to-[#0c0d0f] px-6 pb-20 pt-40 xl:px-[200px]">
+        <div className="pointer-events-none absolute -right-16 top-12 h-64 w-64 rounded-full bg-or/10 blur-3xl" />
         <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-xs tracking-[0.4em] uppercase text-or mb-4 font-light">Nous contacter</motion.p>
         <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="font-display text-5xl md:text-7xl font-light text-texte mb-4">Restons en contact</motion.h1>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-texte-muted font-light text-lg">Notre équipe est à votre écoute pour toute question ou demande de renseignement.</motion.p>
       </div>
       <div className="w-full px-6 xl:px-[200px] py-24">
         <div className="flex flex-col lg:flex-row gap-12">
-          <div className="w-full lg:w-1/2">
+          <div className="w-full rounded-[28px] border border-or/15 bg-gradient-to-br from-[#17130e]/90 to-noir-surface/80 p-6 shadow-[0_24px_80px_rgba(0,0,0,.24)] lg:w-1/2 sm:p-8">
             <h2 className="font-display text-3xl font-light text-texte mb-8">Envoyez-nous un message</h2>
             {status === 'sent' ? <div className="border border-or/30 bg-or/5 p-8"><CheckCircle className="text-or mb-4" /><h3 className="font-display text-2xl">Message envoyé</h3><p className="mt-2 text-sm text-texte-muted">Nous reviendrons vers vous sous 24 heures.</p></div> : <form className="space-y-6" onSubmit={submit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -63,7 +64,7 @@ export default function Contact() {
             </form>}
           </div>
           <div className="w-full lg:w-1/2 flex flex-col gap-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">{infos.slice(0, 4).map((info, i) => <motion.div key={info.label} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} className="bg-noir-surface border border-or/10 p-6 hover:border-or/40 transition-colors group flex items-start gap-4"><info.icon size={20} className="text-or shrink-0 mt-1" /><div><p className="text-[10px] tracking-[0.2em] uppercase text-texte-muted mb-1">{info.label}</p><p className="text-sm text-texte font-light whitespace-pre-line leading-relaxed">{info.value}</p>{info.href && <a href={info.href} className="mt-2 block text-xs text-or">{info.cta}</a>}</div></motion.div>)}</div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{infos.slice(0, 4).map((info, i) => <motion.div key={info.label} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} className="group flex items-start gap-4 rounded-2xl border border-or/10 bg-gradient-to-br from-[#17130e] to-noir-surface p-6 transition-colors hover:border-or/40"><info.icon size={20} className="mt-1 shrink-0 text-or" /><div><p className="mb-1 text-[10px] uppercase tracking-[0.2em] text-texte-muted">{info.label}</p><p className="whitespace-pre-line text-sm font-light leading-relaxed text-texte">{info.value}</p>{info.href && <a href={info.href} className="mt-2 block text-xs text-or">{info.cta}</a>}</div></motion.div>)}</div>
             <div className="w-full h-[300px] bg-noir-surface border border-or/20 p-2 relative overflow-hidden"><div className="absolute top-4 left-6 z-10 bg-noir/80 backdrop-blur px-3 py-1.5 border border-or/20"><p className="text-[10px] tracking-[0.2em] uppercase text-or">Agence Douala</p></div><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127402.13854580525!2d9.658252204733353!3d4.048268875569428" width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="w-full h-full" /></div>
           </div>
         </div>

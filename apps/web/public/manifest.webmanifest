@@ -1,0 +1,19 @@
+{
+  "name": "Élite Placo & Déco",
+  "short_name": "Élite Placo",
+  "description": "Suivi des projets et services Élite Placo & Déco.",
+  "lang": "fr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#090909",
+  "theme_color": "#0d0d0e",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

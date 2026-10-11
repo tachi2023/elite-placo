@@ -49,7 +49,8 @@ export default function Devis() {
     <div className="min-h-screen bg-noir text-texte">
       <Navbar />
 
-      <div className="pt-40 pb-20 w-full px-6 xl:px-[200px] border-b border-or/20">
+      <div className="relative overflow-hidden border-b border-or/20 bg-gradient-to-br from-[#1b160f] via-noir to-[#0c0d0f] px-6 pb-20 pt-40 xl:px-[200px]">
+        <div className="pointer-events-none absolute -right-16 top-12 h-64 w-64 rounded-full bg-or/10 blur-3xl" />
         <motion.p
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           className="text-xs tracking-[0.4em] uppercase text-or mb-4 font-light"
@@ -85,7 +86,7 @@ export default function Devis() {
           <motion.form
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             onSubmit={handleSubmit}
-            className="space-y-6"
+            className="space-y-6 rounded-[28px] border border-or/15 bg-gradient-to-br from-[#17130e]/90 to-noir-surface/80 p-5 shadow-[0_24px_80px_rgba(0,0,0,.3)] sm:p-8"
           >
             <div className="grid md:grid-cols-2 gap-6">
               {[

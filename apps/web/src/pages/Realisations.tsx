@@ -36,7 +36,8 @@ export default function Realisations() {
       <Navbar />
 
       {/* Header */}
-      <div className="pt-40 pb-16 w-full px-6 xl:px-[200px] border-b border-or/20">
+      <div className="relative overflow-hidden border-b border-or/20 bg-gradient-to-br from-[#1b160f] via-noir to-[#0c0d0f] px-6 pb-16 pt-40 xl:px-[200px]">
+        <div className="pointer-events-none absolute -right-16 top-10 h-64 w-64 rounded-full bg-or/10 blur-3xl" />
         <motion.p
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           className="text-xs tracking-[0.4em] uppercase text-or mb-4 font-light"
@@ -84,7 +85,7 @@ export default function Realisations() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.08 }}
-              className="group relative overflow-hidden bg-noir-surface aspect-[4/3] cursor-pointer"
+              className="group relative aspect-[4/3] cursor-pointer overflow-hidden border border-or/10 bg-gradient-to-br from-[#17130e] to-noir-surface shadow-[0_16px_45px_rgba(0,0,0,.22)]"
             >
               <img
                 src={r.img}

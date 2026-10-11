@@ -43,7 +43,8 @@ export default function Services() {
       <Navbar />
 
       {/* Page Header */}
-      <div className="pt-40 pb-20 w-full px-6 xl:px-[200px] border-b border-or/20">
+      <div className="relative overflow-hidden border-b border-or/20 bg-gradient-to-br from-[#1b160f] via-noir to-[#0c0d0f] px-6 pb-20 pt-40 xl:px-[200px]">
+        <div className="pointer-events-none absolute -right-20 top-16 h-72 w-72 rounded-full border border-or/20 shadow-[0_0_80px_rgba(201,168,76,.12)]" />
         <motion.p
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           className="text-xs tracking-[0.4em] uppercase text-or mb-4 font-light"
@@ -72,7 +73,7 @@ export default function Services() {
               key={service.title}
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.08 }} viewport={{ once: true }}
-              className="relative bg-noir-surface p-10 md:p-14 grid md:grid-cols-2 gap-10 border border-or/10 hover:border-or/40 transition-all duration-500 group overflow-hidden"
+              className="relative grid gap-10 overflow-hidden border border-or/10 bg-gradient-to-br from-[#17130e] via-noir-surface to-[#0c0d0f] p-10 shadow-[0_20px_60px_rgba(0,0,0,.18)] transition-all duration-500 group hover:border-or/40 md:grid-cols-2 md:p-14"
             >
               {/* Luxury decorative accent */}
               <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-or/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

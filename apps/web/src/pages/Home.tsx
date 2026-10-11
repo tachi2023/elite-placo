@@ -79,6 +79,8 @@ export default function Home() {
         <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/assets/hero_bg.jpg')" }} />
         <div className="absolute inset-0 bg-gradient-to-t from-noir via-noir/70 to-noir/30" />
         <div className="absolute inset-0 bg-gradient-to-r from-noir/60 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute -right-24 top-28 h-80 w-80 rounded-full bg-or/10 blur-3xl animate-pulse" />
+        <div className="pointer-events-none absolute bottom-20 left-1/2 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-or/50 to-transparent" />
         <div className="relative z-10 w-full min-w-0 px-4 sm:px-6 xl:px-[200px] flex flex-col items-center text-center mt-24 sm:mt-32">
           <motion.p variants={fadeUp} initial="hidden" animate="visible" custom={0} className="text-xs tracking-[0.4em] uppercase text-or mb-8 font-light">Douala · Cameroun</motion.p>
           <motion.h1 variants={fadeUp} initial="hidden" animate="visible" custom={1} className="w-full max-w-4xl break-words font-display font-light text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-texte mb-8 leading-[1.0] mx-auto">
@@ -132,8 +134,9 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
-            <motion.div key={service.id} initial={{ opacity: 0, y: 25 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.08 }} viewport={{ once: true }} className="relative group bg-noir-surface border border-or/10 p-7 sm:p-12 hover:border-or/40 hover:shadow-[0_0_40px_rgba(201,168,76,0.05)] transition-all duration-500 overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-or/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+            <motion.div key={service.id} initial={{ opacity: 0, y: 25 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.08 }} viewport={{ once: true }} className="relative group overflow-hidden border border-or/10 bg-gradient-to-br from-[#17130e] via-noir-surface to-[#0b0c0e] p-7 shadow-[0_18px_50px_rgba(0,0,0,.16)] transition-all duration-500 hover:border-or/40 hover:shadow-[0_0_40px_rgba(201,168,76,0.1)] sm:p-12">
+              <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full border border-or/20 opacity-60 transition-transform duration-700 group-hover:scale-150" />
+              <div className="pointer-events-none absolute bottom-0 left-0 h-1 w-0 bg-or transition-all duration-500 group-hover:w-full" />
               <div className="text-xs text-texte-muted tracking-[0.3em] mb-12">{service.id}</div>
               <h3 className="font-display text-2xl font-light text-texte mb-6 group-hover:text-or transition-colors duration-300 relative z-10">{service.title}</h3>
               <Link to="/services" className="inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase text-or opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 relative z-10">Découvrir <ArrowRight size={14} /></Link>

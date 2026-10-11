@@ -4,7 +4,13 @@ import './index.css'
 import './App.css'
 import App from './App.tsx'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => undefined);
+  });
+}
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8081';
 
 async function prewarmApi() {
   const candidates = [
