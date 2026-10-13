@@ -21,8 +21,13 @@ public class AdminCredentialInitializer {
             if (motDePasse == null || motDePasse.isBlank()) {
                 return;
             }
-            Utilisateur utilisateur = repository.findByIdentifiant("raoul.michel").orElse(null);
-            if (utilisateur != null && !passwordEncoder.matches(motDePasse, utilisateur.getMotDePasseHache())) {
+            Utilisateur utilisateur = repository.findByIdentifiant("raoul.michel").orElseGet(() -> {
+                Utilisateur nouveau = new Utilisateur();
+                nouveau.setIdentifiant("raoul.michel");
+                return nouveau;
+            });
+            if (utilisateur.getMotDePasseHache() == null
+                    || !passwordEncoder.matches(motDePasse, utilisateur.getMotDePasseHache())) {
                 utilisateur.setMotDePasseHache(passwordEncoder.encode(motDePasse));
                 repository.save(utilisateur);
             }
