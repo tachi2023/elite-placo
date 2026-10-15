@@ -76,82 +76,88 @@ class _NouveauChantierScreenState extends State<NouveauChantierScreen> {
               child: AppCard(
                 padding: const EdgeInsets.all(24),
                 child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const AppSectionTitle(title: 'Informations du client', icon: Icons.person_outline),
-              const SizedBox(height: 16),
-              _buildTextField(
-                controller: _nomController,
-                label: 'Nom du client *',
-                icon: Icons.person_outline,
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                controller: _villeController,
-                label: 'Ville',
-                icon: Icons.location_on_outlined,
-              ),
-              const SizedBox(height: 32),
-              const AppSectionTitle(title: 'Détails des travaux', icon: Icons.handyman_outlined),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: _typeTravaux,
-                dropdownColor: AppTheme.anthraciteClair,
-                style:
-                    const TextStyle(color: Colors.white, fontFamily: 'Inter'),
-                decoration: InputDecoration(
-                  labelText: 'Type de travaux *',
-                  labelStyle: const TextStyle(color: Colors.grey),
-                  prefixIcon:
-                      const Icon(Icons.handyman_outlined, color: Colors.grey),
-                  filled: true,
-                  fillColor: AppTheme.anthraciteClair,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.or)),
-                ),
-                items: _typesDisponibles
-                    .map((t) => DropdownMenuItem(value: t, child: Text(t)))
-                    .toList(),
-                onChanged: (v) =>
-                    setState(() => _typeTravaux = v ?? _typeTravaux),
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                controller: _montantController,
-                label: 'Montant du devis signé (FCFA) *',
-                icon: Icons.payments_outlined,
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 48),
-              ElevatedButton(
-                onPressed: _enCours ? null : _enregistrer,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.or,
-                  foregroundColor: AppTheme.anthracite,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  elevation: 2,
-                ),
-                child: _enCours
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: AppTheme.anthracite))
-                    : const Text(
-                        'Créer le chantier',
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Outfit'),
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const AppSectionTitle(
+                        title: 'Informations du client',
+                        icon: Icons.person_outline),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      controller: _nomController,
+                      label: 'Nom du client *',
+                      icon: Icons.person_outline,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      controller: _villeController,
+                      label: 'Ville',
+                      icon: Icons.location_on_outlined,
+                    ),
+                    const SizedBox(height: 32),
+                    const AppSectionTitle(
+                        title: 'Détails des travaux',
+                        icon: Icons.handyman_outlined),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      initialValue: _typeTravaux,
+                      dropdownColor: AppTheme.anthraciteClair,
+                      style: const TextStyle(
+                          color: Colors.white, fontFamily: 'Inter'),
+                      decoration: InputDecoration(
+                        labelText: 'Type de travaux *',
+                        labelStyle: const TextStyle(color: Colors.grey),
+                        prefixIcon: const Icon(Icons.handyman_outlined,
+                            color: Colors.grey),
+                        filled: true,
+                        fillColor: AppTheme.anthraciteClair,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: AppTheme.or)),
                       ),
-              ),
-                ],
+                      items: _typesDisponibles
+                          .map(
+                              (t) => DropdownMenuItem(value: t, child: Text(t)))
+                          .toList(),
+                      onChanged: (v) =>
+                          setState(() => _typeTravaux = v ?? _typeTravaux),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      controller: _montantController,
+                      label: 'Montant du devis signé (FCFA) *',
+                      icon: Icons.payments_outlined,
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 48),
+                    ElevatedButton(
+                      onPressed: _enCours ? null : _enregistrer,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.or,
+                        foregroundColor: AppTheme.anthracite,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        elevation: 2,
+                      ),
+                      child: _enCours
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: AppTheme.anthracite))
+                          : const Text(
+                              'Créer le chantier',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Outfit'),
+                            ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

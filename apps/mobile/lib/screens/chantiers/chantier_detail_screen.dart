@@ -138,164 +138,175 @@ class _ChantierDetailScreenState extends State<ChantierDetailScreen> {
               physics: const BouncingScrollPhysics(),
               child: ResponsiveContent(
                 child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // En-tête
-                AppCard(
-                  accent: indicateurColor,
-                  padding: const EdgeInsets.all(18),
-                  child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        chantier.nomClient,
-                        style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Outfit',
-                            color: Colors.white),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: AppTheme.anthraciteClair,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                            color: AppTheme.or.withValues(alpha: 0.3)),
-                      ),
-                      child: Text(
-                        chantier.statut.replaceAll('_', ' '),
-                        style: const TextStyle(
-                            color: AppTheme.or,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12),
-                      ),
-                    )
-                  ],
-                ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on, color: Colors.grey, size: 16),
-                    const SizedBox(width: 4),
-                    Text(chantier.ville ?? 'Non spécifié',
-                        style: const TextStyle(color: Colors.grey)),
-                    const SizedBox(width: 16),
-                    const Icon(Icons.handyman, color: Colors.grey, size: 16),
-                    const SizedBox(width: 4),
-                    Text(chantier.typeTravaux ?? 'Non spécifié',
-                        style: const TextStyle(color: Colors.grey)),
-                  ],
-                ),
-
-                const SizedBox(height: 24),
-
-                // Carte Financière Résumé
-                AppCard(
-                  accent: indicateurColor,
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text('Résultat Net',
-                                style: TextStyle(
-                                    color: Colors.grey, fontSize: 16)),
-                            Text(
-                              situation != null
-                                  ? _currencyFormat
-                                      .format(situation.resultatNet)
-                                  : '...',
-                              style: TextStyle(
-                                  color: indicateurColor,
+                    // En-tête
+                    AppCard(
+                      accent: indicateurColor,
+                      padding: const EdgeInsets.all(18),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              chantier.nomClient,
+                              style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
-                                  fontFamily: 'Outfit'),
+                                  fontFamily: 'Outfit',
+                                  color: Colors.white),
                             ),
-                          ],
-                        ),
-                        const Divider(color: Colors.white12, height: 30),
-                        _buildLigneFinanciere(
-                            'Montant Devis',
-                            situation != null ? chantier.montantDevis : 0,
-                            Colors.white),
-                        const SizedBox(height: 12),
-                        _buildLigneFinanciere('Total Encaissé',
-                            situation?.totalEncaisse ?? 0, AppTheme.or),
-                        const SizedBox(height: 12),
-                        _buildLigneFinanciere('Total Dépenses',
-                            situation?.totalDepenses ?? 0, AppTheme.rouge),
-                        const SizedBox(height: 12),
-                        _buildLigneFinanciere('Reste à Encaisser',
-                            situation?.resteAEncaisser ?? 0, Colors.grey),
-                        const SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text('Marge Brute',
-                                style: TextStyle(color: Colors.grey)),
-                            Text(
-                              situation != null
-                                  ? '${situation.margeBrutePourcent.toStringAsFixed(1)}%'
-                                  : '...',
-                              style: TextStyle(
-                                  color: indicateurColor,
-                                  fontWeight: FontWeight.bold),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: AppTheme.anthraciteClair,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                  color: AppTheme.or.withValues(alpha: 0.3)),
                             ),
-                          ],
-                        )
+                            child: Text(
+                              chantier.statut.replaceAll('_', ' '),
+                              style: const TextStyle(
+                                  color: AppTheme.or,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on,
+                            color: Colors.grey, size: 16),
+                        const SizedBox(width: 4),
+                        Text(chantier.ville ?? 'Non spécifié',
+                            style: const TextStyle(color: Colors.grey)),
+                        const SizedBox(width: 16),
+                        const Icon(Icons.handyman,
+                            color: Colors.grey, size: 16),
+                        const SizedBox(width: 4),
+                        Text(chantier.typeTravaux ?? 'Non spécifié',
+                            style: const TextStyle(color: Colors.grey)),
                       ],
                     ),
-                  ),
-                ),
 
-                const SizedBox(height: 32),
-                const Text('Actions Rapides',
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Outfit')),
-                const SizedBox(height: 16),
+                    const SizedBox(height: 24),
 
-                // Grille d'actions
-                ResponsiveGrid(
-                  minTileWidth: 175,
-                  children: [
-                    _buildActionButton(
-                        Icons.add_circle_outline, 'Encaissement', AppTheme.or,
-                        () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => AjouterEncaissementScreen(chantier: chantier)));
-                    }),
-                    _buildActionButton(
-                        Icons.remove_circle_outline, 'Dépense', AppTheme.rouge,
-                        () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => AjouterDepenseScreen(chantierId: chantier.id!)));
-                    }),
-                    _buildActionButton(
-                        Icons.architecture, 'Métrage', Colors.blueAccent, () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => FicheMetrageScreen(chantierId: chantier.id!)));
-                    }),
-                    _buildActionButton(
-                        Icons.share,
-                        'Accès Client',
-                        Colors.purpleAccent,
-                        _isLoading ? () {} : _genererAccesClient),
-                    _buildActionButton(
-                        Icons.timeline_rounded,
-                        'Suivi chantier',
-                        AppTheme.vert,
-                        () => Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) => ChantierSuiviAdminScreen(
-                                  chantierId: chantier.id!),
-                            ))),
+                    // Carte Financière Résumé
+                    AppCard(
+                      accent: indicateurColor,
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('Résultat Net',
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 16)),
+                              Text(
+                                situation != null
+                                    ? _currencyFormat
+                                        .format(situation.resultatNet)
+                                    : '...',
+                                style: TextStyle(
+                                    color: indicateurColor,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Outfit'),
+                              ),
+                            ],
+                          ),
+                          const Divider(color: Colors.white12, height: 30),
+                          _buildLigneFinanciere(
+                              'Montant Devis',
+                              situation != null ? chantier.montantDevis : 0,
+                              Colors.white),
+                          const SizedBox(height: 12),
+                          _buildLigneFinanciere('Total Encaissé',
+                              situation?.totalEncaisse ?? 0, AppTheme.or),
+                          const SizedBox(height: 12),
+                          _buildLigneFinanciere('Total Dépenses',
+                              situation?.totalDepenses ?? 0, AppTheme.rouge),
+                          const SizedBox(height: 12),
+                          _buildLigneFinanciere('Reste à Encaisser',
+                              situation?.resteAEncaisser ?? 0, Colors.grey),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('Marge Brute',
+                                  style: TextStyle(color: Colors.grey)),
+                              Text(
+                                situation != null
+                                    ? '${situation.margeBrutePourcent.toStringAsFixed(1)}%'
+                                    : '...',
+                                style: TextStyle(
+                                    color: indicateurColor,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    const Text('Actions Rapides',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Outfit')),
+                    const SizedBox(height: 16),
+
+                    // Grille d'actions
+                    ResponsiveGrid(
+                      minTileWidth: 175,
+                      children: [
+                        _buildActionButton(Icons.add_circle_outline,
+                            'Encaissement', AppTheme.or, () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => AjouterEncaissementScreen(
+                                      chantier: chantier)));
+                        }),
+                        _buildActionButton(Icons.remove_circle_outline,
+                            'Dépense', AppTheme.rouge, () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => AjouterDepenseScreen(
+                                      chantierId: chantier.id!)));
+                        }),
+                        _buildActionButton(
+                            Icons.architecture, 'Métrage', Colors.blueAccent,
+                            () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => FicheMetrageScreen(
+                                      chantierId: chantier.id!)));
+                        }),
+                        _buildActionButton(
+                            Icons.share,
+                            'Accès Client',
+                            Colors.purpleAccent,
+                            _isLoading ? () {} : _genererAccesClient),
+                        _buildActionButton(
+                            Icons.timeline_rounded,
+                            'Suivi chantier',
+                            AppTheme.vert,
+                            () => Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) => ChantierSuiviAdminScreen(
+                                      chantierId: chantier.id!),
+                                ))),
+                      ],
+                    ),
                   ],
-                ),
-              ],
                 ),
               ),
             ),
