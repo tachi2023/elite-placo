@@ -1,11 +1,18 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-// TODO Phase 6 : une fois main.dart branché sur un vrai routeur
-// (PinLockScreen -> ChantiersListScreen), ajouter ici un test de
-// widget de bout en bout : saisir le PIN, vérifier que l'écran
-// "Mes chantiers" s'affiche.
+import 'package:elite_placo/screens/onboarding/onboarding_screen.dart';
+
 void main() {
-  test('placeholder — à compléter en Phase 6', () {
-    expect(true, isTrue);
+  testWidgets('l onboarding affiche sa première étape', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+
+    await tester.pumpWidget(const MaterialApp(home: OnboardingScreen()));
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(find.textContaining('Des chantiers'), findsOneWidget);
+    expect(find.textContaining('sous contrôle'), findsOneWidget);
+    expect(find.text('Commencer'), findsOneWidget);
   });
 }
