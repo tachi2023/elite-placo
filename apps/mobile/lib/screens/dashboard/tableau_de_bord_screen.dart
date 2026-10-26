@@ -100,19 +100,8 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
         label: const Text('NOUVEAU PROJET',
             style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2)),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF1E1E24),
-              AppTheme.anthracite,
-              Color(0xFF0F0F12),
-            ],
-            stops: [0.0, 0.5, 1.0],
-          ),
-        ),
+      body: AppBackground(
+        safeArea: false,
         child: SafeArea(
           child: Consumer<DashboardProvider>(
             builder: (context, provider, _) {
@@ -454,14 +443,14 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
           Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const ChantiersListScreen()));
         } else if (index == 2) {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => const CalculMateriauxScreen()));
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const CalculMateriauxScreen()));
         } else if (index == 3) {
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const SelectionMetrageScreen()));
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => const SelectionMetrageScreen()));
         } else {
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const OuvriersScreen()));
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (_) => const OuvriersScreen()));
         }
       },
       destinations: const [
@@ -494,46 +483,47 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
     return SizedBox(
       width: fullWidth ? double.infinity : null,
       child: AppCard(
-      accent: isHighlight ? AppTheme.or : color,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            children: [
-              Icon(icon,
-                  size: 20,
-                  color: color ??
-                      (isHighlight ? AppTheme.or : AppTheme.grisClair)),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  label.toUpperCase(),
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: isHighlight ? AppTheme.or : AppTheme.grisFonce,
-                      letterSpacing: 0.5),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+        accent: isHighlight ? AppTheme.or : color,
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              children: [
+                Icon(icon,
+                    size: 20,
+                    color: color ??
+                        (isHighlight ? AppTheme.or : AppTheme.grisClair)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    label.toUpperCase(),
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: isHighlight ? AppTheme.or : AppTheme.grisFonce,
+                        letterSpacing: 0.5),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Text(
-            valeur,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: color ?? (isHighlight ? AppTheme.or : AppTheme.blanc),
-                  fontSize: fullWidth ? 28 : 20,
-                  fontWeight: FontWeight.bold,
-                ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            Text(
+              valeur,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color:
+                        color ?? (isHighlight ? AppTheme.or : AppTheme.blanc),
+                    fontSize: fullWidth ? 28 : 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -562,12 +552,13 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
             const Divider(color: Colors.white12, height: 1),
             const Padding(
               padding: EdgeInsets.fromLTRB(20, 22, 20, 8),
-              child: Text('PILOTAGE', style: TextStyle(
-                color: AppTheme.grisFonce,
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 2,
-              )),
+              child: Text('PILOTAGE',
+                  style: TextStyle(
+                    color: AppTheme.grisFonce,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 2,
+                  )),
             ),
             Expanded(
               child: ListView(
@@ -592,7 +583,9 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                   ),
                   _drawerItem(Icons.settings_rounded, 'Paramètres du site',
                       () => const GestionSiteScreen()),
-                  _drawerItem(Icons.lock_reset_rounded, 'Changer le mot de passe',
+                  _drawerItem(
+                      Icons.lock_reset_rounded,
+                      'Changer le mot de passe',
                       () => const ChangerMotDePasseScreen()),
                 ],
               ),

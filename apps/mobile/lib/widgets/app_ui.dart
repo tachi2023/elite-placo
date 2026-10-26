@@ -14,27 +14,41 @@ class AppBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     final content = DecoratedBox(
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF27241E), AppTheme.anthracite, Color(0xFF0B0B0D)],
-          stops: [0, .34, 1],
-        ),
+        color: AppTheme.anthracite,
       ),
       child: Stack(
         children: [
           Positioned(
-            top: -160,
-            right: -110,
+            top: -180,
+            right: -130,
             child: IgnorePointer(
               child: Container(
-                width: 340,
-                height: 340,
+                width: 360,
+                height: 360,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      AppTheme.or.withValues(alpha: .12),
+                      AppTheme.or.withValues(alpha: .08),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -220,
+            left: -180,
+            child: IgnorePointer(
+              child: Container(
+                width: 420,
+                height: 420,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      AppTheme.or.withValues(alpha: .035),
                       Colors.transparent,
                     ],
                   ),
@@ -70,16 +84,24 @@ class AppCard extends StatelessWidget {
       duration: const Duration(milliseconds: 220),
       padding: padding,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: .045),
-        borderRadius: BorderRadius.circular(20),
+        color: AppTheme.anthraciteClair,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: (accent ?? Colors.white).withValues(alpha: accent == null ? .08 : .28),
+          color: (accent ?? AppTheme.or).withValues(
+            alpha: accent == null ? .12 : .3,
+          ),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .18),
-            blurRadius: 22,
-            offset: const Offset(0, 10),
+            color: Colors.black.withValues(alpha: .28),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
+          ),
+          BoxShadow(
+            color: Colors.white.withValues(alpha: .025),
+            blurRadius: 0,
+            spreadRadius: 0,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
@@ -89,7 +111,7 @@ class AppCard extends StatelessWidget {
         ? content
         : InkWell(
             onTap: onTap,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
             child: content,
           );
   }
@@ -172,9 +194,10 @@ class ResponsiveContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final width = constraints.maxWidth.isFinite && constraints.maxWidth < maxWidth
-            ? constraints.maxWidth
-            : maxWidth;
+        final width =
+            constraints.maxWidth.isFinite && constraints.maxWidth < maxWidth
+                ? constraints.maxWidth
+                : maxWidth;
         return Align(
           alignment: Alignment.topCenter,
           child: SizedBox(
@@ -208,12 +231,15 @@ class ResponsiveGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final columns = (constraints.maxWidth / minTileWidth).floor().clamp(1, 4).toInt();
+        final columns =
+            (constraints.maxWidth / minTileWidth).floor().clamp(1, 4).toInt();
         final width = (constraints.maxWidth - ((columns - 1) * gap)) / columns;
         return Wrap(
           spacing: gap,
           runSpacing: gap,
-          children: children.map((child) => SizedBox(width: width, child: child)).toList(),
+          children: children
+              .map((child) => SizedBox(width: width, child: child))
+              .toList(),
         );
       },
     );
