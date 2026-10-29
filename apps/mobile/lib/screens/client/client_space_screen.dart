@@ -22,10 +22,15 @@ class _ClientSpaceScreenState extends State<ClientSpaceScreen> {
   String? _error;
   bool _loading = false;
   int _tab = 0;
+  int _note = 5;
+  bool _avisLoading = false;
+  String? _avisMessage;
+  final _avisController = TextEditingController();
 
   @override
   void dispose() {
     _codeController.dispose();
+    _avisController.dispose();
     super.dispose();
   }
 
@@ -100,6 +105,10 @@ class _ClientSpaceScreenState extends State<ClientSpaceScreen> {
                     icon: Icon(Icons.notifications_none),
                     selectedIcon: Icon(Icons.notifications),
                     label: 'Alertes'),
+                NavigationDestination(
+                    icon: Icon(Icons.star_border_rounded),
+                    selectedIcon: Icon(Icons.star_rounded),
+                    label: 'Avis'),
               ],
             ),
     );
@@ -179,6 +188,8 @@ class _ClientSpaceScreenState extends State<ClientSpaceScreen> {
         return _buildPhotos();
       case 3:
         return _buildAlerts();
+      case 4:
+        return _buildReview();
       default:
         return _buildHome();
     }
@@ -325,6 +336,8 @@ class _ClientSpaceScreenState extends State<ClientSpaceScreen> {
             Icons.timeline_rounded, 'Étapes', 'Consulter le parcours', 1),
         _quickCard(Icons.folder_open_outlined, 'Documents',
             'Ouvrir les éléments partagés', 3),
+        _quickCard(Icons.star_border_rounded, 'Votre avis',
+            'Partager votre expérience', 4),
       ]),
     ]));
   }
@@ -501,6 +514,124 @@ class _ClientSpaceScreenState extends State<ClientSpaceScreen> {
                             _ouvrirDocument(document['url']?.toString()))
                 ])),
     ]));
+  }
+
+  Widget _buildReview() {
+    return _page(Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const AppSectionTitle(
+          title: 'Votre expérience',
+          subtitle: 'Votre avis aide notre équipe à améliorer chaque chantier.',
+          icon: Icons.star_rounded,
+        ),
+        const SizedBox(height: 18),
+        AppCard(
+          accent: AppTheme.or,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Évaluez votre expérience',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 8),
+              const Text(
+                'Votre commentaire sera soumis à validation avant publication sur le site.',
+                style: TextStyle(color: AppTheme.grisFonce, height: 1.45),
+              ),
+              const SizedBox(height: 22),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (var value = 1; value <= 5; value++)
+                    IconButton(
+                      tooltip: '$value étoile${value > 1 ? 's' : ''}',
+                      onPressed: _avisLoading
+                          ? null
+                          : () => setState(() => _note = value),
+                      icon: Icon(
+                        value <= _note
+                            ? Icons.star_rounded
+                            : Icons.star_border_rounded,
+                        size: 34,
+                        color:
+                            value <= _note ? AppTheme.or : AppTheme.grisFonce,
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _avisController,
+                maxLines: 5,
+                maxLength: 1200,
+                enabled: !_avisLoading,
+                decoration: const InputDecoration(
+                  labelText: 'Votre commentaire',
+                  hintText: 'Dites-nous ce que vous avez pensé du chantier.',
+                ),
+              ),
+              if (_avisMessage != null) ...[
+                const SizedBox(height: 10),
+                Text(_avisMessage!,
+                    style: const TextStyle(color: AppTheme.grisClair)),
+              ],
+              const SizedBox(height: 14),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: _avisLoading ? null : _envoyerAvis,
+                  icon: _avisLoading
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Icon(Icons.send_rounded),
+                  label: Text(_avisLoading ? 'Envoi...' : 'Envoyer mon avis'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ));
+  }
+
+  Future<void> _envoyerAvis() async {
+    final commentaire = _avisController.text.trim();
+    if (commentaire.isEmpty) {
+      setState(
+          () => _avisMessage = 'Écrivez un commentaire avant de l’envoyer.');
+      return;
+    }
+    setState(() {
+      _avisLoading = true;
+      _avisMessage = null;
+    });
+    try {
+      await ApiService().client.post('/api/avis', data: {
+        'codePublic': _codeController.text.trim().toUpperCase(),
+        'nomClient': (_data?['nomClient'] ?? 'Client').toString(),
+        'note': _note,
+        'commentaire': commentaire,
+      });
+      if (!mounted) return;
+      _avisController.clear();
+      setState(() =>
+          _avisMessage = 'Merci. Votre avis sera publié après validation.');
+    } on DioException catch (error) {
+      if (!mounted) return;
+      final payload = error.response?.data;
+      final message = payload is Map ? payload['message']?.toString() : null;
+      setState(() => _avisMessage =
+          message ?? 'Impossible d’envoyer votre avis pour le moment.');
+    } catch (_) {
+      if (mounted) {
+        setState(() =>
+            _avisMessage = 'Impossible d’envoyer votre avis pour le moment.');
+      }
+    } finally {
+      if (mounted) setState(() => _avisLoading = false);
+    }
   }
 
   Widget _quickCard(IconData icon, String title, String subtitle, int tab) =>
