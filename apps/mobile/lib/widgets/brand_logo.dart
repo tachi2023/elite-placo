@@ -15,20 +15,21 @@ class BrandLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final alignment = centered ? CrossAxisAlignment.center : CrossAxisAlignment.start;
+    final alignment =
+        centered ? CrossAxisAlignment.center : CrossAxisAlignment.start;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: alignment,
       children: [
         Text.rich(
-          TextSpan(
+          const TextSpan(
             text: 'Élite Placo ',
             children: [
               TextSpan(
                 text: '&',
                 style: TextStyle(color: AppTheme.or),
               ),
-              const TextSpan(text: ' Déco'),
+              TextSpan(text: ' Déco'),
             ],
           ),
           textAlign: centered ? TextAlign.center : TextAlign.start,
@@ -45,7 +46,7 @@ class BrandLogo extends StatelessWidget {
           'PAR PRIMA BTP',
           textAlign: centered ? TextAlign.center : TextAlign.start,
           style: GoogleFonts.outfit(
-            color: Colors.white.withOpacity(0.48),
+            color: Colors.white.withValues(alpha: 0.48),
             fontSize: titleSize < 17 ? 7 : 9,
             fontWeight: FontWeight.w400,
             letterSpacing: 2.1,

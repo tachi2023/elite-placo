@@ -24,13 +24,16 @@ class PdfService {
     String? ville,
   }) async {
     final document = pw.Document();
-    final totalSurfaceNette = pieces.fold<double>(0, (total, piece) => total + piece.surfaceNette);
-    final totalSurfaceBrute = pieces.fold<double>(0, (total, piece) => total + piece.surfaceBrute);
-    final totalDeductions = pieces.fold<double>(0, (total, piece) => total + piece.surfaceDeduction);
+    final totalSurfaceNette =
+        pieces.fold<double>(0, (total, piece) => total + piece.surfaceNette);
+    final totalSurfaceBrute =
+        pieces.fold<double>(0, (total, piece) => total + piece.surfaceBrute);
+    final totalDeductions = pieces.fold<double>(
+        0, (total, piece) => total + piece.surfaceDeduction);
 
     document.addPage(
       pw.MultiPage(
-        pageTheme: pw.PageTheme(
+        pageTheme: const pw.PageTheme(
           pageFormat: PdfPageFormat.a4,
           margin: pw.EdgeInsets.all(28),
         ),
@@ -40,9 +43,13 @@ class PdfService {
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text('Élite Placo & Déco', style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
+                pw.Text('Élite Placo & Déco',
+                    style: pw.TextStyle(
+                        fontSize: 22, fontWeight: pw.FontWeight.bold)),
                 pw.SizedBox(height: 4),
-                pw.Text('Fiche de métrage', style: pw.TextStyle(fontSize: 16, color: PdfColors.grey700)),
+                pw.Text('Fiche de métrage',
+                    style: const pw.TextStyle(
+                        fontSize: 16, color: PdfColors.grey700)),
               ],
             ),
           ),
@@ -56,7 +63,8 @@ class PdfService {
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text('Chantier #$chantierId', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                pw.Text('Chantier #$chantierId',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                 if (nomClient != null) pw.Text('Client : $nomClient'),
                 if (ville != null) pw.Text('Ville : $ville'),
                 pw.Text('Système : ${SystemePlatrerie.libelle(systeme)}'),
@@ -65,8 +73,14 @@ class PdfService {
             ),
           ),
           pw.SizedBox(height: 16),
-          pw.Table.fromTextArray(
-            headers: const ['Pièce', 'L x l (m)', 'Surface brute', 'Déduction', 'Surface nette'],
+          pw.TableHelper.fromTextArray(
+            headers: const [
+              'Pièce',
+              'L x l (m)',
+              'Surface brute',
+              'Déduction',
+              'Surface nette'
+            ],
             data: pieces.map((piece) {
               return [
                 piece.nomPiece,
@@ -101,12 +115,18 @@ class PdfService {
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text('Récapitulatif', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+                pw.Text('Récapitulatif',
+                    style: pw.TextStyle(
+                        fontSize: 14, fontWeight: pw.FontWeight.bold)),
                 pw.SizedBox(height: 6),
-                pw.Text('Surface brute totale : ${totalSurfaceBrute.toStringAsFixed(2)} m²'),
-                pw.Text('Total des déductions : ${totalDeductions.toStringAsFixed(2)} m²'),
-                pw.Text('Surface nette totale : ${totalSurfaceNette.toStringAsFixed(2)} m²'),
-                pw.Text('Estimation indicative : ${_fcfa.format(totalSurfaceNette * 7500)}'),
+                pw.Text(
+                    'Surface brute totale : ${totalSurfaceBrute.toStringAsFixed(2)} m²'),
+                pw.Text(
+                    'Total des déductions : ${totalDeductions.toStringAsFixed(2)} m²'),
+                pw.Text(
+                    'Surface nette totale : ${totalSurfaceNette.toStringAsFixed(2)} m²'),
+                pw.Text(
+                    'Estimation indicative : ${_fcfa.format(totalSurfaceNette * 7500)}'),
               ],
             ),
           ),

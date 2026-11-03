@@ -61,7 +61,7 @@ class _CalculMateriauxScreenState extends State<CalculMateriauxScreen> {
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    value: _systeme,
+                    initialValue: _systeme,
                     isExpanded: true,
                     decoration: const InputDecoration(labelText: 'Système de plâtrerie'),
                     items: const [

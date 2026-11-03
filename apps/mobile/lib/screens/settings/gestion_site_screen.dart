@@ -92,7 +92,7 @@ class _GestionSiteScreenState extends State<GestionSiteScreen>
               TextField(controller: keyController, decoration: const InputDecoration(labelText: 'Clé interne (optionnel)')),
               TextField(controller: descriptionController, minLines: 2, maxLines: 5, decoration: const InputDecoration(labelText: 'Description')),
               TextField(controller: orderController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Ordre')),
-              SwitchListTile(contentPadding: EdgeInsets.zero, title: const Text('Visible sur le site'), value: visible, activeColor: AppTheme.or, onChanged: (value) => setDialogState(() => visible = value)),
+              SwitchListTile(contentPadding: EdgeInsets.zero, title: const Text('Visible sur le site'), value: visible, activeThumbColor: AppTheme.or, onChanged: (value) => setDialogState(() => visible = value)),
               const SizedBox(height: 8),
               OutlinedButton.icon(
                 onPressed: saving ? null : () async {

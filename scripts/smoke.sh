@@ -5,6 +5,7 @@ API_URL="${API_URL:-http://localhost:8081}"
 ADMIN_USER="${ADMIN_USER:-raoul.michel}"
 ADMIN_PASSWORD="${ADMIN_PASSWORD:-}"
 FOLLOWUP_CODE="${FOLLOWUP_CODE:-DEMO-CLIENT}"
+INVALID_FOLLOWUP_CODE="${INVALID_FOLLOWUP_CODE:-INVALID-SMOKE-CODE-9F4A}"
 
 if [ -z "$ADMIN_PASSWORD" ]; then
   echo "ADMIN_PASSWORD doit être défini dans l'environnement du smoke test." >&2
@@ -29,4 +30,13 @@ if printf '%s' "$FOLLOWUP" | grep -Eiq '"(depense|depenses|marge|resultatNet|tot
   echo "Le suivi public expose une donnée financière interdite." >&2
   exit 1
 fi
+
+INVALID_STATUS=$(curl -sS -o /dev/null -w '%{http_code}' "$API_URL/api/suivi/$INVALID_FOLLOWUP_CODE")
+case "$INVALID_STATUS" in
+  400|404|410) ;;
+  *)
+    echo "Le suivi public accepte un code invalide (HTTP $INVALID_STATUS)." >&2
+    exit 1
+    ;;
+esac
 echo "Smoke test OK"

@@ -3,20 +3,22 @@
 Document sans secret. Les mots de passe, clés privées et URLs contenant des
 identifiants de connexion doivent rester dans un gestionnaire de mots de passe.
 
-## État au 06/10/2026
+## État au 03/11/2026
 
-- Branche de travail : `jour-5`.
-- Branche de production : `main` après validation de la PR `jour-4`.
+- Branche de production : `main`.
+- Dernier commit fonctionnel de référence : `ec820e0`.
+- Branche Flutter Web publiée par CI : `deploy-app`.
 - Migrations Flyway V1 à V17 : ne jamais modifier ni supprimer.
 - Version applicative : `0.1.0-mvp`.
 
-## URLs à compléter après Render
+## URLs de production
 
 - API : `https://elite-placo-api-oregon-9q65.onrender.com`
-- Site vitrine statique : `<URL exacte elite-placo-site-static>`
-- App Flutter Web : `<URL exacte elite-placo-app-static>`
-- Espace client : `<URL du site vitrine>/espace-client`
-- Santé API : `<URL API>/actuator/health`
+- Site vitrine : `https://elite-placo-site-9q65.onrender.com/`
+- App Flutter Web/PWA : `https://elite-placo-app-9q65.onrender.com/`
+- Espace client : `https://elite-placo-site-9q65.onrender.com/espace-client`
+- Santé API : `https://elite-placo-api-oregon-9q65.onrender.com/actuator/health`
+- Workflow APK validé : `https://github.com/tachi2023/elite-placo/actions/runs/40816246121`
 
 Les deux URLs statiques exactes doivent être ajoutées à `CORS_ORIGINS` dans le
 service API. Les anciennes URLs Docker pourront être retirées uniquement après
@@ -36,10 +38,10 @@ Compléter les propriétaires dans le gestionnaire de mots de passe :
 
 ## Déploiement
 
-1. Fusionner la PR `jour-4` vers `main` après CI.
-2. Synchroniser Render et vérifier les logs Flyway V14 à V17.
-3. Définir `ADMIN_PASSWORD`, les trois variables Cloudinary et les URLs CORS.
-4. Lancer le workflow **Build and publish Flutter Web** pour créer `deploy-app`.
+1. Vérifier que Render suit `main` et que l’auto-deploy est actif.
+2. Vérifier les logs Flyway V14 à V17 après chaque synchronisation Render.
+3. Définir `ADMIN_PASSWORD`, les trois variables Cloudinary et les URLs CORS dans Render.
+4. Le workflow **Build and publish Flutter Web** publie automatiquement `deploy-app`.
 5. Vérifier `/actuator/health`, puis lancer `scripts/smoke.sh` avec
    `API_URL`, `ADMIN_USER`, `ADMIN_PASSWORD` et `FOLLOWUP_CODE`.
 6. Passer `APP_DEMO_ENABLED=false` après saisie et validation des vrais chantiers.
@@ -62,6 +64,7 @@ base séparée.
 - Notifications push, messagerie et rendez-vous ne sont pas inclus dans cette
   version.
 - Un APK de distribution doit être signé avec la clé privée sauvegardée hors Git.
+- L’artefact APK GitHub est un APK de recette non signé par une clé Play Store ; il sert à installer et tester l’application sur Android.
 
 ## Coûts et renouvellements
 

@@ -104,7 +104,6 @@ class _ChantierSuiviAdminScreenState extends State<ChantierSuiviAdminScreen>
     final label = TextEditingController();
     String? filePath;
     String? fileName;
-    bool uploading = false;
     final ok = await showDialog<bool>(
         context: context,
         builder: (context) => StatefulBuilder(
@@ -118,25 +117,24 @@ class _ChantierSuiviAdminScreenState extends State<ChantierSuiviAdminScreen>
                       decoration: const InputDecoration(labelText: 'Libellé')),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
-                    onPressed: uploading
-                        ? null
-                        : () async {
-                            final path = kind == 'photos'
-                                ? (await _picker.pickImage(
-                                        source: ImageSource.gallery))
-                                    ?.path
-                                : (await FilePicker.platform.pickFiles(
-                                        type: FileType.custom,
-                                        allowedExtensions: ['pdf']))
-                                    ?.files
-                                    .single
-                                    .path;
-                            if (path != null)
-                              setDialogState(() {
-                                filePath = path;
-                                fileName = path.split(RegExp(r'[/\\]')).last;
-                              });
-                          },
+                    onPressed: () async {
+                      final path = kind == 'photos'
+                          ? (await _picker.pickImage(
+                                  source: ImageSource.gallery))
+                              ?.path
+                          : (await FilePicker.platform.pickFiles(
+                                  type: FileType.custom,
+                                  allowedExtensions: ['pdf']))
+                              ?.files
+                              .single
+                              .path;
+                      if (path != null) {
+                        setDialogState(() {
+                          filePath = path;
+                          fileName = path.split(RegExp(r'[/\\]')).last;
+                        });
+                      }
+                    },
                     icon: const Icon(Icons.attach_file),
                     label: Text(fileName ??
                         (kind == 'photos'
@@ -149,7 +147,7 @@ class _ChantierSuiviAdminScreenState extends State<ChantierSuiviAdminScreen>
                       onPressed: () => Navigator.pop(context, false),
                       child: const Text('Annuler')),
                   FilledButton(
-                      onPressed: filePath == null || uploading
+                      onPressed: filePath == null
                           ? null
                           : () => Navigator.pop(context, true),
                       child: const Text('Téléverser'))
@@ -181,9 +179,10 @@ class _ChantierSuiviAdminScreenState extends State<ChantierSuiviAdminScreen>
           libelle: label.text.trim());
       await _charger();
     } catch (error) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Upload impossible : $error')));
+      }
     } finally {
       label.dispose();
     }
@@ -272,8 +271,8 @@ class _ChantierSuiviAdminScreenState extends State<ChantierSuiviAdminScreen>
         color: AppTheme.or,
         onRefresh: _charger,
         child: media.isEmpty
-            ? ListView(children: [
-                const SizedBox(height: 160),
+            ? ListView(children: const [
+                SizedBox(height: 160),
                 Center(child: Text('Aucun élément pour le moment.'))
               ])
             : ListView.builder(
@@ -306,7 +305,7 @@ class _ChantierSuiviAdminScreenState extends State<ChantierSuiviAdminScreen>
                                   : 'Masqué côté client'),
                               trailing: Switch(
                                   value: visible,
-                                  activeColor: AppTheme.or,
+                                  activeThumbColor: AppTheme.or,
                                   onChanged: (value) async {
                                     await _repository.modifierVisibilite(
                                         widget.chantierId, kind, id, value);

@@ -271,7 +271,7 @@ class _PinLockScreenState extends State<PinLockScreen>
                           ),
                           child: Column(
                             children: [
-                              Text(
+                              const Text(
                                 'ELITE PLACO',
                                 style: TextStyle(
                                   fontSize: 11,
@@ -327,7 +327,7 @@ class _PinLockScreenState extends State<PinLockScreen>
                           },
                         ),
                         const SizedBox(height: 20),
-                        Text(
+                        const Text(
                           'ESPACE PRIVÉ',
                           style: TextStyle(
                             color: AppTheme.or,
@@ -403,7 +403,7 @@ class _PinLockScreenState extends State<PinLockScreen>
                         ),
                         const SizedBox(height: 16),
                         if (_isLoading)
-                          SizedBox(
+                          const SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(

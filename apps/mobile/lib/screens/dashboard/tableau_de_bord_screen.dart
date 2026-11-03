@@ -123,7 +123,7 @@ class _TableauDeBordScreenState extends State<TableauDeBordScreen> {
                             style: TextStyle(
                                 fontSize: 22, fontWeight: FontWeight.w700)),
                         const SizedBox(height: 8),
-                        Text(
+                        const Text(
                           'Le serveur est peut-être en réveil ou le réseau est coupé. Vos données n’ont pas été supprimées.',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: AppTheme.grisClair),

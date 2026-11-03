@@ -201,7 +201,7 @@ class _FicheMetrageScreenState extends State<FicheMetrageScreen> {
                 AppCard(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                   child: DropdownButtonFormField<String>(
-                    value: _systeme,
+                    initialValue: _systeme,
                     decoration: const InputDecoration(labelText: 'Système'),
                     items: const [
                       DropdownMenuItem(

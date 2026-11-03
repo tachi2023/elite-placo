@@ -128,8 +128,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       const SizedBox(height: 18),
                       Row(
                         children: [
-                          Expanded(
-                            child: const BrandLogo(titleSize: 18),
+                          const Expanded(
+                            child: BrandLogo(titleSize: 18),
                           ),
                           TextButton(
                             onPressed: _terminerOnboarding,
