@@ -27,11 +27,12 @@ Si vous utilisez Android Studio : ouvrez SDK Manager → SDK Tools → cochez "S
 
 2) Méthode CI (recommandée si vous ne voulez pas installer localement)
 
-- Un workflow GitHub Actions a été ajouté : `.github/workflows/android-build.yml`.
-- Pour déclencher la construction : pousser sur `main` ou exécuter manuellement le workflow depuis l'onglet Actions.
+- Le workflow GitHub Actions est `.github/workflows/android-build.yml`.
+- Il se déclenche sur `main` et peut aussi être lancé manuellement depuis l'onglet Actions.
 - L'artefact `app-release-apk` sera téléchargeable depuis la page d'exécution du workflow.
 
-Le workflow est aussi déclenché sur `jour-2` et `jour-3`, sans modifier `main`.
+Le workflow manuel `.github/workflows/android-apk.yml` permet aussi de générer un APK
+sans pousser de commit.
 
 ### Signature release
 

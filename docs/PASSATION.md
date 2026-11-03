@@ -6,7 +6,7 @@ identifiants de connexion doivent rester dans un gestionnaire de mots de passe.
 ## État au 03/11/2026
 
 - Branche de production : `main`.
-- Dernier commit fonctionnel de référence : `ec820e0`.
+- Dernier commit fonctionnel de référence : voir l’historique de `main`.
 - Branche Flutter Web publiée par CI : `deploy-app`.
 - Migrations Flyway V1 à V17 : ne jamais modifier ni supprimer.
 - Version applicative : `0.1.0-mvp`.
