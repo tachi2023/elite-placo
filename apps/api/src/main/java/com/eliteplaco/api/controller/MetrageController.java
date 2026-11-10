@@ -46,7 +46,8 @@ public class MetrageController {
                         p.getLongueur(),
                         p.getLargeur(),
                         p.getSurfaceDeduction(),
-                        p.getOrdre()
+                        p.getOrdre(),
+                        metrageService.deductionDepasseSurface(p)
                 )).collect(Collectors.toList())
         );
     }

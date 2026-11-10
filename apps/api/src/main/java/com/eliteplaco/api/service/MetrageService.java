@@ -54,6 +54,12 @@ public class MetrageService {
         if (requete.longueur().compareTo(BigDecimal.ZERO) <= 0 || requete.largeur().compareTo(BigDecimal.ZERO) <= 0) {
             throw new AppException("Longueur et largeur doivent être des nombres positifs pour \"" + requete.nomPiece() + "\".");
         }
+        BigDecimal deduction = requete.surfaceDeduction() == null
+                ? BigDecimal.ZERO
+                : requete.surfaceDeduction();
+        if (deduction.compareTo(BigDecimal.ZERO) < 0) {
+            throw new AppException("La déduction ne peut pas être négative.");
+        }
         if (fiche.getPieces().size() >= LIMITE_PIECES) {
             throw new AppException("Une fiche de métrage est limitée à " + LIMITE_PIECES + " pièces.");
         }
@@ -63,7 +69,7 @@ public class MetrageService {
         piece.setNomPiece(requete.nomPiece());
         piece.setLongueur(requete.longueur());
         piece.setLargeur(requete.largeur());
-        piece.setSurfaceDeduction(requete.surfaceDeduction() != null ? requete.surfaceDeduction() : BigDecimal.ZERO);
+        piece.setSurfaceDeduction(deduction);
         piece.setOrdre(fiche.getPieces().size() + 1);
         piece.setSynchronise(false);
         piece.setLastModifiedDate(LocalDateTime.now());
@@ -96,5 +102,11 @@ public class MetrageService {
             total = total.add(surfaceNette);
         }
         return total;
+    }
+
+    /** Avertissement non bloquant demandé par le cahier des charges. */
+    public boolean deductionDepasseSurface(PieceMetrage piece) {
+        return piece.getSurfaceDeduction().compareTo(
+                piece.getLongueur().multiply(piece.getLargeur())) > 0;
     }
 }

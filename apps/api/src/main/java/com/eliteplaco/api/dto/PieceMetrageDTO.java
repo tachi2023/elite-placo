@@ -8,5 +8,6 @@ public record PieceMetrageDTO(
         BigDecimal longueur,
         BigDecimal largeur,
         BigDecimal surfaceDeduction,
-        Integer ordre
+        Integer ordre,
+        boolean avertissementDeduction
 ) {}
