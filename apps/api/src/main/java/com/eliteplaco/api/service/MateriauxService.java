@@ -73,8 +73,10 @@ public class MateriauxService {
 
         lignes.add(new QuantiteMateriauDTO("Vis placo", Math.ceil(avecMarge(surfaceM2 * VIS_PLACO_PAR_M2)), "unité", prix.get("vis_placo")));
         lignes.add(new QuantiteMateriauDTO("Vis autoforeuses", Math.ceil(avecMarge(surfaceM2 * VIS_AUTOFOREUSE_PAR_M2)), "unité", prix.get("vis_autoforeuse")));
-        lignes.add(new QuantiteMateriauDTO("Bande à joints", avecMarge(surfaceM2 * ML_BANDE_JOINT_PAR_M2), "ml", prix.get("bande_joint")));
-        lignes.add(new QuantiteMateriauDTO("Enduit de jointoiement", avecMarge(surfaceM2 * KG_ENDUIT_PAR_M2), "kg", prix.get("enduit")));
+        lignes.add(new QuantiteMateriauDTO("Bande à joints",
+                Math.ceil(avecMarge(surfaceM2 * ML_BANDE_JOINT_PAR_M2)), "ml", prix.get("bande_joint")));
+        lignes.add(new QuantiteMateriauDTO("Enduit de jointoiement",
+                Math.ceil(avecMarge(surfaceM2 * KG_ENDUIT_PAR_M2)), "kg", prix.get("enduit")));
 
         boolean incomplet = lignes.stream().anyMatch(l -> l.prixUnitaire() == null);
         BigDecimal total = incomplet ? null : lignes.stream()
