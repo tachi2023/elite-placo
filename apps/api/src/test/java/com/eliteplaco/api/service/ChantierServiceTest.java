@@ -75,18 +75,30 @@ class ChantierServiceTest {
                 new BigDecimal("6400000"));
 
         assertEquals(new BigDecimal("2800000"), situation.resultatNet());
-        assertEquals(new BigDecimal("30.4300"), situation.margeBrutePourcent());
+        assertEquals(new BigDecimal("28.0000"), situation.margeBrutePourcent());
         assertEquals("VERT", situation.indicateur());
     }
 
     @Test
-    void margeEstZeroSiAucunEncaissement() {
+    void margeEstZeroSiDevisNul() {
         Chantier chantier = chantier("Client test", BigDecimal.ZERO);
 
         var situation = chantierService.calculerSituation(
                 chantier, BigDecimal.ZERO, BigDecimal.ZERO);
 
         assertEquals(BigDecimal.ZERO, situation.margeBrutePourcent());
+        assertEquals("ROUGE", situation.indicateur());
+    }
+
+    @Test
+    void depensesSuperieuresAuxEncaissementsProduisentUneMargeNegative() {
+        Chantier chantier = chantier("Client en perte", BigDecimal.valueOf(1_000_000));
+
+        var situation = chantierService.calculerSituation(
+                chantier, BigDecimal.valueOf(200_000), BigDecimal.valueOf(350_000));
+
+        assertEquals(new BigDecimal("-150000"), situation.resultatNet());
+        assertEquals(new BigDecimal("-15.0000"), situation.margeBrutePourcent());
         assertEquals("ROUGE", situation.indicateur());
     }
 

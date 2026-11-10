@@ -204,9 +204,10 @@ public class ChantierService {
         BigDecimal resultatNet = totalEncaisse.subtract(totalDepenses);
 
         BigDecimal margePourcent = BigDecimal.ZERO;
-        if (totalEncaisse.compareTo(BigDecimal.ZERO) > 0) {
+        BigDecimal devisSigne = chantier.getMontantDevis();
+        if (devisSigne != null && devisSigne.compareTo(BigDecimal.ZERO) > 0) {
             margePourcent = resultatNet
-                    .divide(totalEncaisse, 4, RoundingMode.HALF_UP)
+                    .divide(devisSigne, 4, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
         }
 
