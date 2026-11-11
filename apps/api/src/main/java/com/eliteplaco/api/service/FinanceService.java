@@ -81,6 +81,9 @@ public class FinanceService {
         if (montant == null || montant.compareTo(BigDecimal.ZERO) <= 0) {
             throw new AppException("Le montant doit être un nombre positif.");
         }
+        if (date == null || date.isAfter(LocalDate.now())) {
+            throw new AppException("La date ne peut pas être vide ni postérieure à aujourd'hui.");
+        }
         if (categorie == null) {
             throw new AppException("Choisissez une catégorie de dépense.");
         }
