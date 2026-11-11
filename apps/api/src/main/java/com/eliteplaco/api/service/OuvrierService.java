@@ -66,6 +66,9 @@ public class OuvrierService {
         if (montant == null || montant.compareTo(BigDecimal.ZERO) <= 0) {
             throw new AppException("Le montant du paiement doit être positif.");
         }
+        if (date == null || date.isAfter(LocalDate.now())) {
+            throw new AppException("La date du paiement ne peut pas être vide ni postérieure à aujourd'hui.");
+        }
         Ouvrier ouvrier = ouvrierRepository.findById(ouvrierId)
                 .orElseThrow(() -> new AppException("Ouvrier introuvable."));
         Chantier chantier = chantierService.trouverParIdOuLever(chantierId);
