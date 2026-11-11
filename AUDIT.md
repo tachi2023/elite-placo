@@ -126,3 +126,21 @@ Sprint 1 limité à cinq corrections maximum : tests Finance, correction et
 validation de la formule de marge, tests Matériaux, tests Métrage, tests
 Ouvriers. Aucune modification de design ni nouvelle fonctionnalité pendant ce
 lot.
+
+## Résultat du Sprint 1
+
+Le Sprint 1 a été exécuté sur la branche `sprint-1-core-business` sans modifier
+`main`. La validation complète `mvn -B -Plocal verify` est verte : 35 tests,
+0 échec, 0 erreur.
+
+| Commit | Correction | Preuve |
+| --- | --- | --- |
+| `d8159f3` | Marge calculée par rapport au devis signé, avec cas devis nul et perte | 12 tests `ChantierServiceTest` |
+| `092e3c6` | Arrondi supérieur de toutes les quantités matériaux et budget incomplet | 2 tests `MateriauxServiceTest` |
+| `25efe42` | Déduction négative refusée et avertissement si déduction supérieure à la surface | 3 tests `MetrageServiceTest` |
+| `5976adf` | Paiement ouvrier relié à la dépense automatique Main d'œuvre et dates contrôlées | 3 tests `OuvrierServiceTest` |
+| `560193a` | Date de dépense absente/future refusée et validation financière étendue | 2 tests `FinanceServiceTest` |
+
+Le prochain lot ne doit pas commencer avant validation du dirigeant. Les
+priorités restantes sont l'authentification complète et la rotation des
+refresh tokens, puis la synchronisation hors ligne réelle sur appareil.
